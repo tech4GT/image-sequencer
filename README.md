@@ -42,6 +42,7 @@ A diagram of this running 5 steps on a single sample image may help explain how 
 * [Contributing](https://github.com/publiclab/image-sequencer/blob/master/CONTRIBUTING.md)
 * [Submit a Module](https://github.com/publiclab/image-sequencer/blob/master/CONTRIBUTING.md#contributing-modules)
 
+* [Get Demo Bookmarklet](https://publiclab.org/wiki/imagesequencerbookmarklet)
 ## Installation
 
 This library works in the browser, in Node, and on the commandline (CLI), which we think is great. 
