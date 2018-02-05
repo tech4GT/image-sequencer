@@ -21,7 +21,7 @@ program
   .parse(process.argv);
 
 // Parse step into an array to allow for multiple steps.
-program.step = program.step.split(" ");
+if(program.step) program.step = program.step.split(" ");
 
 // User must input an image.
 if(!program.image) exit("Can't read file.")
@@ -104,7 +104,7 @@ sequencer.loadImages(program.image,function(){
 });
 
 // Takes an array of steps and checks if they are valid steps for the sequencer.
-function validateSteps(steps) {
+ function validateSteps(steps) {
 
   // Assume all are valid in the beginning. 
   var valid = true;
