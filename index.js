@@ -58,7 +58,11 @@ sequencer.setUI({
 sequencer.loadImages(program.image,function(){
     console.warn('\x1b[33m%s\x1b[0m', "The execution will be async\nYou may not see the output for a few seconds or minutes")
 
-    if(program.basic) console.log("Basic mode is enabled, outputting only final image")
+    //Generate the Output Directory
+    require('fs').mkdir(program.output,()=>{
+      console.log("Files will be exported to \""+program.output+"\"");
+
+      if(program.basic) console.log("Basic mode is enabled, outputting only final image")
 
   // Iterate through the steps and retrieve their inputs.
   program.step.forEach(function(step){
@@ -92,9 +96,10 @@ sequencer.loadImages(program.image,function(){
     // Export all images or final image as binary files.
     sequencer.exportBin(program.output,program.basic);
 
-    console.log("Files will be exported to \""+program.output+"\"");
 
   });
+
+    });
 
 });
 
