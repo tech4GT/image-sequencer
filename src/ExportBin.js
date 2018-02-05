@@ -1,6 +1,9 @@
 var fs = require('fs');
 var getDirectories = function(rootDir, cb) {
   fs.readdir(rootDir, function(err, files) {
+
+    if(err) console.error(err);
+
       var dirs = [];
       if(typeof(files)=="undefined") {
         cb(dirs);
@@ -27,7 +30,7 @@ module.exports = function ExportBin(dir = "./output/",ref,basic) {
   dir = (dir[dir.length-1]=="/") ? dir : dir + "/";
   if(ref.options.inBrowser) return false;
   fs.access(dir, function(err){
-    if(err) fs.mkdir(dir, function() {});
+    if(err) console.log(err);
   });
   getDirectories(dir,function(dirs){
     var num = 1;
@@ -36,7 +39,9 @@ module.exports = function ExportBin(dir = "./output/",ref,basic) {
       var n = parseInt(dirs[d].match(/^sequencer(.*)$/)[1]);
       num = (n>=num)?(n+1):num;
     }
-    fs.mkdir(dir+'sequencer'+num,function(){
+    fs.mkdir(dir+'sequencer'+num,function(err){
+      if(err) throw err;
+
       var root = dir+'sequencer'+num+'/';
       for(var image in ref.images) {
         var steps = ref.images[image].steps;
