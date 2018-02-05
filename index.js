@@ -21,7 +21,8 @@ program
   .parse(process.argv);
 
 // Parse step into an array to allow for multiple steps.
-if(program.step) program.step = program.step.split(" ");
+if(!program.step) exit("No steps passed")
+program.step = program.step.split(" ");
 
 // User must input an image.
 if(!program.image) exit("Can't read file.")
