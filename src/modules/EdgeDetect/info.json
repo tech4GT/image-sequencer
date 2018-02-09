@@ -1,0 +1,7 @@
+{
+    "name": "Detect Edges",
+    "description": "Detects the edges in an image",
+    "inputs": {
+    }
+    
+}
