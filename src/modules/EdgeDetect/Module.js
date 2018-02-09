@@ -6,6 +6,7 @@ module.exports = function edgeDetect(options,UI) {
     options = options || {};
     options.title = "Detect Edges";
     options.description = "Detects the edges in an image";
+    options.blur = options.blur || 2
   
     // Tell UI that a step has been set up.
     UI.onSetup(options.step);
@@ -18,6 +19,13 @@ module.exports = function edgeDetect(options,UI) {
       UI.onDraw(options.step);
   
       var step = this;
+
+
+    //   Extra Manipulation function used as an enveloper for applying gaussian blur and Convolution
+      function extraManipulation(pixels){
+        pixels = require('ndarray-gaussian-filter')(pixels,options.blur)
+        return require('./Convolution')(pixels)
+      }
   
       function changePixel(r, g, b, a) {
         return [(r+g+b)/3, (r+g+b)/3, (r+g+b)/3, a];
@@ -38,6 +46,7 @@ module.exports = function edgeDetect(options,UI) {
       return require('../_nomodule/PixelManipulation.js')(input, {
         output: output,
         changePixel: changePixel,
+        extraManipulation: extraManipulation,
         format: input.format,
         image: options.image,
         callback: callback

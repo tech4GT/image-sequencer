@@ -2,6 +2,10 @@
     "name": "Detect Edges",
     "description": "Detects the edges in an image",
     "inputs": {
+        "blur": {
+            "type": "integer",
+            "desc": "amount of gaussian blur(Less blur gives more detail, typically 0-5)",
+            "default": 2
+        }
     }
-    
 }

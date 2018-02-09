@@ -30,6 +30,7 @@
     "font-awesome": "~4.5.0",
     "jquery": "~2",
     "jsqr": "^0.2.2",
+    "ndarray-gaussian-filter": "^1.0.0",
     "readline-sync": "^1.4.7",
     "save-pixels": "~2.3.4",
     "urify": "^2.1.0"
