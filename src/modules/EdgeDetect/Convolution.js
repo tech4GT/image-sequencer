@@ -25,7 +25,7 @@ module.exports = exports =  function(pixels){
     return pixels
 }
 
-//changepixel function that convolutes every pixel
+//changepixel function that convolutes every pixel (sobel filter)
 function changePixel(pixels,val,a,x,y){
     let magX = 0.0
     for(let a = 0; a < 3; a++){

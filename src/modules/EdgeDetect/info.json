@@ -1,6 +1,6 @@
 {
     "name": "Detect Edges",
-    "description": "Detects the edges in an image",
+    "description": "Detects the edges in an image and outputs a a greyscale image with the canny method",
     "inputs": {
         "blur": {
             "type": "integer",
