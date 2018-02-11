@@ -40170,7 +40170,7 @@ module.exports = exports =  function(pixels){
     return pixels
 }
 
-//changepixel function that convolutes every pixel
+//changepixel function that convolutes every pixel (sobel filter)
 function changePixel(pixels,val,a,x,y){
     let magX = 0.0
     for(let a = 0; a < 3; a++){
@@ -40262,7 +40262,7 @@ module.exports = function edgeDetect(options,UI) {
 },{"../_nomodule/PixelManipulation.js":159,"./Convolution":145,"ndarray-gaussian-filter":59}],147:[function(require,module,exports){
 module.exports={
     "name": "Detect Edges",
-    "description": "Detects the edges in an image",
+    "description": "Detects the edges in an image and outputs a greyscale image using the canny method",
     "inputs": {
         "blur": {
             "type": "integer",
