@@ -6,6 +6,16 @@
             "type": "integer",
             "desc": "amount of gaussian blur(Less blur gives more detail, typically 0-5)",
             "default": 2
+        },
+        "highThresholdRatio":{
+            "type": "float",
+            "desc": "The high threshold ratio for the image",
+            "default": 0.2
+        },
+        "lowThresholdRatio": {
+            "type": "float",
+            "desc": "The low threshold value for the image",
+            "default": 0.15
         }
     }
 }

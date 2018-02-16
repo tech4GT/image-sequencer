@@ -40147,27 +40147,36 @@ module.exports={
 const kernelx = [[-1,0,1],[-2,0,2],[-1,0,1]],
 kernely = [[-1,-2,-1],[0,0,0],[1,2,1]]
 
-module.exports = exports =  function(pixels){
+let angles = []
+let mags = []
+let strongEdgePixels = []
+let weakEdgePixels = []
 
+module.exports = exports =  function(pixels,highThresholdRatio,lowThresholdRatio){
+    
     for(var x = 0; x < pixels.shape[0]; x++) {
+        angles.push([])
+        mags.push([])
         for(var y = 0; y < pixels.shape[1]; y++) {
-            
-            var pixel = changePixel(
+            var result = changePixel(
                 pixels,
                 pixels.get(x,y,0),
                 pixels.get(x, y, 3),
                 x,
                 y
-            );
+            )
+            let pixel = result.pixel
             
             pixels.set(x, y, 0, pixel[0]);
             pixels.set(x, y, 1, pixel[1]);
             pixels.set(x, y, 2, pixel[2]);
             pixels.set(x, y, 3, pixel[3]);
             
+            mags.slice(-1)[0].push(pixel[3])
+            angles.slice(-1)[0].push(result.angle)  
         }
     }
-    return pixels
+    return doubleThreshold(nonMaxSupress(pixels),highThresholdRatio,lowThresholdRatio)
 }
 
 //changepixel function that convolutes every pixel (sobel filter)
@@ -40193,8 +40202,92 @@ function changePixel(pixels,val,a,x,y){
         }
     }
     let mag = Math.sqrt(Math.pow(magX,2) + Math.pow(magY,2))
-    return [val,val,val,mag]
+    let angle = Math.atan2(magY,magX)
+    return {
+        pixel:
+        [val,val,val,mag],
+        angle: angle
+    }
 }
+
+//Non Maximum Supression without interpolation
+function nonMaxSupress(pixels) { 
+    angles = angles.map((arr)=>arr.map(convertToDegrees))
+    
+    for(let i = 1;i<pixels.shape[0]-1;i++){
+        for(let j=1;j<pixels.shape[1]-1;j++){
+            
+            let angle = angles[i][j]
+            let pixel = pixels.get(i,j)
+            
+            if ((angle>=-22.5 && angle<=22.5) ||
+            (angle<-157.5 && angle>=-180))
+            
+            if ((mags[i][j]>= mags[i][j+1]) && 
+            (mags[i][j] >= mags[i][j-1]))
+            pixels.set(i,j,3,mags[i][j])
+            else
+            pixels.set(i,j,3,0)
+            
+            else if ((angle>=22.5 && angle<=67.5) || 
+            (angle<-112.5 && angle>=-157.5))
+            
+            if ((mags[i][j] >= mags[i+1][j+1]) && 
+            (mags[i][j] >= mags[i-1][j-1]))
+            pixels.set(i,j,3,mags[i][j])
+            else
+            pixels.set(i,j,3,0)
+            
+            else if ((angle>=67.5 && angle<=112.5) || 
+            (angle<-67.5 && angle>=-112.5))
+            
+            if ((mags[i][i] >= mags[i+1][j]) && 
+            (mags[i][j] >= mags[i][j]))
+            pixels.set(i,j,3,mags[i][j])
+            else
+            pixels.set(i,j,3,0)
+            
+            else if ((angle>=112.5 && angle<=157.5) || 
+            (angle<-22.5 && angle>=-67.5))
+            
+            if ((mags[i][j] >= mags[i+1][j-1]) && 
+            (mags[i][j] >= mags[i-1][j+1]))
+            pixels.set(i,j,3,mags[i][j])
+            else
+            pixels.set(i,j,3,0)  
+        }
+    }
+    return pixels
+}
+//Converts rasians to degrees
+var convertToDegrees = radians => (radians * 180)/Math.PI
+
+//Finds the max value in a 2d array like mags
+var findMaxInMatrix = arr => Math.max(...arr.map(el=>el.map(val=>!!val?val:0)).map(el=>Math.max(...el)))
+
+//Applies the double threshold to the image
+function doubleThreshold(pixels,highThresholdRatio,lowThresholdRatio){
+    const highThreshold = findMaxInMatrix(mags) * 0.2
+    const lowThreshold = highThreshold * lowThresholdRatio
+    
+    for(let i =0;i<pixels.shape[0];i++){
+        for(let j=0;j<pixels.shape[1];j++){
+            let pixelPos = [i,j]
+            
+            mags[i][j]>lowThreshold
+            ?mags[i][j]>highThreshold
+            ?strongEdgePixels.push(pixelPos)
+            :weakEdgePixels.push(pixelPos)
+            :pixels.set(i,j,3,0)
+            
+        }
+    }
+    
+    return pixels
+}
+
+
+
 },{}],146:[function(require,module,exports){
 /*
  * Detect Edges in an Image
@@ -40205,6 +40298,8 @@ module.exports = function edgeDetect(options,UI) {
     options.title = "Detect Edges";
     options.description = "Detects the edges in an image";
     options.blur = options.blur || 2
+    options.highThresholdRatio = options.highThresholdRatio||0.2
+    options.lowThresholdRatio = options.lowThresholdRatio||0.15
   
     // Tell UI that a step has been set up.
     UI.onSetup(options.step);
@@ -40222,7 +40317,7 @@ module.exports = function edgeDetect(options,UI) {
     //   Extra Manipulation function used as an enveloper for applying gaussian blur and Convolution
       function extraManipulation(pixels){
         pixels = require('ndarray-gaussian-filter')(pixels,options.blur)
-        return require('./Convolution')(pixels)
+        return require('./Convolution')(pixels,options.highThresholdRatio,options.lowThresholdRatio)
       }
   
       function changePixel(r, g, b, a) {
@@ -40262,12 +40357,22 @@ module.exports = function edgeDetect(options,UI) {
 },{"../_nomodule/PixelManipulation.js":159,"./Convolution":145,"ndarray-gaussian-filter":59}],147:[function(require,module,exports){
 module.exports={
     "name": "Detect Edges",
-    "description": "Detects the edges in an image and outputs a greyscale image using the canny method",
+    "description": "this module detects edges using the Canny method, which first Gaussian blurs the image to reduce noise (amount of blur configurable in settings as `options.blur`), then applies a number of steps to highlight edges, resulting in a greyscale image where the brighter the pixel, the stronger the detected edge. Read more at: https://en.wikipedia.org/wiki/Canny_edge_detector",
     "inputs": {
         "blur": {
             "type": "integer",
             "desc": "amount of gaussian blur(Less blur gives more detail, typically 0-5)",
             "default": 2
+        },
+        "highThresholdRatio":{
+            "type": "float",
+            "desc": "The high threshold ratio for the image",
+            "default": 0.2
+        },
+        "lowThresholdRatio": {
+            "type": "float",
+            "desc": "The low threshold value for the image",
+            "default": 0.15
         }
     }
 }

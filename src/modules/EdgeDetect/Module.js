@@ -7,6 +7,8 @@ module.exports = function edgeDetect(options,UI) {
     options.title = "Detect Edges";
     options.description = "Detects the edges in an image";
     options.blur = options.blur || 2
+    options.highThresholdRatio = options.highThresholdRatio||0.2
+    options.lowThresholdRatio = options.lowThresholdRatio||0.15
   
     // Tell UI that a step has been set up.
     UI.onSetup(options.step);
@@ -24,7 +26,7 @@ module.exports = function edgeDetect(options,UI) {
     //   Extra Manipulation function used as an enveloper for applying gaussian blur and Convolution
       function extraManipulation(pixels){
         pixels = require('ndarray-gaussian-filter')(pixels,options.blur)
-        return require('./Convolution')(pixels)
+        return require('./Convolution')(pixels,options.highThresholdRatio,options.lowThresholdRatio)
       }
   
       function changePixel(r, g, b, a) {
