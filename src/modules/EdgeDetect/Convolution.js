@@ -1,3 +1,5 @@
+const _ = require('lodash')
+
 //define kernels for the sobel filter
 const kernelx = [[-1,0,1],[-2,0,2],[-1,0,1]],
 kernely = [[-1,-2,-1],[0,0,0],[1,2,1]]
@@ -31,7 +33,8 @@ module.exports = exports =  function(pixels,highThresholdRatio,lowThresholdRatio
             angles.slice(-1)[0].push(result.angle)  
         }
     }
-    return doubleThreshold(nonMaxSupress(pixels),highThresholdRatio,lowThresholdRatio)
+    
+    return hysteresis(doubleThreshold(nonMaxSupress(pixels),highThresholdRatio,lowThresholdRatio))
 }
 
 //changepixel function that convolutes every pixel (sobel filter)
@@ -137,8 +140,39 @@ function doubleThreshold(pixels,highThresholdRatio,lowThresholdRatio){
             
         }
     }
+
+    strongEdgePixels.forEach(pix=>pixels.set(pix[0],pix[1],3,255))
     
     return pixels
 }
+
+//  hysteresis edge tracking algorithm
+function hysteresis(pixels){
+    function getNeighbouringPixelPositions(pixelPosition){
+        let x = pixelPosition[0],y=pixelPosition[1]
+        return [[x+1,y+1],
+        [x+1,y],
+        [x+1,y-1],
+        [x,y+1],
+        [x,y-1],
+        [x-1,y+1],
+        [x-1,y],
+        [x-1,y-1]]
+    }
+
+//This can potentially be improved see  https://en.wikipedia.org/wiki/Connected-component_labeling
+    for(weakPixel in weakEdgePixels){
+        let neighbourPixels = getNeighbouringPixelPositions(weakEdgePixels[weakPixel])
+        for(pixel in neighbourPixels){
+            if(strongEdgePixels.find(el=> _.isEqual(el,neighbourPixels[pixel]))) {
+                pixels.set(weakPixel[0],weakPixel[1],3,255)
+                weakEdgePixels.splice(weakPixel,weakPixel)
+                break
+            }
+        }
+    }
+    return pixels
+}
+
 
 
