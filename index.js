@@ -17,7 +17,7 @@ program
 .option('-s, --step [step-name]', 'Name of the step to be added.')
 .option('-o, --output [PATH]', 'Directory where output will be stored.')
 .option('-b, --basic','Basic mode outputs only final image')
-.option('-d, --details [Object]', 'Options for the step')
+.option('-c, --config [Object]', 'Options for the step')
 .parse(process.argv);
 
 // Parse step into an array to allow for multiple steps.
@@ -81,21 +81,21 @@ sequencer.loadImages(program.image,function(){
         console.log(new Array(step.length + 5).join(' ') + input + ": " + options[input].desc);
       });
       
-      if(program.details){
+      if(program.config){
         try{
-          program.details = JSON.parse(program.details);
-          console.log(`The parsed options object: `, program.details);
+          program.config = JSON.parse(program.config);
+          console.log(`The parsed options object: `, program.config);
         }
         catch(e){
-          console.error('\x1b[31m%s\x1b[0m',`Options(Details) is not a not valid JSON Fallback activate`);
-          program.details = false;
+          console.error('\x1b[31m%s\x1b[0m',`Options(Config) is not a not valid JSON Fallback activate`);
+          program.config = false;
           console.log(e);
         }
       }
-      if(program.details && validateDetails(program.details,options)){
+      if(program.config && validateConfig(program.config,options)){
         console.log("Now using Options object");
         Object.keys(options).forEach(function (input) {
-          options[input] = program.details[input];
+          options[input] = program.config[input];
         })
       }
       else{
@@ -138,13 +138,13 @@ function validateSteps(steps) {
   return valid;
 }
 
-//Takes details and options object and checks if all the keys exist in details 
-function validateDetails(details_,options_){
+//Takes config and options object and checks if all the keys exist in config 
+function validateConfig(config_,options_){
   options_ = Object.keys(options_);
   if (
     (function(){
     for(var input in options_){
-      if(!details_[options_[input]]){
+      if(!config_[options_[input]]){
         console.error('\x1b[31m%s\x1b[0m',`Options Object does not have the required details "${options_[input]}" not specified. Fallback case activated`);
         return false;
       } 
