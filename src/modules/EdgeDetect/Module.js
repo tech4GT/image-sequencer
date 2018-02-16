@@ -26,7 +26,7 @@ module.exports = function edgeDetect(options,UI) {
     //   Extra Manipulation function used as an enveloper for applying gaussian blur and Convolution
       function extraManipulation(pixels){
         pixels = require('ndarray-gaussian-filter')(pixels,options.blur)
-        return require('./Convolution')(pixels,options.highThresholdRatio,options.lowThresholdRatio)
+        return require('./EdgeUtils')(pixels,options.highThresholdRatio,options.lowThresholdRatio)
       }
   
       function changePixel(r, g, b, a) {

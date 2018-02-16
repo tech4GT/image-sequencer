@@ -171,6 +171,7 @@ function hysteresis(pixels){
             }
         }
     }
+    weakEdgePixels.forEach(pix=>pixels.set(pix[0],pix[1],3,0))
     return pixels
 }
 
