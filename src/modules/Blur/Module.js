@@ -5,6 +5,7 @@
      options = options || {};
      options.title = "Blur";
      options.description = "Blur an Image";
+     options.blur = options.blur || 2
 
      //Tell the UI that a step has been set up
      UI.onSetup(options.step);
@@ -17,9 +18,12 @@
 
          var step = this;
 
+         function extraManipulation(pixels){
+           return pixels = require('ndarray-gaussian-filter')(pixels,options.blur)
+         }
+
          function changePixel(r, g, b, a){
-             pixels = require('ndarray-gaussian-filter')(pixels,options.blur)
-             var val = (pixels)/100.0
+             var val = (options.blur)/100.0
 
              r = val*r<255?val*r:255
              g = val*g<255?val*g:255
@@ -42,6 +46,7 @@
          return require('../_nomodule/PixelManipulation.js')(input, {
              output: output,
              changePixel: changePixel,
+             extraManipulation: extraManipulation,
              format: input.format,
              image: options.image,
              callback: callback
