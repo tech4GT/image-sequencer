@@ -1,0 +1,11 @@
+{
+    "name": "Blur",
+    "description": "Blur an image by a given value",
+    "inputs": {
+        "brightness": {
+            "type": "integer",
+            "desc": "% blur for the new image",
+            "default": 0
+        }
+    }
+}
