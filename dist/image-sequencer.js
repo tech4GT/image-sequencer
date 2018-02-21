@@ -56910,6 +56910,7 @@ module.exports = function UserInterface(events = {}) {
      options = options || {};
      options.title = "Blur";
      options.description = "Blur an Image";
+     options.blur = options.blur || 2
 
      //Tell the UI that a step has been set up
      UI.onSetup(options.step);
@@ -56922,15 +56923,10 @@ module.exports = function UserInterface(events = {}) {
 
          var step = this;
 
-         function changePixel(r, g, b, a){
-             pixels = require('ndarray-gaussian-filter')(pixels,options.blur)
-             var val = (pixels)/100.0
-
-             r = val*r<255?val*r:255
-             g = val*g<255?val*g:255
-             b = val*b<255?val*b:255
-             return [r , g, b, a]
+         function extraManipulation(pixels){
+           return pixels = require('ndarray-gaussian-filter')(pixels,options.blur)
          }
+
 
          function output(image,datauri,mimetype){
 
@@ -56947,6 +56943,7 @@ module.exports = function UserInterface(events = {}) {
          return require('../_nomodule/PixelManipulation.js')(input, {
              output: output,
              changePixel: changePixel,
+             extraManipulation: extraManipulation,
              format: input.format,
              image: options.image,
              callback: callback
@@ -56966,10 +56963,10 @@ module.exports={
     "name": "Blur",
     "description": "Blur an image by a given value",
     "inputs": {
-        "brightness": {
+        "blur": {
             "type": "integer",
-            "desc": "% blur for the new image",
-            "default": 0
+            "desc": "amount of gaussian blur(Less blur gives more detail, typically 0-5)",
+            "default": 2
         }
     }
 }

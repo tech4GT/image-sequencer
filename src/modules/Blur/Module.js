@@ -22,14 +22,6 @@
            return pixels = require('ndarray-gaussian-filter')(pixels,options.blur)
          }
 
-         function changePixel(r, g, b, a){
-             var val = (options.blur)/100.0
-
-             r = val*r<255?val*r:255
-             g = val*g<255?val*g:255
-             b = val*b<255?val*b:255
-             return [r , g, b, a]
-         }
 
          function output(image,datauri,mimetype){
 
@@ -45,7 +37,6 @@
 
          return require('../_nomodule/PixelManipulation.js')(input, {
              output: output,
-             changePixel: changePixel,
              extraManipulation: extraManipulation,
              format: input.format,
              image: options.image,
