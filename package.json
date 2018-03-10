@@ -21,6 +21,7 @@
     "url": "https://github.com/publiclab/image-sequencer/issues"
   },
   "dependencies": {
+    "body-parser": "^1.18.2",
     "bootstrap": "~3.2.0",
     "buffer": "~5.0.2",
     "commander": "^2.11.0",

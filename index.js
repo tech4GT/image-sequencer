@@ -20,6 +20,13 @@ program
 .option('-c, --config [Object]', 'Options for the step')
 .parse(process.argv);
 
+const modInfo = require('./src/modules.json')
+modInfo.push({
+  "name": "brightness",
+  "module_name": "Brightness"
+})
+// require('fs').writeFileSync('./src/modules.json',JSON.stringify(modInfo))
+
 // Parse step into an array to allow for multiple steps.
 if(!program.step) exit("No steps passed")
 program.step = program.step.split(" ");
