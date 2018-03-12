@@ -36,7 +36,13 @@ module.exports = function ModuleName(options,UI) {
   UI.onSetup(options.step);
   var output;
 
-  function draw(input,callback) {
+  function draw(input,callback,progressObj) {
+
+    //If you wish to supply your own progress bar you need to override progressObj 
+    progressObj.stop()
+    progressObj.overrideFlag = true;
+    progressObj = /* Your own progress Bar */
+
     UI.onDraw(options.step);
 
     var output = /*do something with the input*/ ;

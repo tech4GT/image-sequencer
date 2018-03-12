@@ -114,7 +114,9 @@ ImageSequencer = function ImageSequencer(options) {
     return this;
   }
 
-  function run(t_image,t_from) {
+  function run(spinnerObj,t_image,t_from) {
+    let progressObj = spinnerObj
+    delete arguments['0']
     var this_ = (this.name == "ImageSequencer")?this:this.sequencer;
     var args = (this.name == "ImageSequencer")?[]:[this.images];
     for (var arg in arguments) args.push(copy(arguments[arg]));
@@ -126,7 +128,7 @@ ImageSequencer = function ImageSequencer(options) {
 
     var json_q = formatInput.call(this_,args,"r");
 
-    require('./Run')(this_, json_q, callback);
+    require('./Run')(this_, json_q, callback,progressObj);
 
     return true;
   }
