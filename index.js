@@ -18,14 +18,18 @@ program
 .option('-o, --output [PATH]', 'Directory where output will be stored.')
 .option('-b, --basic','Basic mode outputs only final image')
 .option('-c, --config [Object]', 'Options for the step')
+.option('--bind [step-name]','Bind an installed step to the sequencer')
 .parse(process.argv);
 
-const modInfo = require('./src/modules.json')
-modInfo.push({
-  "name": "brightness",
-  "module_name": "Brightness"
-})
-// require('fs').writeFileSync('./src/modules.json',JSON.stringify(modInfo))
+if(program.bind){
+  const modInfo = require('./src/modules.json')
+  modInfo.push({
+    "name": program.bind.toLowerCase(),
+    "module_name": program.bind
+  })
+  require('fs').writeFileSync('./src/modules.json',JSON.stringify(modInfo))
+  exit("Your modules is now registered, you can access it with the name in lowercase\nFor example Brightness becomes brightness")
+}
 
 // Parse step into an array to allow for multiple steps.
 if(!program.step) exit("No steps passed")
@@ -150,15 +154,15 @@ function validateConfig(config_,options_){
   options_ = Object.keys(options_);
   if (
     (function(){
-    for(var input in options_){
-      if(!config_[options_[input]]){
-        console.error('\x1b[31m%s\x1b[0m',`Options Object does not have the required details "${options_[input]}" not specified. Fallback case activated`);
-        return false;
-      } 
-    }
-  })()
-   == false)
-     return false;
-  else
-     return true;
-}
+      for(var input in options_){
+        if(!config_[options_[input]]){
+          console.error('\x1b[31m%s\x1b[0m',`Options Object does not have the required details "${options_[input]}" not specified. Fallback case activated`);
+          return false;
+        } 
+      }
+    })()
+    == false)
+    return false;
+    else
+    return true;
+  }
