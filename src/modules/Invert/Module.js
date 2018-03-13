@@ -16,7 +16,7 @@ module.exports = function Invert(options,UI) {
 
     progressObj.stop(true);
     progressObj.overrideFlag = true;
-
+    options.inBrowser = options.inBrowser || !!progressObj.inBrowser;
     // Tell UI that a step is being drawn.
     UI.onDraw(options.step);
 
