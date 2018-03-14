@@ -5,6 +5,7 @@ sequencer = ImageSequencer({ui: false});
 
 var program = require('commander');
 var readlineSync = require('readline-sync');
+var metaModules = require('./src/config/MetaModules')
 
 function exit(message) {
   console.error(message);
@@ -32,9 +33,14 @@ require('fs').access(program.image, function(err){
   if(err) exit("Can't read file.")
 });
 
+//Expand the metamodules in steps
+program.step = expandMetaModules(program.step);
+
 // User must input a step. If steps exist, check that every step is a valid step.
 if(!program.step || !validateSteps(program.step))
 exit("Please ensure all steps are valid.");
+
+
 
 // If there's no user defined output directory, select a default directory.
 program.output = program.output || "./output/";
@@ -143,15 +149,28 @@ function validateConfig(config_,options_){
   options_ = Object.keys(options_);
   if (
     (function(){
-    for(var input in options_){
-      if(!config_[options_[input]]){
-        console.error('\x1b[31m%s\x1b[0m',`Options Object does not have the required details "${options_[input]}" not specified. Fallback case activated`);
-        return false;
-      } 
+      for(var input in options_){
+        if(!config_[options_[input]]){
+          console.error('\x1b[31m%s\x1b[0m',`Options Object does not have the required details "${options_[input]}" not specified. Fallback case activated`);
+          return false;
+        } 
+      }
+    })()
+    == false)
+    return false;
+    else
+    return true;
+  }
+  function expandMetaModules(steps){
+    let result = steps.slice(0);
+    for(let step in steps){
+      for(module in metaModules){
+        if(metaModules[module].name == steps[step]){
+          let temp = result.splice(0,step);
+          temp.push(...metaModules[module].steps,...result.slice(step+1));
+          result = temp;
+        }
+      }
     }
-  })()
-   == false)
-     return false;
-  else
-     return true;
-}
+    return result;
+  }
