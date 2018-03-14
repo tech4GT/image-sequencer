@@ -32,7 +32,6 @@ module.exports = function PixelManipulation(image, options) {
       }
       catch(e){
         options.inBrowser = true;
-        console.log(e);
       }
     }
     

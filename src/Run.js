@@ -1,4 +1,5 @@
 function Run(ref, json_q, callback,progressObj) {
+  if(!progressObj) progressObj = {stop: function(){}}
 
   function drawStep(drawarray, pos) {
     if (pos == drawarray.length && drawarray[pos - 1] !== undefined) {

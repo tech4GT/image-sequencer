@@ -36,12 +36,21 @@ module.exports = function ModuleName(options,UI) {
   UI.onSetup(options.step);
   var output;
 
+  /* the progressObj argument is not needed if you donot wish to suplly your owin progress bar */
   function draw(input,callback,progressObj) {
-
-    //If you wish to supply your own progress bar you need to override progressObj 
+  // function draw(input,callback) {
+    
+    /*If you wish to supply your own progress bar you need to override progressObj
+    This is optional
+    */
+    /* Stop the current progress spinner */
     progressObj.stop()
+    /* Tell image sequencer that you will supply your own progressBar */
     progressObj.overrideFlag = true;
+    /* Override object and give your own progress Bar */
     progressObj = /* Your own progress Bar */
+
+
 
     UI.onDraw(options.step);
 

@@ -16,7 +16,6 @@ var qr = require('./images/IS-QR.js');
 var test_png = require('./images/test.png.js');
 var test_gif = require('./images/test.gif.js');
 var spinner = require('ora')('').start()
-spinner.inBrowser = true
 
 sequencer.loadImages(test_png);
 sequencer.addSteps(['invert','invert']);

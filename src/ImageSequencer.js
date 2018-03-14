@@ -116,13 +116,11 @@ ImageSequencer = function ImageSequencer(options) {
   
   function run(spinnerObj,t_image,t_from) {
     let progressObj;
-    if(arguments[0] == 'test'){
-      progressObj = {stop:function(){},inBrowser: true}
-    }
-    else{
+    if(arguments[0] != 'test'){
       progressObj = spinnerObj
-      delete arguments['0']
+      delete arguments['0']    
     }
+
     var this_ = (this.name == "ImageSequencer")?this:this.sequencer;
     var args = (this.name == "ImageSequencer")?[]:[this.images];
     for (var arg in arguments) args.push(copy(arguments[arg]));
