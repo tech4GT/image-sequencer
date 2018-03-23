@@ -21,6 +21,15 @@ module.exports = function PixelManipulation(image, options) {
       console.log('Bad image path');
       return;
     }
+
+    var getNeighbourPixel;
+
+    if(options.getNeighbourPixel){
+      getNeighbourPixel = options.getNeighbourPixel.fun
+      options.getNeighbourPixel.fun = function (distX,distY) { 
+        return getNeighbourPixel(pixels,x,y,distX,distY);
+      }
+    }
     
     // iterate through pixels;
     // this could possibly be more efficient; see
@@ -31,26 +40,13 @@ module.exports = function PixelManipulation(image, options) {
     
     for(var x = 0; x < pixels.shape[0]; x++) {
       for(var y = 0; y < pixels.shape[1]; y++) {
-
-        if(options.getNeighbourPixel){
-          var pixel = options.changePixel(
-            pixels.get(x, y, 0),
-            pixels.get(x, y, 1),
-            pixels.get(x, y, 2),
-            pixels.get(x, y, 3),
-            function (distX,distY) { 
-              return options.getNeighbourPixel(pixels,x,y,distX,distY);
-            }
-          );
-        }
-        else{
-          var pixel = options.changePixel(
+          
+        var pixel = options.changePixel(
             pixels.get(x, y, 0),
             pixels.get(x, y, 1),
             pixels.get(x, y, 2),
             pixels.get(x, y, 3)
           );
-        }
         
         pixels.set(x, y, 0, pixel[0]);
         pixels.set(x, y, 1, pixel[1]);

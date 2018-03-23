@@ -34,7 +34,13 @@ module.exports = function Dynamic(options,UI) {
       else                                 options[channel + '_function'] = generator(options.monochrome);
     });
     
-    function changePixel(r, g, b, a,neighbour) {
+    function changePixel(r, g, b, a) {
+
+      /* neighbourpixels can be calculated by
+      
+       this.getNeighbourPixel.fun(x,y) 
+       
+       */
       var combined = (r + g + b) / 3.000;
       return [
         options.red_function(r, g, b, a),
@@ -45,7 +51,8 @@ module.exports = function Dynamic(options,UI) {
     }
     
     /* Function to get the neighbouring pixel by position (x,y) */
-    function getNeighbourPixel(pixels,curX,curY,distX,distY){
+    var getNeighbourPixel = {}
+    getNeighbourPixel.fun = function(pixels,curX,curY,distX,distY){
       return [
          pixels.get(curX+distX,curY+distY,0)
         ,pixels.get(curX+distX,curY+distY,1)
