@@ -38,7 +38,7 @@ module.exports = function Dynamic(options,UI) {
 
       /* neighbourpixels can be calculated by
       
-       this.getNeighbourPixel.fun(x,y) 
+       this.getNeighbourPixel.fun(x,y)  or this.getNeighborPixel.fun(x,y)
        
        */
       var combined = (r + g + b) / 3.000;
@@ -51,8 +51,7 @@ module.exports = function Dynamic(options,UI) {
     }
     
     /* Functions to get the neighbouring pixel by position (x,y) */
-    var getNeighbourPixel = {},getNeighborPixel = getNeighbourPixel
-    getNeighbourPixel.fun = function(pixels,curX,curY,distX,distY){
+    var getNeighbourPixel = function(pixels,curX,curY,distX,distY){
       return [
          pixels.get(curX+distX,curY+distY,0)
         ,pixels.get(curX+distX,curY+distY,1)
@@ -60,6 +59,7 @@ module.exports = function Dynamic(options,UI) {
         ,pixels.get(curX+distX,curY+distY,3)
       ]
     }
+    
     
     function output(image,datauri,mimetype){
       
@@ -77,6 +77,7 @@ module.exports = function Dynamic(options,UI) {
       output: output,
       changePixel: changePixel,
       getNeighbourPixel: getNeighbourPixel,
+      getNeighborPixel: getNeighbourPixel,
       format: input.format,
       image: options.image,
       inBrowser: options.inBrowser,

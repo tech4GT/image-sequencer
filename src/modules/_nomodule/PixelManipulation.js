@@ -22,13 +22,10 @@ module.exports = function PixelManipulation(image, options) {
       return;
     }
 
-    var getNeighbourPixel;
-
     if(options.getNeighbourPixel){
-      getNeighbourPixel = options.getNeighbourPixel.fun
       options.getNeighbourPixel.fun = function (distX,distY) { 
-        return getNeighbourPixel(pixels,x,y,distX,distY);
-      }
+        return options.getNeighbourPixel(pixels,x,y,distX,distY);
+      };
     }
     
     // iterate through pixels;
