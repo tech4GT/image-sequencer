@@ -50,8 +50,8 @@ module.exports = function Dynamic(options,UI) {
       ];
     }
     
-    /* Function to get the neighbouring pixel by position (x,y) */
-    var getNeighbourPixel = {}
+    /* Functions to get the neighbouring pixel by position (x,y) */
+    var getNeighbourPixel = {},getNeighborPixel = getNeighbourPixel
     getNeighbourPixel.fun = function(pixels,curX,curY,distX,distY){
       return [
          pixels.get(curX+distX,curY+distY,0)
