@@ -2,6 +2,7 @@
 
 require('./src/ImageSequencer');
 sequencer = ImageSequencer({ui: false});
+var Spinner = require('ora')
 
 var program = require('commander');
 var readlineSync = require('readline-sync');
@@ -115,12 +116,19 @@ sequencer.loadImages(program.image,function(){
       sequencer.addSteps(step, options);
     });
     
+    var spinnerObj = Spinner('Your Image is being processed..').start();
+    
     // Run the sequencer.
-    sequencer.run(function(){
-      
+    sequencer.run(spinnerObj,function(){
+
       // Export all images or final image as binary files.
       sequencer.exportBin(program.output,program.basic);
-      
+
+      //check if spinner was not overriden stop it
+      if(!spinnerObj.overrideFlag) {
+        spinnerObj.succeed()
+        console.log(`\nDone!!`)
+      }
       
     });
     
