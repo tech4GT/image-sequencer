@@ -80,8 +80,8 @@
             let options = $('#options > div > div > input')
             options[0].value = selection.x1
             options[1].value = selection.y1
-            options[2].value = (selection.x2 - selection.x1)
-            options[3].value = (selection.y2 - selection.y1)
+            options[2].value = Math.abs(selection.x2 - selection.x1)
+            options[3].value = Math.abs(selection.y2 - selection.y1)
           }
         });
       }
