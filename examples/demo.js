@@ -204,7 +204,7 @@ window.onload = function() {
     sequencer.addSteps($('#addStep select').val(),options).run();
 
     if($('#selectStep')[0].value === "crop"){
-      $(".dragable").imgAreaSelect({disable: true,hide: true})
+      $(".dragable").imgAreaSelect({remove: true,hide: true})
       $($(".dragable").get().pop()).imgAreaSelect({
         handles: true,
         onSelectEnd: function(img,selection){

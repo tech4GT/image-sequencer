@@ -73,7 +73,6 @@
     console.log(selectStep[0].value)
     selectStep.change(function () { 
       if(selectStep[0].value === "crop"){
-        console.log($('.dragable').imgAreaSelect)
         $($(".dragable").get().pop()).imgAreaSelect({
           handles: true,
           onSelectEnd: function(img,selection){
@@ -86,7 +85,7 @@
         });
       }
       else{
-        $(".dragable").imgAreaSelect({disable: true,hide: true})
+        $(".dragable").imgAreaSelect({remove: true,hide: true})
       }
     })
 
