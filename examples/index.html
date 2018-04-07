@@ -11,6 +11,7 @@
     <title>Image Sequencer</title>
 
     <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="./image-area-select/js/jquery.imgareaselect.pack"></script>
     <script src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="../dist/image-sequencer.js" charset="utf-8"></script>
     <script src="lib/urlHash.js" charset="utf-8"></script>
@@ -24,6 +25,7 @@
 
     <link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="../node_modules/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="./image-area-select/css/imgareaselect-default.css">
     <link rel="stylesheet" href="demo.css">
 
     <div class="container-fluid">
@@ -48,7 +50,7 @@
 
       <section id="addStep">
         <div class="row">
-          <select class="form-control">
+          <select id="selectStep" class="form-control">
             <option value="none" disabled selected>Select a new step...</option>
           </select>
         </div>
@@ -66,8 +68,11 @@
     <script type="text/javascript">
 
       var sequencer;
-    
-
+      let selectStep = $('#selectStep');
+      console.log(selectStep)
+      selectStep.change(function () { 
+        alert(selectStep.value)
+       })
     </script>
 
   </body>
