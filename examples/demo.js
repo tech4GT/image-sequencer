@@ -191,6 +191,9 @@ window.onload = function() {
 
 
   function addStepUI() {
+    // Removes the dragable class from the current image
+    $($(".dragable").get().pop()).imgAreaSelect({remove: true})
+
     var options = {};
     var inputs = $('#options input, #options select');
     $.each(inputs, function() {
@@ -203,8 +206,7 @@ window.onload = function() {
     setUrlHashParameter('steps', hash + $('#addStep select').val())
     sequencer.addSteps($('#addStep select').val(),options).run();
 
-    if($('#selectStep')[0].value === "crop"){
-      $(".dragable").imgAreaSelect({remove: true,hide: true})
+    // Adds the dragable class to the cropped image
       $($(".dragable").get().pop()).imgAreaSelect({
         handles: true,
         onSelectEnd: function(img,selection){
@@ -215,7 +217,6 @@ window.onload = function() {
           options[3].value = (selection.y2 - selection.y1)
         }
       });
-    }
   }
 
   $('#addStep button').on('click', addStepUI);

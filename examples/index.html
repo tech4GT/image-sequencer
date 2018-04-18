@@ -63,14 +63,12 @@
     </section>
     
   </div>
-  <!-- <script src="./image-area-select/js/jquery.imgareaselect.js"></script> -->
   <script src="./image-area-select/js/jquery.imgareaselect.pack.js"></script>
   <script type="text/javascript">
   $(function () { 
 
-    var sequencer;
+    var sequencer
     let selectStep = $('#selectStep');
-    console.log(selectStep[0].value)
     selectStep.change(function () { 
       if(selectStep[0].value === "crop"){
         $($(".dragable").get().pop()).imgAreaSelect({
@@ -85,10 +83,11 @@
         });
       }
       else{
-        $(".dragable").imgAreaSelect({remove: true,hide: true})
+        $($(".dragable").get().pop()).imgAreaSelect({
+          remove: true
+        })
       }
     })
-
    })
   </script>
   
