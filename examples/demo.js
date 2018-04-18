@@ -40,7 +40,7 @@ window.onload = function() {
         </div>\
         <div class="col-md-8">\
           <div class="load" style="display:none;"><i class="fa fa-circle-o-notch fa-spin"></i></div>\
-          <img alt="" class="img-thumbnail"/>\
+          <img alt="" class="img-thumbnail dragable"/>\
         </div>\
       </div>\
       ';
@@ -191,6 +191,9 @@ window.onload = function() {
 
 
   function addStepUI() {
+    // Removes the dragable class from the current image
+    $($(".dragable").get().pop()).imgAreaSelect({remove: true})
+
     var options = {};
     var inputs = $('#options input, #options select');
     $.each(inputs, function() {
@@ -202,6 +205,18 @@ window.onload = function() {
     if (hash != '') hash += ',';
     setUrlHashParameter('steps', hash + $('#addStep select').val())
     sequencer.addSteps($('#addStep select').val(),options).run();
+
+    // Adds the dragable class to the cropped image
+      $($(".dragable").get().pop()).imgAreaSelect({
+        handles: true,
+        onSelectEnd: function(img,selection){
+          let options = $('#options > div > div > input')
+          options[0].value = selection.x1
+          options[1].value = selection.y1
+          options[2].value = (selection.x2 - selection.x1)
+          options[3].value = (selection.y2 - selection.y1)
+        }
+      });
   }
 
   $('#addStep button').on('click', addStepUI);
