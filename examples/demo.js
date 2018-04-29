@@ -214,18 +214,11 @@ window.onload = function() {
     sequencer.addSteps($("#addStep select").val(), options).run();
 
     if (dragToCropFlag) {
-      let newImage = $(
-        $(".dragable")
-          .get()
-          .pop()
-      );
-      newImage.removeClass("dragable");
+      let images = $(".dragable").get();
 
-      $(
-        $(".dragable")
-          .get()
-          .pop()
-      ).imgAreaSelect({
+      let newImage = $(images.pop());
+
+      $(images.pop()).imgAreaSelect({
         handles: true,
         onSelectEnd: function(img, selection) {
           let options = $(newImage.parents()[2]).find("input");
