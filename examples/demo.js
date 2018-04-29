@@ -107,6 +107,21 @@ window.onload = function() {
         // on clicking Save in the details pane of the step
         $(step.ui.querySelector("div.details .btn-save")).click(
           function saveOptions() {
+            $(
+              $(".dragable")
+                .get()
+                .pop()
+            ).imgAreaSelect({
+              hide: true,
+              onSelectStart: function() {
+                console.log("start");
+                $(".dragable")
+                  .get()
+                  .slice(-2)[1].src = $(".dragable")
+                  .get()
+                  .slice(-2)[0].src;
+              }
+            });
             $(step.ui.querySelector("div.details"))
               .find("input,select")
               .each(function(i, input) {
@@ -198,7 +213,7 @@ window.onload = function() {
 
   function addStepUI() {
     // Adds the dragable class to the cropped image
-    let dragToCropFlag = false;
+    var dragToCropFlag = false;
     if ($("#selectStep")[0].value === "crop") dragToCropFlag = true;
 
     var options = {};
@@ -211,24 +226,46 @@ window.onload = function() {
     var hash = getUrlHashParameter("steps") || "";
     if (hash != "") hash += ",";
     setUrlHashParameter("steps", hash + $("#addStep select").val());
-    sequencer.addSteps($("#addStep select").val(), options).run();
+    if (
+      $("#addStep select")
+        .val()
+        .toLowerCase() === "crop"
+    ) {
+      options.x = 0;
+      options.y = 0;
+      options.w = $(".dragable")
+        .get()
+        .pop().clientWidth;
+      options.h = $(".dragable")
+        .get()
+        .pop().clientHeight;
+      console.log(options);
+    }
+    sequencer
+      .addSteps($("#addStep select").val(), options)
+      .run(null, function() {
+        if (dragToCropFlag) {
+          let images = $(".dragable").get();
 
-    if (dragToCropFlag) {
-      let images = $(".dragable").get();
+          let newImage = images.pop(),
+            prevImage = images.pop();
 
-      let newImage = $(images.pop());
-
-      $(images.pop()).imgAreaSelect({
-        handles: true,
-        onSelectEnd: function(img, selection) {
-          let options = $(newImage.parents()[2]).find("input");
-          options[0].value = selection.x1;
-          options[1].value = selection.y1;
-          options[2].value = selection.x2 - selection.x1;
-          options[3].value = selection.y2 - selection.y1;
+          $(newImage).imgAreaSelect({
+            handles: true,
+            x1: 0,
+            y1: 0,
+            x2: Math.floor(prevImage.clientWidth / 2),
+            y2: Math.floor(prevImage.clientHeight / 2),
+            onSelectEnd: function(img, selection) {
+              let options = $($(newImage).parents()[2]).find("input");
+              options[0].value = selection.x1;
+              options[1].value = selection.y1;
+              options[2].value = selection.x2 - selection.x1;
+              options[3].value = selection.y2 - selection.y1;
+            }
+          });
         }
       });
-    }
   }
 
   $("#addStep button").on("click", addStepUI);
