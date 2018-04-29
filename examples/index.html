@@ -4,93 +4,88 @@
 
 
 <head>
-  
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="content-type" content="text/html; charset=UTF8">
-  
+  <link rel="icon" sizes="192x192" href="../icons/ic_192.png">
+
+
   <title>Image Sequencer</title>
-  
+
   <script src="../node_modules/jquery/dist/jquery.min.js"></script>
   <script src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
   <script src="../dist/image-sequencer.js" charset="utf-8"></script>
   <script src="lib/urlHash.js" charset="utf-8"></script>
   <script src="lib/imageSelection.js" charset="utf-8"></script>
   <script src="demo.js" charset="utf-8"></script>
-  
+
 </head>
 
 
 <body>
-  
+
+  <link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../node_modules/font-awesome/css/font-awesome.min.css" rel="stylesheet">
   <link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="../node_modules/font-awesome/css/font-awesome.min.css" rel="stylesheet">
   <link href="./image-area-select/css/imgareaselect-default.css" rel="stylesheet">
   <link rel="stylesheet" href="demo.css">
-  
+
   <div class="container-fluid">
-    
+
     <header class="text-center">
       <h1>Image Sequencer</h1>
       <p>
-        A pure JavaScript sequential image processing system, inspired by storyboards. Instead of modifying the original image, it creates a new image at each step in a sequence. 
+        A pure JavaScript sequential image processing system, inspired by storyboards. Instead of modifying the original image, it
+        creates a new image at each step in a sequence.
         <a href="https://publiclab.org/image-sequencer">Learn more</a>
       </p>
       <p>
-        Open Source <a href="https://github.com/publiclab/image-sequencer"><i class="fa fa-github"></i></a> by <a href="https://publiclab.org">Public Lab</a>
+        Open Source
+        <a href="https://github.com/publiclab/image-sequencer">
+          <i class="fa fa-github"></i>
+        </a> by
+        <a href="https://publiclab.org">Public Lab</a>
       </p>
     </header>
-    
+
     <div id="dropzone">
-      <p><i>Select or drag in an image to start!</i></p>
-      <center><input type="file" id="fileInput" value=""></center>
+      <p>
+        <i>Select or drag in an image to start!</i>
+      </p>
+      <center>
+        <input type="file" id="fileInput" value="">
+      </center>
     </div>
-    
+
     <section id="steps" class="row"></section>
-    
-    <section id="addStep">
-      <div class="row">
-        <select id="selectStep" class="form-control">
-          <option value="none" disabled selected>Select a new step...</option>
-        </select>
-      </div>
-      <hr />
-      <div class="row">
-        <div id="options"></div>
-      </div>
-      <div class="row add">
-        <button class="btn btn-success btn-lg" name="add">Add Step</button>
+
+    <hr />
+
+    <section id="addStep" class="panel panel-primary">
+      <div class="form-inline">
+        <div class="panel-body">
+          <div style="text-align:center;">
+            <select class="form-control input-lg" id="selectStep">
+              <option value="none" disabled selected>Select a new step...</option>
+            </select>
+            <button class="btn btn-success btn-lg" name="add">Add Step</button>
+          </div>
+          <br />
+          <p class="info" style="padding:8px;">Select a new module to add to your sequence.</p>
+        </div>
       </div>
     </section>
-    
+
   </div>
+
   <script src="./image-area-select/js/jquery.imgareaselect.pack.js"></script>
   <script type="text/javascript">
-  $(function () { 
-
-    var sequencer
-    let selectStep = $('#selectStep');
-    selectStep.change(function () { 
-      if(selectStep[0].value === "crop"){
-        $($(".dragable").get().pop()).imgAreaSelect({
-          handles: true,
-          onSelectEnd: function(img,selection){
-            let options = $('#options > div > div > input')
-            options[0].value = selection.x1
-            options[1].value = selection.y1
-            options[2].value = Math.abs(selection.x2 - selection.x1)
-            options[3].value = Math.abs(selection.y2 - selection.y1)
-          }
-        });
-      }
-      else{
-        $($(".dragable").get().pop()).imgAreaSelect({
-          remove: true
-        })
-      }
+    $(function () {
+      var sequencer;
     })
-   })
   </script>
-  
+
 </body>
 
 </html>

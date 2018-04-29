@@ -1,19 +1,18 @@
 window.onload = function() {
-
   sequencer = ImageSequencer();
 
   // Load information of all modules (Name, Inputs, Outputs)
   var modulesInfo = sequencer.modulesInfo();
 
   // Add modules to the addStep dropdown
-  for(var m in modulesInfo) {
-    $('#addStep select').append(
-      '<option value="'+m+'">'+modulesInfo[m].name+'</option>'
+  for (var m in modulesInfo) {
+    $("#addStep select").append(
+      '<option value="' + m + '">' + modulesInfo[m].name + "</option>"
     );
   }
 
   // Initial definitions
-  var steps = document.querySelector('#steps');
+  var steps = document.querySelector("#steps");
   var parser = new DOMParser();
   var reader = new FileReader();
 
@@ -27,109 +26,172 @@ window.onload = function() {
   // output values, step information.
   // See documetation for more details.
   sequencer.setUI({
-
     onSetup: function(step) {
+      if (step.options && step.options.description)
+        step.description = step.options.description;
 
-      if (step.options && step.options.description) step.description = step.options.description
-
-      step.ui = '\
+      step.ui =
+        '\
       <div class="row step">\
-        <div class="col-md-4 details">\
-          <h3>'+step.name+'</h3>\
-          <p><i>'+(step.description || '')+'</i></p>\
-        </div>\
-        <div class="col-md-8">\
-          <div class="load" style="display:none;"><i class="fa fa-circle-o-notch fa-spin"></i></div>\
-          <img alt="" class="img-thumbnail dragable"/>\
-        </div>\
+      <div class="col-md-4 details">\
+      <h3>' +
+        step.name +
+        "</h3>\
+      <p><i>" +
+        (step.description || "") +
+        '</i></p>\
+      </div>\
+      <div class="col-md-8">\
+      <div class="load" style="display:none;"><i class="fa fa-circle-o-notch fa-spin"></i></div>\
+      <a><img alt="" class=\'img-thumbnail dragable\' /></a>\
+      </div>\
       </div>\
       ';
 
       var tools =
-      '<div class="tools btn-group">\
-         <button confirm="Are you sure?" class="remove btn btn-xs btn-default">\
+        '<div class="tools btn-group">\
+         <button confirm="Are you sure?" class="remove btn btn btn-default">\
            <i class="fa fa-trash"></i>\
          </button>\
       </div>';
 
-      step.ui = parser.parseFromString(step.ui,'text/html');
-      step.ui = step.ui.querySelector('div.row');
-      step.imgElement = step.ui.querySelector('img');
+      step.ui = parser.parseFromString(step.ui, "text/html");
+      step.ui = step.ui.querySelector("div.row");
+      step.linkElement = step.ui.querySelector("a");
+      step.imgElement = step.ui.querySelector("a img");
 
-      if(sequencer.modulesInfo().hasOwnProperty(step.name)) {
+      if (sequencer.modulesInfo().hasOwnProperty(step.name)) {
         var inputs = sequencer.modulesInfo(step.name).inputs;
         var outputs = sequencer.modulesInfo(step.name).outputs;
-        var io = Object.assign(inputs, outputs);
-        for (var i in io) {
-          var isInput = inputs.hasOwnProperty(i);
-          var ioUI = "";
-          var inputDesc = (isInput)?inputs[i]:{};
+        var merged = Object.assign(inputs, outputs); // combine outputs w inputs
+        for (var paramName in merged) {
+          var isInput = inputs.hasOwnProperty(paramName);
+          var html = "";
+          var inputDesc = isInput ? inputs[paramName] : {};
           if (!isInput) {
-            ioUI += "<span class=\"output\"></span>";
-          }
-          else if (inputDesc.type.toLowerCase() == "select") {
-            ioUI += "<select class=\"form-control\" name=\""+i+"\">";
+            html += '<span class="output"></span>';
+          } else if (inputDesc.type.toLowerCase() == "select") {
+            html += '<select class="form-control" name="' + paramName + '">';
             for (var option in inputDesc.values) {
-              ioUI += "<option>"+inputDesc.values[option]+"</option>";
+              html += "<option>" + inputDesc.values[option] + "</option>";
             }
-            ioUI += "</select>";
+            html += "</select>";
+          } else {
+            html =
+              '<input class="form-control" type="' +
+              inputDesc.type +
+              '" name="' +
+              paramName +
+              '">';
           }
-          else {
-            ioUI = "<input class=\"form-control\" type=\""+inputDesc.type+"\" name=\""+i+"\">";
-          }
-          var div = document.createElement('div');
+          var div = document.createElement("div");
           div.className = "row";
-          div.setAttribute('name', i);
-          div.innerHTML = "<div class='det'>\
-                             <label for='" + i + "'>" + i + "</label>\
-                             "+ioUI+"\
+          div.setAttribute("name", paramName);
+          var description = inputs[paramName].desc || paramName;
+          div.innerHTML =
+            "<div class='det'>\
+                             <label for='" +
+            paramName +
+            "'>" +
+            description +
+            "</label>\
+                             " +
+            html +
+            "\
                            </div>";
-          step.ui.querySelector('div.details').appendChild(div);
+          step.ui.querySelector("div.details").appendChild(div);
         }
-        $(step.ui.querySelector('div.details')).append("<p><button class='btn btn-default btn-save'>Save</button></p>");
+        $(step.ui.querySelector("div.details")).append(
+          "<p><button class='btn btn-default btn-save'>Save</button></p>"
+        );
+
+        function saveOptions() {
+          $(step.ui.querySelector("div.details"))
+            .find("input,select")
+            .each(function(i, input) {
+              step.options[$(input).attr("name")] = input.value;
+            });
+          sequencer.run();
+        }
 
         // on clicking Save in the details pane of the step
-        $(step.ui.querySelector('div.details .btn-save')).click(function saveOptions() {
-          $(step.ui.querySelector('div.details')).find('input,select').each(function(i, input) {
-            step.options[$(input).attr('name')] = input.value;
-          });
-          sequencer.run();
-        });
+        $(step.ui.querySelector("div.details .btn-save")).click(
+          function saveOptions() {
+            $(
+              $(".dragable")
+                .get()
+                .pop()
+            ).imgAreaSelect({
+              hide: true,
+              onSelectStart: function() {
+                console.log("start");
+                $(".dragable")
+                  .get()
+                  .slice(-2)[1].src = $(".dragable")
+                  .get()
+                  .slice(-2)[0].src;
+              }
+            });
+            $(step.ui.querySelector("div.details"))
+              .find("input,select")
+              .each(function(i, input) {
+                step.options[$(input).attr("name")] = input.value;
+              });
+            sequencer.run();
+          }
+        );
       }
 
-      if(step.name != "load-image")
-        step.ui.querySelector('div.details').appendChild(
-          parser.parseFromString(tools,'text/html')
-                .querySelector('div')
-        );
+      if (step.name != "load-image")
+        step.ui
+          .querySelector("div.details")
+          .appendChild(
+            parser.parseFromString(tools, "text/html").querySelector("div")
+          );
 
       steps.appendChild(step.ui);
     },
 
     onDraw: function(step) {
-      $(step.ui.querySelector('.load')).show();
-      $(step.ui.querySelector('img')).hide();
+      $(step.ui.querySelector(".load")).show();
+      $(step.ui.querySelector("img")).hide();
     },
 
     onComplete: function(step) {
-      $(step.ui.querySelector('.load')).hide();
-      $(step.ui.querySelector('img')).show();
+      $(step.ui.querySelector(".load")).hide();
+      $(step.ui.querySelector("img")).show();
 
       step.imgElement.src = step.output;
-      if(sequencer.modulesInfo().hasOwnProperty(step.name)) {
+      step.linkElement.href = step.output;
+
+      function fileExtension(output) {
+        return output.split("/")[1].split(";")[0];
+      }
+
+      step.linkElement.download = step.name + "." + fileExtension(step.output);
+      step.linkElement.target = "_blank";
+
+      if (sequencer.modulesInfo().hasOwnProperty(step.name)) {
         var inputs = sequencer.modulesInfo(step.name).inputs;
         var outputs = sequencer.modulesInfo(step.name).outputs;
         for (var i in inputs) {
-          if (step.options[i] !== undefined && 
-              inputs[i].type.toLowerCase() === "input") step.ui.querySelector('div[name="' + i + '"] input')
-                                                               .value = step.options[i];
-          if (step.options[i] !== undefined &&
-              inputs[i].type.toLowerCase() === "select") step.ui.querySelector('div[name="' + i + '"] select')
-                                                                .value = step.options[i];
+          if (
+            step.options[i] !== undefined &&
+            inputs[i].type.toLowerCase() === "input"
+          )
+            step.ui.querySelector('div[name="' + i + '"] input').value =
+              step.options[i];
+          if (
+            step.options[i] !== undefined &&
+            inputs[i].type.toLowerCase() === "select"
+          )
+            step.ui.querySelector('div[name="' + i + '"] select').value =
+              step.options[i];
         }
         for (var i in outputs) {
-          if (step[i] !== undefined) step.ui.querySelector('div[name="'+i+'"] input')
-                                            .value = step[i];
+          if (step[i] !== undefined)
+            step.ui.querySelector('div[name="' + i + '"] input').value =
+              step[i];
         }
       }
     },
@@ -137,104 +199,98 @@ window.onload = function() {
     onRemove: function(step) {
       step.ui.remove();
     }
-
   });
 
-  sequencer.loadImage('images/tulips.png', function loadImageUI() {
-
+  sequencer.loadImage("images/tulips.png", function loadImageUI() {
     // look up needed steps from Url Hash:
-    var hash = getUrlHashParameter('steps');
+    var hash = getUrlHashParameter("steps");
 
     if (hash) {
-      var stepsFromHash = hash.split(',');
+      var stepsFromHash = hash.split(",");
       stepsFromHash.forEach(function eachStep(step) {
         sequencer.addSteps(step);
       });
       sequencer.run();
     }
-
   });
 
-
-  // File handling
-
-  $('#addStep select').on('change', selectNewStepUI);
+  $("#addStep select").on("change", selectNewStepUI);
 
   function selectNewStepUI() {
-    $('#options').html('');
-    var m = $('#addStep select').val();
-    for(var input in modulesInfo[m].inputs) {
-      var inputUI = "";
-      var inputDesc = modulesInfo[m].inputs[input];
-      if (inputDesc.type.toLowerCase() == "select") {
-        inputUI += "<select class=\"form-control\" name=\""+input+"\">";
-        for (var option in inputDesc.values) {
-          inputUI += "<option>"+inputDesc.values[option]+"</option>";
-        }
-        inputUI += "</select>";
-      }
-      else {
-        inputUI = "<input class=\"form-control\" type=\""+inputDesc.type+"\" name=\""+input+"\">";
-      }
-      $('#options').append(
-        '<div class="row">\
-           <div class="col-md-5 labels">\
-             '+input+':\
-           </div>\
-           <div class="col-md-5">\
-             '+inputUI+'\
-           </div>\
-         </div>'
-      );
-    }
+    var m = $("#addStep select").val();
+    $("#addStep .info").html(sequencer.modulesInfo(m).description);
   }
 
-
   function addStepUI() {
-    // Removes the dragable class from the current image
-    $($(".dragable").get().pop()).imgAreaSelect({remove: true})
+    // Adds the dragable class to the cropped image
+    var dragToCropFlag = false;
+    if ($("#selectStep")[0].value === "crop") dragToCropFlag = true;
 
     var options = {};
-    var inputs = $('#options input, #options select');
+    var inputs = $("#options input, #options select");
     $.each(inputs, function() {
       options[this.name] = $(this).val();
     });
-    if($('#addStep select').val() == "none") return;
+    if ($("#addStep select").val() == "none") return;
     // add to URL hash too
-    var hash = getUrlHashParameter('steps') || '';
-    if (hash != '') hash += ',';
-    setUrlHashParameter('steps', hash + $('#addStep select').val())
-    sequencer.addSteps($('#addStep select').val(),options).run();
+    var hash = getUrlHashParameter("steps") || "";
+    if (hash != "") hash += ",";
+    setUrlHashParameter("steps", hash + $("#addStep select").val());
+    if (
+      $("#addStep select")
+        .val()
+        .toLowerCase() === "crop"
+    ) {
+      options.x = 0;
+      options.y = 0;
+      options.w = $(".dragable")
+        .get()
+        .pop().clientWidth;
+      options.h = $(".dragable")
+        .get()
+        .pop().clientHeight;
+      console.log(options);
+    }
+    sequencer
+      .addSteps($("#addStep select").val(), options)
+      .run(null, function() {
+        if (dragToCropFlag) {
+          let images = $(".dragable").get();
 
-    // Adds the dragable class to the cropped image
-      $($(".dragable").get().pop()).imgAreaSelect({
-        handles: true,
-        onSelectEnd: function(img,selection){
-          let options = $('#options > div > div > input')
-          options[0].value = selection.x1
-          options[1].value = selection.y1
-          options[2].value = (selection.x2 - selection.x1)
-          options[3].value = (selection.y2 - selection.y1)
+          let newImage = images.pop(),
+            prevImage = images.pop();
+
+          $(newImage).imgAreaSelect({
+            handles: true,
+            x1: 0,
+            y1: 0,
+            x2: Math.floor(prevImage.clientWidth / 2),
+            y2: Math.floor(prevImage.clientHeight / 2),
+            onSelectEnd: function(img, selection) {
+              let options = $($(newImage).parents()[2]).find("input");
+              options[0].value = selection.x1;
+              options[1].value = selection.y1;
+              options[2].value = selection.x2 - selection.x1;
+              options[3].value = selection.y2 - selection.y1;
+            }
+          });
         }
       });
   }
 
-  $('#addStep button').on('click', addStepUI);
+  $("#addStep button").on("click", addStepUI);
 
-
-  function removeStepUI(){
-    var index = $('button.remove').index(this) + 1;
+  function removeStepUI() {
+    var index = $("button.remove").index(this) + 1;
     sequencer.removeSteps(index).run();
     // remove from URL hash too
-    var urlHash = getUrlHashParameter('steps').split(',');
+    var urlHash = getUrlHashParameter("steps").split(",");
     urlHash.splice(index - 1, 1);
-    setUrlHashParameter("steps", urlHash.join(','));
+    setUrlHashParameter("steps", urlHash.join(","));
   }
 
-  $('body').on('click','button.remove', removeStepUI);
-
+  $("body").on("click", "button.remove", removeStepUI);
 
   // image selection and drag/drop handling from examples/lib/imageSelection.js
   setupFileHandling(sequencer);
-
-}
+};

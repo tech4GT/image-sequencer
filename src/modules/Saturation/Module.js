@@ -1,11 +1,9 @@
 /*
- * Saturate an image
+ * Saturate an image with a value from 0 to 1
  */
 module.exports = function Saturation(options,UI) {
 
   options = options || {};
-  options.title = "Saturation";
-  options.description = "Saturate an image";
 
   // Tell UI that a step has been set up
   UI.onSetup(options.step);
