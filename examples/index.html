@@ -66,7 +66,7 @@
       <div class="form-inline">
         <div class="panel-body">
           <div style="text-align:center;">
-            <select class="form-control input-lg">
+            <select class="form-control input-lg" id="selectStep">
               <option value="none" disabled selected>Select a new step...</option>
             </select>
             <button class="btn btn-success btn-lg" name="add">Add Step</button>
@@ -82,27 +82,7 @@
   <script src="./image-area-select/js/jquery.imgareaselect.pack.js"></script>
   <script type="text/javascript">
     $(function () {
-
-      var sequencer
-      let selectStep = $('#selectStep');
-      selectStep.change(function () {
-        if (selectStep[0].value === "crop") {
-          $($(".dragable").get().pop()).imgAreaSelect({
-            handles: true,
-            onSelectEnd: function (img, selection) {
-              let options = $('#options > div > div > input')
-              options[0].value = selection.x1
-              options[1].value = selection.y1
-              options[2].value = Math.abs(selection.x2 - selection.x1)
-              options[3].value = Math.abs(selection.y2 - selection.y1)
-            }
-          });
-        } else {
-          $($(".dragable").get().pop()).imgAreaSelect({
-            remove: true
-          })
-        }
-      })
+      var sequencer;
     })
   </script>
 

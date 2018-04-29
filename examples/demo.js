@@ -33,26 +33,26 @@ window.onload = function() {
       step.ui =
         '\
       <div class="row step">\
-        <div class="col-md-4 details">\
-          <h3>' +
+      <div class="col-md-4 details">\
+      <h3>' +
         step.name +
         "</h3>\
-          <p><i>" +
+      <p><i>" +
         (step.description || "") +
         '</i></p>\
-        </div>\
-        <div class="col-md-8">\
-          <div class="load" style="display:none;"><i class="fa fa-circle-o-notch fa-spin"></i></div>\
-          <a><img alt="" class=“img-thumbnail dragable” /></a>\
-        </div>\
+      </div>\
+      <div class="col-md-8">\
+      <div class="load" style="display:none;"><i class="fa fa-circle-o-notch fa-spin"></i></div>\
+      <a><img alt="" class=\'img-thumbnail dragable\' /></a>\
+      </div>\
       </div>\
       ';
 
       var tools =
         '<div class="tools btn-group">\
-         <button confirm="Are you sure?" class="remove btn btn-xs btn-default">\
-           <i class="fa fa-trash"></i>\
-         </button>\
+      <button confirm="Are you sure?" class="remove btn btn-xs btn-default">\
+      <i class="fa fa-trash"></i>\
+      </button>\
       </div>';
 
       step.ui = parser.parseFromString(step.ui, "text/html");
@@ -89,15 +89,15 @@ window.onload = function() {
           div.setAttribute("name", i);
           div.innerHTML =
             "<div class='det'>\
-                             <label for='" +
+          <label for='" +
             i +
             "'>" +
             i +
             "</label>\
-                             " +
+          " +
             ioUI +
             "\
-                           </div>";
+          </div>";
           step.ui.querySelector("div.details").appendChild(div);
         }
         $(step.ui.querySelector("div.details")).append(
@@ -197,12 +197,9 @@ window.onload = function() {
   }
 
   function addStepUI() {
-    // Removes the dragable class from the current image
-    $(
-      $(".dragable")
-        .get()
-        .pop()
-    ).imgAreaSelect({ remove: true });
+    // Adds the dragable class to the cropped image
+    let dragToCropFlag = false;
+    if ($("#selectStep")[0].value === "crop") dragToCropFlag = true;
 
     var options = {};
     var inputs = $("#options input, #options select");
@@ -216,21 +213,29 @@ window.onload = function() {
     setUrlHashParameter("steps", hash + $("#addStep select").val());
     sequencer.addSteps($("#addStep select").val(), options).run();
 
-    // Adds the dragable class to the cropped image
-    $(
-      $(".dragable")
-        .get()
-        .pop()
-    ).imgAreaSelect({
-      handles: true,
-      onSelectEnd: function(img, selection) {
-        let options = $("#options > div > div > input");
-        options[0].value = selection.x1;
-        options[1].value = selection.y1;
-        options[2].value = selection.x2 - selection.x1;
-        options[3].value = selection.y2 - selection.y1;
-      }
-    });
+    if (dragToCropFlag) {
+      let newImage = $(
+        $(".dragable")
+          .get()
+          .pop()
+      );
+      newImage.removeClass("dragable");
+
+      $(
+        $(".dragable")
+          .get()
+          .pop()
+      ).imgAreaSelect({
+        handles: true,
+        onSelectEnd: function(img, selection) {
+          let options = $(newImage.parents()[2]).find("input");
+          options[0].value = selection.x1;
+          options[1].value = selection.y1;
+          options[2].value = selection.x2 - selection.x1;
+          options[3].value = selection.y2 - selection.y1;
+        }
+      });
+    }
   }
 
   $("#addStep button").on("click", addStepUI);
