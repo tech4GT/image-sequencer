@@ -55889,32 +55889,32 @@ function hasOwnProperty(obj, prop) {
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./support/isBuffer":131,"_process":105,"inherits":130}],133:[function(require,module,exports){
 // add steps to the sequencer 
-function AddStep(ref, image, name, o) {
+function AddStep(_sequencer, image, name, o) {
 
   function addStep(image, name, o_) {
-    var moduleInfo = ref.modules[name][1];
+    var moduleInfo = _sequencer.modules[name][1];
 
-    var o = ref.copy(o_);
-    o.number = ref.options.sequencerCounter++; // gives a unique ID to each step
+    var o = _sequencer.copy(o_);
+    o.number = _sequencer.options.sequencerCounter++; // gives a unique ID to each step
     o.name = o_.name || name || moduleInfo.name;
     o.description = o_.description || moduleInfo.description;
     o.selector = o_.selector || 'ismod-' + name;
-    o.container = o_.container || ref.options.selector;
+    o.container = o_.container || _sequencer.options.selector;
     o.image = image;
-    o.inBrowser = ref.options.inBrowser;
+    o.inBrowser = _sequencer.options.inBrowser;
 
     o.step = {
       name: o.name,
       description: o.description,
       ID: o.number,
       imageName: o.image,
-      inBrowser: ref.options.inBrowser,
-      ui: ref.options.ui,
+      inBrowser: _sequencer.options.inBrowser,
+      ui: _sequencer.options.ui,
       options: o
     };
-    var UI = ref.events;
-    var module = ref.modules[name][0](o,UI);
-    ref.images[image].steps.push(module);
+    var UI = _sequencer.events;
+    var module = _sequencer.modules[name][0](o,UI);
+    _sequencer.images[image].steps.push(module);
 
     return true;
   }
@@ -57100,50 +57100,97 @@ module.exports = function Crop(input,options,callback) {
  *          y = options.y
  *          y = options.y + options.h
  */
- module.exports = function CropModule(options,UI) {
+module.exports = function CropModule(options,UI) {
 
-   // TODO: we could also set this to {} if nil in AddModule.js to avoid this line:
-   options = options || {};
+  // TODO: we could also set this to {} if nil in AddModule.js to avoid this line:
+  options = options || {};
 
-   // Tell the UI that a step has been added
-   UI.onSetup(options.step);
-   var output;
+  // Tell the UI that a step has been added
+  UI.onSetup(options.step);
+  if (options.step.inBrowser) onSetupUi();
+  var output;
 
-   // This function is caled everytime the step has to be redrawn
-   function draw(input,callback) {
+  // This function is caled everytime the step has to be redrawn
+  function draw(input,callback) {
 
-     // Tell the UI that the step has been triggered
-     UI.onDraw(options.step);
-     var step = this;
+    // Tell the UI that the step has been triggered
+    UI.onDraw(options.step);
+    var step = this;
 
-     require('./Crop')(input,options,function(out,format){
+    require('./Crop')(input,options,function(out,format){
 
-       // This output is accessible to Image Sequencer
-       step.output = {
-         src: out,
-         format: format
-       }
+      // This output is accessible to Image Sequencer
+      step.output = {
+        src: out,
+        format: format
+      }
 
-       // This output is accessible to the UI
-       options.step.output = out;
+      // This output is accessible to the UI
+      options.step.output = out;
 
-       // Tell the UI that the step has been drawn
-       UI.onComplete(options.step);
+      // Tell the UI that the step has been drawn
+      UI.onComplete(options.step);
 
-       // Tell Image Sequencer that step has been drawn
-       callback();
+      // Tell Image Sequencer that step has been drawn
+      callback();
 
-     });
+    });
 
-   }
+  }
 
-   return {
-     options: options,
-     draw: draw,
-     output: output,
-     UI: UI
-   }
- }
+  function onSetupUi(imgSelector) {
+    imgSelector = imgSelector || ".img-thumbnail";
+ 
+    let images = $(imgSelector).get();
+ 
+    let newImage = images.pop(),
+      prevImage = images.pop();
+ 
+    // display with 50%/50% default crop
+    $(newImage).imgAreaSelect({
+      handles: true,
+      x1: 0,
+      y1: 0,
+      x2: Math.floor($(prevImage).width() / 2),
+      y2: Math.floor($(prevImage).height() / 2),
+      onSelectEnd: function onSelectEnd(img, selection) {
+        let options = $($(newImage).parents()[2]).find("input");
+        options[0].value = selection.x1;
+        options[1].value = selection.y1;
+        options[2].value = selection.x2 - selection.x1;
+        options[3].value = selection.y2 - selection.y1;
+        $(imgSelector).last().imgAreaSelect({
+          hide: true
+        });
+      }
+    });
+  }
+ 
+  function reactivateDragToCrop(imgSelector) {
+    imgSelector = imgSelector || ".img-thumbnail";
+    // now hide the select, but re-activate when dragged upon
+    $(imgSelector).last().imgAreaSelect({
+      hide: true,
+      onSelectStart: function() {
+        showOriginal();
+      }
+    });
+  }
+ 
+  function showOriginal(imgSelector) {
+    imgSelector = imgSelector || ".img-thumbnail";
+    var currentImage = $(imgSelector).get().slice(-2)[1];
+    var previousImage = $(imgSelector).get().slice(-2)[0];
+    currentImage.src = previousImage.src; // replace the image with the original when you start re-cropping
+  }
+
+  return {
+    options: options,
+    draw: draw,
+    output: output,
+    UI: UI
+  }
+}
 
 },{"./Crop":151}],153:[function(require,module,exports){
 module.exports={
