@@ -13,55 +13,6 @@ function DefaultHtmlStepUi(_sequencer, options) {
   var stepsEl = options.stepsEl || document.querySelector("#steps");
   var selectStepSel = options.selectStepSel = options.selectStepSel || "#selectStep";
 
-  function onDraw(step) {
-    $(step.ui.querySelector(".load")).show();
-    $(step.ui.querySelector("img")).hide();
-  }
-
-  function onComplete(step) {
-    $(step.ui.querySelector(".load")).hide();
-    $(step.ui.querySelector("img")).show();
-
-    step.imgElement.src = step.output;
-    step.linkElement.href = step.output;
-
-    function fileExtension(output) {
-      return output.split("/")[1].split(";")[0];
-    }
-
-    step.linkElement.download = step.name + "." + fileExtension(step.output);
-    step.linkElement.target = "_blank";
-
-    // fill inputs with stored step options
-    if (_sequencer.modulesInfo().hasOwnProperty(step.name)) {
-      var inputs = _sequencer.modulesInfo(step.name).inputs;
-      var outputs = _sequencer.modulesInfo(step.name).outputs;
-      for (var i in inputs) {
-        if (
-          step.options[i] !== undefined &&
-          inputs[i].type.toLowerCase() === "input"
-        )
-          step.ui.querySelector('div[name="' + i + '"] input').value =
-            step.options[i];
-        if (
-          step.options[i] !== undefined &&
-          inputs[i].type.toLowerCase() === "select"
-        )
-          step.ui.querySelector('div[name="' + i + '"] select').value =
-            step.options[i];
-      }
-      for (var i in outputs) {
-        if (step[i] !== undefined)
-          step.ui.querySelector('div[name="' + i + '"] input').value =
-            step[i];
-      }
-    }
-  }
-
-  function onRemove(step) {
-    step.ui.remove();
-  }
-
   function onSetup(step) {
     if (step.options && step.options.description)
       step.description = step.options.description;
@@ -176,7 +127,61 @@ function DefaultHtmlStepUi(_sequencer, options) {
     stepsEl.appendChild(step.ui);
   }
 
+  function onDraw(step) {
+    $(step.ui.querySelector(".load")).show();
+    $(step.ui.querySelector("img")).hide();
+  }
+
+  function onComplete(step) {
+    $(step.ui.querySelector(".load")).hide();
+    $(step.ui.querySelector("img")).show();
+
+    step.imgElement.src = step.output;
+    step.linkElement.href = step.output;
+
+    function fileExtension(output) {
+      return output.split("/")[1].split(";")[0];
+    }
+
+    step.linkElement.download = step.name + "." + fileExtension(step.output);
+    step.linkElement.target = "_blank";
+
+    // fill inputs with stored step options
+    if (_sequencer.modulesInfo().hasOwnProperty(step.name)) {
+      var inputs = _sequencer.modulesInfo(step.name).inputs;
+      var outputs = _sequencer.modulesInfo(step.name).outputs;
+      for (var i in inputs) {
+        if (
+          step.options[i] !== undefined &&
+          inputs[i].type.toLowerCase() === "input"
+        )
+          step.ui.querySelector('div[name="' + i + '"] input').value =
+            step.options[i];
+        if (
+          step.options[i] !== undefined &&
+          inputs[i].type.toLowerCase() === "select"
+        )
+          step.ui.querySelector('div[name="' + i + '"] select').value =
+            step.options[i];
+      }
+      for (var i in outputs) {
+        if (step[i] !== undefined)
+          step.ui.querySelector('div[name="' + i + '"] input').value =
+            step[i];
+      }
+    }
+  }
+
+  function onRemove(step) {
+    step.ui.remove();
+  }
+
+  function getPreview() {
+    return step.imgElement;
+  }
+
   return {
+    getPreview: getPreview,
     onSetup: onSetup,
     onComplete: onComplete,
     onRemove: onRemove,
