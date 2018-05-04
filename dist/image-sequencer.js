@@ -57109,27 +57109,19 @@ module.exports = function CropModule(options, UI) {
   UI.onSetup(options.step); // we should get UI to return the image thumbnail so we can attach our own UI extensions
   // add our custom in-module html ui:
   var ui = require('./Ui.js')(options.step, UI);
-  var output;
+  var output,
+      setupComplete = false;
 
   // This function is caled everytime the step has to be redrawn
   function draw(input,callback) {
 
     // Tell the UI that the step has been triggered
     UI.onDraw(options.step);
-    var step = this,
-      setupComplete = false;
+    var step = this;
 
     // save the input image; 
     // TODO: this should be moved to module API to persist the input image
     options.step.input = input.src;
-
-    // start custom UI setup (draggable UI)
-    // only once we have an input image
-    if (setupComplete === false && options.step.inBrowser) {
-console.log('setup started')
-      setupComplete = true;
-      ui.setup();
-    }
 
     require('./Crop')(input, options, function(out, format){
 
@@ -57144,6 +57136,13 @@ console.log('setup started')
 
       // Tell the UI that the step has been drawn
       UI.onComplete(options.step);
+
+      // start custom UI setup (draggable UI)
+      // only once we have an input image
+      if (setupComplete === false && options.step.inBrowser) {
+        setupComplete = true;
+        ui.setup();
+      }
 
       // Tell Image Sequencer that step has been drawn
       callback();
@@ -57163,61 +57162,69 @@ console.log('setup started')
 },{"./Crop":151,"./Ui.js":153}],153:[function(require,module,exports){
 module.exports = function CropModuleUi(step, ui) {
 
-  // problem is we don't have input image dimensions at the time of setting up the UI;
-  // that comes when draw() is triggered...
+  // The problem is we don't have input image dimensions at the 
+  // time of setting up the UI; that comes when draw() is triggered...
+  // so we're triggering setup only on first run of draw()
   function setup() {
     // display original input image on initial setup
-    var imgEl = step.imgElement //$(step.imgSelector);
-// step.imgSelector is not defined, imgElement is
-    imgEl.get().src = step.input;
-    // display with 50%/50% default crop
-    let width = Math.floor(imgEl.width() / 2),
-        height = Math.floor(imgEl.height() / 2);
-    imgEl.imgAreaSelect({
+    showOriginal()
+    let width = Math.floor(imgEl.width),
+        height = Math.floor(imgEl.height),
+        x1 = 0,
+        y1 = 0,
+        x2 = width / 2,
+        y2 = height / 2;
+
+    // display with 50%/50% default crop:
+    setOptions(
+      x1,
+      y1,
+      x2 - x1,
+      y2 - y1
+    )
+
+    $(imgEl()).imgAreaSelect({
       handles: true,
-      x1: 0,
-      y1: 0,
-      x2: width,
-      y2: height,
+      x1: x1,
+      y1: y1,
+      x2: x2,
+      y2: y2,
       // when selection is complete
       onSelectEnd: function onSelectEnd(img, selection) {
         // assign crop values to module UI form inputs:
-        let options = $(imgEl.get().parents()[2]).find("input");
-        options[0].value = selection.x1;
-        options[1].value = selection.y1;
-        options[2].value = selection.x2 - selection.x1;
-        options[3].value = selection.y2 - selection.y1;
+        setOptions(
+          selection.x1,
+          selection.y1,
+          selection.x2 - selection.x1,
+          selection.y2 - selection.y1
+        )
         // then hide the draggable UI
-        imgEl.imgAreaSelect({
+        $(imgEl()).imgAreaSelect({
           hide: true
         });
       }
     });
   }
- 
-  function reactivateDragToCrop(imgSelector) {
-    imgSelector = imgSelector || ".img-thumbnail";
-    // now hide the select, but re-activate when dragged upon
-    $(imgSelector).last().imgAreaSelect({
-      hide: true,
-      onSelectStart: function() {
-        showOriginal();
-      }
-    });
+
+  // step.imgSelector is not defined, imgElement is:
+  function imgEl() {
+    return step.imgElement;
+  }
+
+  function setOptions(x1,y1,x2,y2) {
+    let options = $($(imgEl()).parents()[2]).find("input");
+    options[0].value = x1;
+    options[1].value = y1;
+    options[2].value = x2 - x1;
+    options[3].value = y2 - y1;
   }
 
   // replaces currently displayed output thumbnail with the input image, for ui dragging purposes
   function showOriginal() {
-console.log('show original', step, step.input);
-if (step.input)    step.imgElement.src = step.input;
-//    let images = $(step.imgElement).get();
-//    var currentImage = $(imgSelector).get().slice(-2)[1];
-//    var previousImage = $(imgSelector).get().slice(-2)[0];
-//    currentImage.src = previousImage.src; // replace the image with the original when you start re-cropping
+    step.imgElement.src = step.input;
   }
 
   return {
-    reactivateDragToCrop: reactivateDragToCrop,
     setup: setup
   }
 }

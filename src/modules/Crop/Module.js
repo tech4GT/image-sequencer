@@ -22,27 +22,19 @@ module.exports = function CropModule(options, UI) {
   UI.onSetup(options.step); // we should get UI to return the image thumbnail so we can attach our own UI extensions
   // add our custom in-module html ui:
   var ui = require('./Ui.js')(options.step, UI);
-  var output;
+  var output,
+      setupComplete = false;
 
   // This function is caled everytime the step has to be redrawn
   function draw(input,callback) {
 
     // Tell the UI that the step has been triggered
     UI.onDraw(options.step);
-    var step = this,
-      setupComplete = false;
+    var step = this;
 
     // save the input image; 
     // TODO: this should be moved to module API to persist the input image
     options.step.input = input.src;
-
-    // start custom UI setup (draggable UI)
-    // only once we have an input image
-    if (setupComplete === false && options.step.inBrowser) {
-console.log('setup started')
-      setupComplete = true;
-      ui.setup();
-    }
 
     require('./Crop')(input, options, function(out, format){
 
@@ -57,6 +49,13 @@ console.log('setup started')
 
       // Tell the UI that the step has been drawn
       UI.onComplete(options.step);
+
+      // start custom UI setup (draggable UI)
+      // only once we have an input image
+      if (setupComplete === false && options.step.inBrowser) {
+        setupComplete = true;
+        ui.setup();
+      }
 
       // Tell Image Sequencer that step has been drawn
       callback();
