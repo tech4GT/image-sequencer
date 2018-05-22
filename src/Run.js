@@ -62,11 +62,14 @@ function Run(ref, json_q, callback, progressObj) {
     var outputs_arr = [];
     for (let opt in ref.images[image].steps) {
       if (opt >= i) break;
-      outputs_arr.push(ref.images[image].steps[opt].output);
+      outputs_arr.push(ref.images[image].steps[opt]);
     }
     input.history = ref.copy(outputs_arr);
-    input.getStepOutput = function getStepOutput(offset) {
+    input.getStep = function getStep(offset) {
       return this.history.slice(offset)[0];
+    };
+    input.getStepOutput = function getStepOutput(offset) {
+      return this.getStep(offset).output;
     };
   }
 
