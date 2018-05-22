@@ -65,7 +65,7 @@ function Run(ref, json_q, callback, progressObj) {
       outputs_arr.push(ref.images[image].steps[opt].output);
     }
     input.history = ref.copy(outputs_arr);
-    input.getStep = function getStep(offset) {
+    input.getStepOutput = function getStepOutput(offset) {
       return this.history.slice(offset)[0];
     };
   }
