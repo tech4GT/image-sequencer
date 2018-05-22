@@ -1,5 +1,5 @@
 function Run(ref, json_q, callback, progressObj) {
-  if (!progressObj) progressObj = { stop: function() {} };
+  if (!progressObj) progressObj = { stop: function () { } };
 
   function drawStep(drawarray, pos) {
     if (pos == drawarray.length && drawarray[pos - 1] !== undefined) {
@@ -16,15 +16,8 @@ function Run(ref, json_q, callback, progressObj) {
       var image = drawarray[pos].image;
       var i = drawarray[pos].i;
       var input = ref.images[image].steps[i - 1].output;
-      var outputs_arr = [];
-      for (let opt in ref.images[image].steps) {
-        if (opt >= i) break;
-        outputs_arr.push(ref.images[image].steps[opt].output);
-      }
-      input.history = ref.copy(outputs_arr);
-      input.getStep = function(offset) {
-        return this.history.slice(offset)[0];
-      };
+
+      generateOutputsArray(input, i, image);
 
       ref.images[image].steps[i].draw(
         ref.copy(input),
@@ -64,6 +57,17 @@ function Run(ref, json_q, callback, progressObj) {
       }
     }
     return json_q;
+  }
+  function generateOutputsArray(input, i, image) {
+    var outputs_arr = [];
+    for (let opt in ref.images[image].steps) {
+      if (opt >= i) break;
+      outputs_arr.push(ref.images[image].steps[opt].output);
+    }
+    input.history = ref.copy(outputs_arr);
+    input.getStep = function getStep(offset) {
+      return this.history.slice(offset)[0];
+    };
   }
 
   var json_q = filter(json_q);
