@@ -166,12 +166,6 @@ test('insertSteps({image: {index: index, name: "module", o: options} }) inserts 
 
 test('run() runs the sequencer and returns output to callback', function (t) {
   sequencer.run('test', function (out) {
-    // t.equal(sequencer.images.test.steps.slice(-2)[0].output.getStepOutput(-2).src,
-    //   sequencer.images.test.steps.slice(-3)[0].output.src, 'offset -2 gives previous step'
-    // );
-    // t.equal(sequencer.images.test.steps.slice(-2)[0].output.getStep(-2).options.name,
-    //   sequencer.images.test.steps.slice(-3)[0].options.name, 'offset -2 gives previous step'
-    // );
     t.equal(typeof (sequencer.images.test.steps[sequencer.images.test.steps.length - 1].output), "object", "Output is Generated");
     t.equal(out, sequencer.images.test.steps[sequencer.images.test.steps.length - 1].output.src, "Output callback works");
   });
