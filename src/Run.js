@@ -17,7 +17,7 @@ function Run(ref, json_q, callback, progressObj) {
       var i = drawarray[pos].i;
       var input = ref.images[image].steps[i - 1].output;
 
-      generateStepApi(input, i, image);
+      // generateStepApi(input, i, image);
 
       ref.images[image].steps[i].draw(
         ref.copy(input),
@@ -58,20 +58,20 @@ function Run(ref, json_q, callback, progressObj) {
     }
     return json_q;
   }
-  function generateStepApi(input, i, image) {
-    var outputs_arr = [];
-    for (let opt in ref.images[image].steps) {
-      if (opt >= i) break;
-      outputs_arr.push(ref.images[image].steps[opt]);
-    }
-    input.history = ref.copy(outputs_arr);
-    input.getStep = function getStep(offset) {
-      return this.history.slice(offset)[0];
-    };
-    input.getStepOutput = function getStepOutput(offset) {
-      return this.getStep(offset).output;
-    };
-  }
+  // function generateStepApi(input, i, image) {
+  //   var outputs_arr = [];
+  //   for (let opt in ref.images[image].steps) {
+  //     if (opt >= i) break;
+  //     outputs_arr.push(ref.images[image].steps[opt]);
+  //   }
+  //   input.history = ref.copy(outputs_arr);
+  //   input.getStep = function getStep(offset) {
+  //     return this.history.slice(offset)[0];
+  //   };
+  //   input.getStepOutput = function getStepOutput(offset) {
+  //     return this.getStep(offset).output;
+  //   };
+  // }
 
   var json_q = filter(json_q);
   return drawSteps(json_q);
