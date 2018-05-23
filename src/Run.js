@@ -17,7 +17,7 @@ function Run(ref, json_q, callback, progressObj) {
       var i = drawarray[pos].i;
       var input = ref.images[image].steps[i - 1].output;
 
-      generateOutputsArray(input, i, image);
+      generateStepApi(input, i, image);
 
       ref.images[image].steps[i].draw(
         ref.copy(input),
@@ -58,7 +58,7 @@ function Run(ref, json_q, callback, progressObj) {
     }
     return json_q;
   }
-  function generateOutputsArray(input, i, image) {
+  function generateStepApi(input, i, image) {
     var outputs_arr = [];
     for (let opt in ref.images[image].steps) {
       if (opt >= i) break;
