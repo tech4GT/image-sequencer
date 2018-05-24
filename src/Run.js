@@ -17,6 +17,7 @@ function Run(ref, json_q, callback, progressObj) {
       var image = drawarray[pos].image;
       var i = drawarray[pos].i;
       var input = ref.images[image].steps[i - 1].output;
+      input.index = i - 1;
       ref.images[image].steps[i].draw(
         ref.copy(input),
         function onEachStep() {
