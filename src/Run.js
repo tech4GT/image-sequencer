@@ -19,7 +19,6 @@ function Run(ref, json_q, callback, progressObj) {
       var i = drawarray[pos].i;
       var input = ref.images[image].steps[i - 1].output;
       getStep = function getStep(offset) {
-        console.log("hello")
         return _.cloneDeep(ref.images[image].steps.slice(i + offset)[0]);
       }
       ref.images[image].steps[i].draw(
