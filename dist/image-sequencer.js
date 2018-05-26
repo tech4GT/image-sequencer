@@ -47254,6 +47254,7 @@ function hasOwnProperty(obj, prop) {
 },{"./support/isBuffer":131,"_process":94,"inherits":130}],133:[function(require,module,exports){
 // add steps to the sequencer 
 // TODO: reduce redundancy with InsertStep; this should be a specific usage of InsertStep at the final position
+const _ = require('lodash')
 function AddStep(_sequencer, image, name, o) {
 
   function addStep(image, name, o_) {
@@ -47279,9 +47280,7 @@ function AddStep(_sequencer, image, name, o) {
       options: o
     };
     var UI = _sequencer.events;
-    getStep = function getStep(input, offset) {
-      return _sequencer.images[image].steps.slice(input.index + offset + 1)[0];
-    }
+    // _sequencer.modules[name].getStep = function getStep(offset) {
     var module = _sequencer.modules[name][0](o, UI);
     _sequencer.images[image].steps.push(module);
 
@@ -47292,7 +47291,7 @@ function AddStep(_sequencer, image, name, o) {
 }
 module.exports = AddStep;
 
-},{}],134:[function(require,module,exports){
+},{"lodash":58}],134:[function(require,module,exports){
 var fs = require('fs');
 var getDirectories = function(rootDir, cb) {
   fs.readdir(rootDir, function(err, files) {
@@ -47777,6 +47776,9 @@ function InsertStep(ref, image, index, name, o) {
       options: o
     };
     var UI = ref.events;
+    getStep = function getStep(input, offset) {
+      return ref.images[image].steps.slice(input.index + offset + 1)[0];
+    }
     var module = ref.modules[name][0](o, UI);
     ref.images[image].steps.splice(index, 0, module);
 
@@ -47901,6 +47903,7 @@ function ReplaceImage(ref,selector,steps,options) {
 module.exports = ReplaceImage;
 
 },{}],140:[function(require,module,exports){
+const _ = require('lodash')
 function Run(ref, json_q, callback, progressObj) {
   if (!progressObj) progressObj = { stop: function () { } };
 
@@ -47920,7 +47923,10 @@ function Run(ref, json_q, callback, progressObj) {
       var image = drawarray[pos].image;
       var i = drawarray[pos].i;
       var input = ref.images[image].steps[i - 1].output;
-      input.index = i - 1;
+      getStep = function getStep(offset) {
+        console.log("hello")
+        return _.cloneDeep(ref.images[image].steps.slice(i + offset)[0]);
+      }
       ref.images[image].steps[i].draw(
         ref.copy(input),
         function onEachStep() {
@@ -47966,7 +47972,7 @@ function Run(ref, json_q, callback, progressObj) {
 }
 module.exports = Run;
 
-},{}],141:[function(require,module,exports){
+},{"lodash":58}],141:[function(require,module,exports){
 /*
 * Average all pixel colors
 */
@@ -48090,7 +48096,7 @@ module.exports = function Dynamic(options, UI, util) {
     var getPixels = require('get-pixels');
 
     // save first image's pixels
-    var priorStep = getStep(input, -2);
+    var priorStep = getStep(-2);
 
     getPixels(priorStep.output.src, function (err, pixels) {
       options.firstImagePixels = pixels;
@@ -49648,9 +49654,9 @@ module.exports = function Invert(options, UI) {
   // The function which is called on every draw.
   function draw(input, callback, progressObj) {
 
-    console.log(getStep(input, -2).options.name);
-    console.log(getStep(input, -1).options.name);
-    console.log(getStep(input, 0).options.name);
+    console.log(getStep(-2).options.name);
+    console.log(getStep(-1).options.name);
+    console.log(getStep(0).options.name);
     progressObj.stop(true);
     progressObj.overrideFlag = true;
     // Tell UI that a step is being drawn.
