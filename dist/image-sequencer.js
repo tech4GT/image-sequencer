@@ -47279,7 +47279,6 @@ function AddStep(_sequencer, image, name, o) {
       options: o
     };
     var UI = _sequencer.events;
-    // _sequencer.modules[name].getStep = function getStep(offset) {
     var module = _sequencer.modules[name][0](o, UI);
     _sequencer.images[image].steps.push(module);
 
@@ -47521,7 +47520,7 @@ module.exports = formatInput;
 },{}],136:[function(require,module,exports){
 if (typeof window !== 'undefined') {isBrowser = true}
 else {var isBrowser = false}
-require('./util/prevStepAPI.js')
+require('./util/getStep.js')
 
 ImageSequencer = function ImageSequencer(options) {
   
@@ -47751,7 +47750,7 @@ ImageSequencer = function ImageSequencer(options) {
 }
 module.exports = ImageSequencer;
 
-},{"./AddStep":133,"./ExportBin":134,"./FormatInput":135,"./InsertStep":137,"./Modules":138,"./ReplaceImage":139,"./Run":140,"./ui/LoadImage":178,"./ui/SetInputStep":179,"./ui/UserInterface":180,"./util/prevStepAPI.js":182,"fs":39}],137:[function(require,module,exports){
+},{"./AddStep":133,"./ExportBin":134,"./FormatInput":135,"./InsertStep":137,"./Modules":138,"./ReplaceImage":139,"./Run":140,"./ui/LoadImage":178,"./ui/SetInputStep":179,"./ui/UserInterface":180,"./util/getStep.js":182,"fs":39}],137:[function(require,module,exports){
 // insert one or more steps at a given index in the sequencer
 function InsertStep(ref, image, index, name, o) {
 
@@ -47903,7 +47902,6 @@ function ReplaceImage(ref,selector,steps,options) {
 module.exports = ReplaceImage;
 
 },{}],140:[function(require,module,exports){
-const _ = require('lodash')
 function Run(ref, json_q, callback, progressObj) {
   if (!progressObj) progressObj = { stop: function () { } };
 
@@ -47925,7 +47923,7 @@ function Run(ref, json_q, callback, progressObj) {
       var input = ref.images[image].steps[i - 1].output;
 
       getStep = function getStep(offset) {
-        return _.cloneDeep(ref.images[image].steps.slice(i + offset)[0]);
+        return ref.images[image].steps.slice(i + offset)[0];
       }
       
       ref.images[image].steps[i].draw(
@@ -47973,7 +47971,7 @@ function Run(ref, json_q, callback, progressObj) {
 }
 module.exports = Run;
 
-},{"lodash":58}],141:[function(require,module,exports){
+},{}],141:[function(require,module,exports){
 /*
 * Average all pixel colors
 */

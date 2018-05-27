@@ -1,6 +1,6 @@
 if (typeof window !== 'undefined') {isBrowser = true}
 else {var isBrowser = false}
-require('./util/prevStepAPI.js')
+require('./util/getStep.js')
 
 ImageSequencer = function ImageSequencer(options) {
   

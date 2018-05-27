@@ -25,7 +25,6 @@ function AddStep(_sequencer, image, name, o) {
       options: o
     };
     var UI = _sequencer.events;
-    // _sequencer.modules[name].getStep = function getStep(offset) {
     var module = _sequencer.modules[name][0](o, UI);
     _sequencer.images[image].steps.push(module);
 

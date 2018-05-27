@@ -1,4 +1,3 @@
-const _ = require('lodash')
 function Run(ref, json_q, callback, progressObj) {
   if (!progressObj) progressObj = { stop: function () { } };
 
@@ -20,7 +19,7 @@ function Run(ref, json_q, callback, progressObj) {
       var input = ref.images[image].steps[i - 1].output;
 
       getStep = function getStep(offset) {
-        return _.cloneDeep(ref.images[image].steps.slice(i + offset)[0]);
+        return ref.images[image].steps.slice(i + offset)[0];
       }
       
       ref.images[image].steps[i].draw(
