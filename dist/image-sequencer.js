@@ -47902,9 +47902,10 @@ function ReplaceImage(ref,selector,steps,options) {
 module.exports = ReplaceImage;
 
 },{}],140:[function(require,module,exports){
+const getStepUtils = require('./util/getStep.js')
 function Run(ref, json_q, callback, progressObj) {
   if (!progressObj) progressObj = { stop: function () { } };
-
+  
   function drawStep(drawarray, pos) {
     if (pos == drawarray.length && drawarray[pos - 1] !== undefined) {
       var image = drawarray[pos - 1].image;
@@ -47915,14 +47916,24 @@ function Run(ref, json_q, callback, progressObj) {
         return true;
       }
     }
-
+    
     // so we don't run on the loadImage module:
     if (drawarray[pos] !== undefined) {
       var image = drawarray[pos].image;
       var i = drawarray[pos].i;
       var input = ref.images[image].steps[i - 1].output;
 
-      getStep = function getStep(offset) {
+      ref.images[image].steps[i].getStep = function getStep(offset) {
+        return ref.images[image].steps.slice(i + offset)[0];
+      }
+      
+      for (var util in getStepUtils) {
+        if (getStepUtils.hasOwnProperty(util)) {
+          ref.images[image].steps[i][util] = getStepUtils[util];
+        }
+      }
+      
+      ref.images[image].steps[i].getStep = function getStep(offset) {
         return ref.images[image].steps.slice(i + offset)[0];
       }
       
@@ -47935,7 +47946,7 @@ function Run(ref, json_q, callback, progressObj) {
       );
     }
   }
-
+  
   function drawSteps(json_q) {
     var drawarray = [];
     for (var image in json_q) {
@@ -47947,11 +47958,11 @@ function Run(ref, json_q, callback, progressObj) {
     }
     drawStep(drawarray, 0);
   }
-
+  
   function filter(json_q) {
     for (var image in json_q) {
       if (json_q[image] == 0 && ref.images[image].steps.length == 1)
-        delete json_q[image];
+      delete json_q[image];
       else if (json_q[image] == 0) json_q[image]++;
     }
     for (var image in json_q) {
@@ -47965,13 +47976,13 @@ function Run(ref, json_q, callback, progressObj) {
     }
     return json_q;
   }
-
+  
   var json_q = filter(json_q);
   return drawSteps(json_q);
 }
 module.exports = Run;
 
-},{}],141:[function(require,module,exports){
+},{"./util/getStep.js":182}],141:[function(require,module,exports){
 /*
 * Average all pixel colors
 */
@@ -48095,7 +48106,7 @@ module.exports = function Dynamic(options, UI, util) {
     var getPixels = require('get-pixels');
 
     // save first image's pixels
-    var priorStep = getStep(-2);
+    var priorStep = this.getStep(-2);
 
     getPixels(priorStep.output.src, function (err, pixels) {
       options.firstImagePixels = pixels;
@@ -49653,9 +49664,9 @@ module.exports = function Invert(options, UI) {
   // The function which is called on every draw.
   function draw(input, callback, progressObj) {
 
-    console.log(getIndex());
-    console.log(getPreviousStep().options.name);
-    console.log(getStep(0).options.name);
+    console.log(this.getIndex());
+    console.log(this.getPreviousStep().options.name);
+    console.log(this.getStep(0).options.name);
     progressObj.stop(true);
     progressObj.overrideFlag = true;
     // Tell UI that a step is being drawn.
@@ -50207,22 +50218,24 @@ module.exports = function GetFormat(src) {
 }
 
 },{}],182:[function(require,module,exports){
-getPreviousStep = function () {
-    return getStep(-1);
-};
-
-// getNextStep won't exactly be useful since module would have already been run
-
-getIndex = function(){
-    return getStep(0).options.number;
-};
-
-getInput = function(offset){
-    if(offset + getIndex() === 0) offset++;
-    return getStep(offset - 1).output;
-};
-
-getOuput = function(offset){
-    return getStep(offset).output;
-};
+module.exports = {
+    getPreviousStep : function () {
+        return this.getStep(-1);
+    },
+    
+    // getNextStep won't exactly be useful since module would have already been run
+    
+    getIndex : function(){
+        return this.getStep(0).options.number;
+    },
+    
+    getInput : function(offset){
+        if(offset + this.getIndex() === 0) offset++;
+        return this.getStep(offset - 1).output;
+    },
+    
+    getOuput : function(offset){
+        return this.getStep(offset).output;
+    }
+}
 },{}]},{},[136]);
