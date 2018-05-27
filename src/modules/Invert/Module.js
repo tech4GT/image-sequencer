@@ -12,7 +12,7 @@ module.exports = function Invert(options, UI) {
   // The function which is called on every draw.
   function draw(input, callback, progressObj) {
 
-    console.log(getStep(-2).options.name);
+    console.log(getIndex());
     console.log(getPreviousStep().options.name);
     console.log(getStep(0).options.name);
     progressObj.stop(true);

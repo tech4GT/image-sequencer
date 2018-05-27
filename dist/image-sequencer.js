@@ -47923,9 +47923,11 @@ function Run(ref, json_q, callback, progressObj) {
       var image = drawarray[pos].image;
       var i = drawarray[pos].i;
       var input = ref.images[image].steps[i - 1].output;
+
       getStep = function getStep(offset) {
         return _.cloneDeep(ref.images[image].steps.slice(i + offset)[0]);
       }
+      
       ref.images[image].steps[i].draw(
         ref.copy(input),
         function onEachStep() {
@@ -49653,7 +49655,7 @@ module.exports = function Invert(options, UI) {
   // The function which is called on every draw.
   function draw(input, callback, progressObj) {
 
-    console.log(getStep(-2).options.name);
+    console.log(getIndex());
     console.log(getPreviousStep().options.name);
     console.log(getStep(0).options.name);
     progressObj.stop(true);
@@ -50209,5 +50211,20 @@ module.exports = function GetFormat(src) {
 },{}],182:[function(require,module,exports){
 getPreviousStep = function () {
     return getStep(-1);
+};
+
+// getNextStep won't exactly be useful since module would have already been run
+
+getIndex = function(){
+    return getStep(0).options.number;
+};
+
+getInput = function(offset){
+    if(offset + getIndex() === 0) offset++;
+    return getStep(offset - 1).output;
+};
+
+getOuput = function(offset){
+    return getStep(offset).output;
 };
 },{}]},{},[136]);
