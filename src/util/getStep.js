@@ -3,7 +3,9 @@ module.exports = {
         return this.getStep(-1);
     },
     
-    // getNextStep won't exactly be useful since module would have already been run
+    getNextStep : function() {
+        return this.getStep(1);
+    },
     
     getIndex : function(){
         return this.getStep(0).options.number;

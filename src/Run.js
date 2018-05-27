@@ -22,7 +22,7 @@ function Run(ref, json_q, callback, progressObj) {
       ref.images[image].steps[i].getStep = function getStep(offset) {
         return ref.images[image].steps.slice(i + offset)[0];
       }
-      
+
       for (var util in getStepUtils) {
         if (getStepUtils.hasOwnProperty(util)) {
           ref.images[image].steps[i][util] = getStepUtils[util];
@@ -30,7 +30,8 @@ function Run(ref, json_q, callback, progressObj) {
       }
       
       ref.images[image].steps[i].getStep = function getStep(offset) {
-        return ref.images[image].steps.slice(i + offset)[0];
+        if(i + offset >= ref.images[image].steps.length) return {options:{name:undefined}};
+        else return ref.images[image].steps.slice(i + offset)[0];
       }
       
       ref.images[image].steps[i].draw(

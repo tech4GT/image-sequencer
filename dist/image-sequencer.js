@@ -47926,7 +47926,7 @@ function Run(ref, json_q, callback, progressObj) {
       ref.images[image].steps[i].getStep = function getStep(offset) {
         return ref.images[image].steps.slice(i + offset)[0];
       }
-      
+
       for (var util in getStepUtils) {
         if (getStepUtils.hasOwnProperty(util)) {
           ref.images[image].steps[i][util] = getStepUtils[util];
@@ -47934,6 +47934,7 @@ function Run(ref, json_q, callback, progressObj) {
       }
       
       ref.images[image].steps[i].getStep = function getStep(offset) {
+        if(i + offset >= ref.images[image].steps.length) return {options:{name:undefined}};
         return ref.images[image].steps.slice(i + offset)[0];
       }
       
@@ -49665,7 +49666,7 @@ module.exports = function Invert(options, UI) {
   function draw(input, callback, progressObj) {
 
     console.log(this.getIndex());
-    console.log(this.getPreviousStep().options.name);
+    console.log(this.getNextStep().options.name);
     console.log(this.getStep(0).options.name);
     progressObj.stop(true);
     progressObj.overrideFlag = true;
@@ -50223,7 +50224,9 @@ module.exports = {
         return this.getStep(-1);
     },
     
-    // getNextStep won't exactly be useful since module would have already been run
+    getNextStep : function() {
+        return this.getStep(1);
+    },
     
     getIndex : function(){
         return this.getStep(0).options.number;
