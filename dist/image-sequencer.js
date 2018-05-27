@@ -47521,6 +47521,7 @@ module.exports = formatInput;
 },{}],136:[function(require,module,exports){
 if (typeof window !== 'undefined') {isBrowser = true}
 else {var isBrowser = false}
+require('./util/prevStepAPI.js')
 
 ImageSequencer = function ImageSequencer(options) {
   
@@ -47750,7 +47751,7 @@ ImageSequencer = function ImageSequencer(options) {
 }
 module.exports = ImageSequencer;
 
-},{"./AddStep":133,"./ExportBin":134,"./FormatInput":135,"./InsertStep":137,"./Modules":138,"./ReplaceImage":139,"./Run":140,"./ui/LoadImage":178,"./ui/SetInputStep":179,"./ui/UserInterface":180,"fs":39}],137:[function(require,module,exports){
+},{"./AddStep":133,"./ExportBin":134,"./FormatInput":135,"./InsertStep":137,"./Modules":138,"./ReplaceImage":139,"./Run":140,"./ui/LoadImage":178,"./ui/SetInputStep":179,"./ui/UserInterface":180,"./util/prevStepAPI.js":182,"fs":39}],137:[function(require,module,exports){
 // insert one or more steps at a given index in the sequencer
 function InsertStep(ref, image, index, name, o) {
 
@@ -49653,7 +49654,7 @@ module.exports = function Invert(options, UI) {
   function draw(input, callback, progressObj) {
 
     console.log(getStep(-2).options.name);
-    console.log(getStep(-1).options.name);
+    console.log(getPreviousStep().options.name);
     console.log(getStep(0).options.name);
     progressObj.stop(true);
     progressObj.overrideFlag = true;
@@ -50205,4 +50206,8 @@ module.exports = function GetFormat(src) {
 
 }
 
+},{}],182:[function(require,module,exports){
+getPreviousStep = function () {
+    return getStep(-1);
+};
 },{}]},{},[136]);

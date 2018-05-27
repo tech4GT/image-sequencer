@@ -13,7 +13,7 @@ module.exports = function Invert(options, UI) {
   function draw(input, callback, progressObj) {
 
     console.log(getStep(-2).options.name);
-    console.log(getStep(-1).options.name);
+    console.log(getPreviousStep().options.name);
     console.log(getStep(0).options.name);
     progressObj.stop(true);
     progressObj.overrideFlag = true;
