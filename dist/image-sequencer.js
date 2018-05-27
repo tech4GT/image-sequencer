@@ -47254,7 +47254,6 @@ function hasOwnProperty(obj, prop) {
 },{"./support/isBuffer":131,"_process":94,"inherits":130}],133:[function(require,module,exports){
 // add steps to the sequencer 
 // TODO: reduce redundancy with InsertStep; this should be a specific usage of InsertStep at the final position
-const _ = require('lodash')
 function AddStep(_sequencer, image, name, o) {
 
   function addStep(image, name, o_) {
@@ -47291,7 +47290,7 @@ function AddStep(_sequencer, image, name, o) {
 }
 module.exports = AddStep;
 
-},{"lodash":58}],134:[function(require,module,exports){
+},{}],134:[function(require,module,exports){
 var fs = require('fs');
 var getDirectories = function(rootDir, cb) {
   fs.readdir(rootDir, function(err, files) {
@@ -47776,8 +47775,8 @@ function InsertStep(ref, image, index, name, o) {
       options: o
     };
     var UI = ref.events;
-    getStep = function getStep(input, offset) {
-      return ref.images[image].steps.slice(input.index + offset + 1)[0];
+    getStep = function getStep(offset) {
+      return ref.images[image].steps.slice(index + offset)[0];
     }
     var module = ref.modules[name][0](o, UI);
     ref.images[image].steps.splice(index, 0, module);
@@ -47924,7 +47923,6 @@ function Run(ref, json_q, callback, progressObj) {
       var i = drawarray[pos].i;
       var input = ref.images[image].steps[i - 1].output;
       getStep = function getStep(offset) {
-        console.log("hello")
         return _.cloneDeep(ref.images[image].steps.slice(i + offset)[0]);
       }
       ref.images[image].steps[i].draw(

@@ -22,8 +22,8 @@ function InsertStep(ref, image, index, name, o) {
       options: o
     };
     var UI = ref.events;
-    getStep = function getStep(input, offset) {
-      return ref.images[image].steps.slice(input.index + offset + 1)[0];
+    getStep = function getStep(offset) {
+      return ref.images[image].steps.slice(index + offset)[0];
     }
     var module = ref.modules[name][0](o, UI);
     ref.images[image].steps.splice(index, 0, module);
