@@ -3,7 +3,6 @@ function setInputStepInit() {
 
   return function setInputStep(options) {
 
-    console.log($(options.dropZoneSelector)[0])
     var dropzone = $(options.dropZoneSelector);
     var fileInput = $(options.fileInputSelector);
  
