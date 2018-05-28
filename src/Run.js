@@ -20,13 +20,8 @@ function Run(ref, json_q, callback, progressObj) {
       var i = drawarray[pos].i;
       var input = ref.images[image].steps[i - 1].output;
       
-      ref.images[image].steps[i].getStep = function getStep(offset) {
-        if(i + offset >= ref.images[image].steps.length) return {options:{name:undefined}};
-        else return ref.images[image].steps.slice(i + offset)[0];
-      };
-      ref.images[image].steps[i].getIndex = function getIndex(){
-        return i;
-      }
+      ref.images[image].steps[i].getStep = getStep;
+      ref.images[image].steps[i].getIndex = getIndex;
       
       for (var util in getStepUtils) {
         if (getStepUtils.hasOwnProperty(util)) {
@@ -42,6 +37,13 @@ function Run(ref, json_q, callback, progressObj) {
         progressObj
       );
     }
+    function getStep(offset) {
+      if(i + offset >= ref.images[image].steps.length) return {options:{name:undefined}};
+      else return ref.images[image].steps.slice(i + offset)[0];
+    };
+    function getIndex(){
+      return i;
+    };
   }
   
   function drawSteps(json_q) {
