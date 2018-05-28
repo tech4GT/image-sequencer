@@ -24,6 +24,9 @@ function Run(ref, json_q, callback, progressObj) {
         if(i + offset >= ref.images[image].steps.length) return {options:{name:undefined}};
         else return ref.images[image].steps.slice(i + offset)[0];
       };
+      ref.images[image].steps[i].getIndex = function getIndex(){
+        return i;
+      }
       
       for (var util in getStepUtils) {
         if (getStepUtils.hasOwnProperty(util)) {

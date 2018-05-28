@@ -7,10 +7,6 @@ module.exports = {
         return this.getStep(1);
     },
     
-    getIndex : function(){
-        return this.getStep(0).options.number;
-    },
-    
     getInput : function(offset){
         if(offset + this.getIndex() === 0) offset++;
         return this.getStep(offset - 1).output;
