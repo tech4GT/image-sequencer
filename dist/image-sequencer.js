@@ -9033,24 +9033,28 @@ EventEmitter.prototype.removeAllListeners =
       return this;
     };
 
-EventEmitter.prototype.listeners = function listeners(type) {
-  var evlistener;
-  var ret;
-  var events = this._events;
+function _listeners(target, type, unwrap) {
+  var events = target._events;
 
   if (!events)
-    ret = [];
-  else {
-    evlistener = events[type];
-    if (!evlistener)
-      ret = [];
-    else if (typeof evlistener === 'function')
-      ret = [evlistener.listener || evlistener];
-    else
-      ret = unwrapListeners(evlistener);
-  }
+    return [];
 
-  return ret;
+  var evlistener = events[type];
+  if (!evlistener)
+    return [];
+
+  if (typeof evlistener === 'function')
+    return unwrap ? [evlistener.listener || evlistener] : [evlistener];
+
+  return unwrap ? unwrapListeners(evlistener) : arrayClone(evlistener, evlistener.length);
+}
+
+EventEmitter.prototype.listeners = function listeners(type) {
+  return _listeners(this, type, true);
+};
+
+EventEmitter.prototype.rawListeners = function rawListeners(type) {
+  return _listeners(this, type, false);
 };
 
 EventEmitter.listenerCount = function(emitter, type) {
@@ -47909,7 +47913,7 @@ function Run(ref, json_q, callback, progressObj) {
   function drawStep(drawarray, pos) {
     if (pos == drawarray.length && drawarray[pos - 1] !== undefined) {
       var image = drawarray[pos - 1].image;
-      if (ref.objTypeOf(callback) == "Function") {
+      if (ref.objTypeOf(callback) == "Function" && ref.images[image].steps.slice(-1)[0].output) {
         var steps = ref.images[image].steps;
         var out = steps[steps.length - 1].output.src;
         callback(out);
@@ -49664,9 +49668,6 @@ module.exports = function Invert(options, UI) {
   // The function which is called on every draw.
   function draw(input, callback, progressObj) {
 
-    console.log(this.getIndex());
-    console.log(this.getPreviousStep().options.name);
-    console.log(this.getStep(0).options.name);
     progressObj.stop(true);
     progressObj.overrideFlag = true;
     // Tell UI that a step is being drawn.
