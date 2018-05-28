@@ -1,4 +1,5 @@
 const getStepUtils = require('./util/getStep.js');
+
 function Run(ref, json_q, callback, progressObj) {
   if (!progressObj) progressObj = { stop: function () { } };
   
@@ -20,16 +21,15 @@ function Run(ref, json_q, callback, progressObj) {
       var input = ref.images[image].steps[i - 1].output;
       
       ref.images[image].steps[i].getStep = function getStep(offset) {
-        return ref.images[image].steps.slice(i + offset)[0];
-      }
+        if(i + offset >= ref.images[image].steps.length) return {options:{name:undefined}};
+        else return ref.images[image].steps.slice(i + offset)[0];
+      };
       
       for (var util in getStepUtils) {
         if (getStepUtils.hasOwnProperty(util)) {
           ref.images[image].steps[i][util] = getStepUtils[util];
         }
       }
-      
-      ref.images[image].steps[i].getStep = getStep();
       
       ref.images[image].steps[i].draw(
         ref.copy(input),
@@ -69,11 +69,6 @@ function Run(ref, json_q, callback, progressObj) {
       }
     }
     return json_q;
-  }
-
-  function getStep(offset) {
-    if(i + offset >= ref.images[image].steps.length) return {options:{name:undefined}};
-    else return ref.images[image].steps.slice(i + offset)[0];
   }
   
   var json_q = filter(json_q);

@@ -47751,6 +47751,8 @@ ImageSequencer = function ImageSequencer(options) {
 module.exports = ImageSequencer;
 
 },{"./AddStep":133,"./ExportBin":134,"./FormatInput":135,"./InsertStep":137,"./Modules":138,"./ReplaceImage":139,"./Run":140,"./ui/LoadImage":178,"./ui/SetInputStep":179,"./ui/UserInterface":180,"./util/getStep.js":182,"fs":39}],137:[function(require,module,exports){
+const getStepUtils = require('./util/getStep.js');
+
 // insert one or more steps at a given index in the sequencer
 function InsertStep(ref, image, index, name, o) {
 
@@ -47775,9 +47777,6 @@ function InsertStep(ref, image, index, name, o) {
       options: o
     };
     var UI = ref.events;
-    getStep = function getStep(offset) {
-      return ref.images[image].steps.slice(index + offset)[0];
-    }
     var module = ref.modules[name][0](o, UI);
     ref.images[image].steps.splice(index, 0, module);
 
@@ -47788,7 +47787,7 @@ function InsertStep(ref, image, index, name, o) {
 }
 module.exports = InsertStep;
 
-},{}],138:[function(require,module,exports){
+},{"./util/getStep.js":182}],138:[function(require,module,exports){
 /*
 * Core modules and their info files
 */
@@ -47902,7 +47901,8 @@ function ReplaceImage(ref,selector,steps,options) {
 module.exports = ReplaceImage;
 
 },{}],140:[function(require,module,exports){
-const getStepUtils = require('./util/getStep.js')
+const getStepUtils = require('./util/getStep.js');
+
 function Run(ref, json_q, callback, progressObj) {
   if (!progressObj) progressObj = { stop: function () { } };
   
@@ -47922,20 +47922,16 @@ function Run(ref, json_q, callback, progressObj) {
       var image = drawarray[pos].image;
       var i = drawarray[pos].i;
       var input = ref.images[image].steps[i - 1].output;
-
+      
       ref.images[image].steps[i].getStep = function getStep(offset) {
-        return ref.images[image].steps.slice(i + offset)[0];
-      }
-
+        if(i + offset >= ref.images[image].steps.length) return {options:{name:undefined}};
+        else return ref.images[image].steps.slice(i + offset)[0];
+      };
+      
       for (var util in getStepUtils) {
         if (getStepUtils.hasOwnProperty(util)) {
           ref.images[image].steps[i][util] = getStepUtils[util];
         }
-      }
-      
-      ref.images[image].steps[i].getStep = function getStep(offset) {
-        if(i + offset >= ref.images[image].steps.length) return {options:{name:undefined}};
-        return ref.images[image].steps.slice(i + offset)[0];
       }
       
       ref.images[image].steps[i].draw(
@@ -49666,7 +49662,7 @@ module.exports = function Invert(options, UI) {
   function draw(input, callback, progressObj) {
 
     console.log(this.getIndex());
-    console.log(this.getNextStep().options.name);
+    console.log(this.getPreviousStep().options.name);
     console.log(this.getStep(0).options.name);
     progressObj.stop(true);
     progressObj.overrideFlag = true;
