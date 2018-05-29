@@ -47730,7 +47730,7 @@ ImageSequencer = function ImageSequencer(options) {
         let inputs = modulesInfo(step.options.name).inputs;
         inputs = inputs || {}
         
-        for(let input in inputs){
+        for(let input in inputs) {
           inputs[input] = step.options[input];
         }
         return toString(step.options.name,inputs);
@@ -47738,8 +47738,9 @@ ImageSequencer = function ImageSequencer(options) {
     }
   }
   
-  function stepToString(step_name,options){
-    return `${step_name}(${Object.keys(options).map(key=>key + ':' + options[key]).join(',')})`
+  function stepToString(step_name,options) {
+    var configurations = Object.keys(options).map(key=>key + ':' + options[key]).join(',');
+    return `${step_name}(${configurations})`;
   }
   
   return {
@@ -47763,6 +47764,7 @@ ImageSequencer = function ImageSequencer(options) {
     exportBin: exportBin,
     modulesInfo: modulesInfo,
     toString: toString,
+    stepToString: stepToString,
     
     //other functions
     log: log,
