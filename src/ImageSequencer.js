@@ -197,17 +197,14 @@ ImageSequencer = function ImageSequencer(options) {
     else modulesdata = modules[name][1];
     return modulesdata;
   }
-
-  function toString(step_name,options){
-    if(step_name){
-      return `${step_name}(${Object.keys(options).map(key=>key + ':' + options[key]).join(',')})`
-    }
-    else{
+  
+  function toString(step_name,options) {
+    if(step_name) {
+      return stepToString(step_name,options);
+    } else {
       return  copy(this.images.image1.steps).map(step=>{
         let inputs = modulesInfo(step.options.name).inputs;
-        
-        if(!inputs)
-          inputs = {}
+        inputs = inputs || {}
         
         for(let input in inputs){
           inputs[input] = step.options[input];
@@ -215,6 +212,10 @@ ImageSequencer = function ImageSequencer(options) {
         return toString(step.options.name,inputs);
       }).join(',');
     }
+  }
+  
+  function stepToString(step_name,options){
+    return `${step_name}(${Object.keys(options).map(key=>key + ':' + options[key]).join(',')})`
   }
   
   return {
