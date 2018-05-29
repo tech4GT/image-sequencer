@@ -198,25 +198,26 @@ ImageSequencer = function ImageSequencer(options) {
     return modulesdata;
   }
   
-  function toString(step_name,options) {
-    if(step_name) {
-      return stepToString(step_name,options);
+  function toString(step) {
+    if(step) {
+      return stepToString(step);
     } else {
-      return  copy(this.images.image1.steps).map(function(step){
-        let inputs = modulesInfo(step.options.name).inputs;
-        inputs = inputs || {}
-        
-        for(let input in inputs) {
-          inputs[input] = step.options[input];
-        }
-        return toString(step.options.name,inputs);
+      return  copy(this.images.image1.steps).map(function forEachStep(step){
+        return toString(step);
       }).slice(1).join(',');
     }
   }
   
-  function stepToString(step_name,options) {
-    var configurations = Object.keys(options).map(key=>key + ':' + options[key]).join(',');
-    return `${step_name}(${configurations})`;
+  function stepToString(step) {
+    let inputs = copy(modulesInfo(step.options.name).inputs);
+        inputs = inputs || {};
+
+        for(let input in inputs) {
+          inputs[input] = step.options[input] || inputs[input].default;
+        }
+
+    var configurations = Object.keys(inputs).map(key=>key + ':' + inputs[key]).join(',');
+    return `${step.options.name}(${configurations})`;
   }
   
   return {
