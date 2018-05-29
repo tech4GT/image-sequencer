@@ -210,7 +210,7 @@ ImageSequencer = function ImageSequencer(options) {
           inputs[input] = step.options[input];
         }
         return toString(step.options.name,inputs);
-      }).join(',');
+      }).slice(1).join(',');
     }
   }
   
