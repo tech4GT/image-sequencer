@@ -121,7 +121,7 @@ ImageSequencer = function ImageSequencer(options) {
       progressObj = spinnerObj
       delete arguments['0']    
     }
-
+    
     var this_ = (this.name == "ImageSequencer")?this:this.sequencer;
     var args = (this.name == "ImageSequencer")?[]:[this.images];
     for (var arg in arguments) args.push(copy(arguments[arg]));
@@ -210,11 +210,9 @@ ImageSequencer = function ImageSequencer(options) {
   
   function stepToString(step) {
     let inputs = copy(modulesInfo(step.options.name).inputs);
-        inputs = inputs || {};
+    inputs = inputs || {};
 
-        for(let input in inputs) {
-          inputs[input] = step.options[input] || inputs[input].default;
-        }
+    for(let input in inputs) inputs[input] = step.options[input] || inputs[input].default;
 
     var configurations = Object.keys(inputs).map(key=>key + ':' + inputs[key]).join(',');
     return `${step.options.name}(${configurations})`;
@@ -247,7 +245,7 @@ ImageSequencer = function ImageSequencer(options) {
     log: log,
     objTypeOf: objTypeOf,
     copy: copy,
-
+    
     setInputStep: require('./ui/SetInputStep')(sequencer)
   }
   
