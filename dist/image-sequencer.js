@@ -47290,6 +47290,7 @@ function AddStep(_sequencer, image, name, o) {
   }
 
   addStep(image, name, o);
+  _sequencer.steps = _sequencer.images[image].steps;
 }
 module.exports = AddStep;
 
@@ -47723,7 +47724,7 @@ ImageSequencer = function ImageSequencer(options) {
   }
   
   function toString() {
-    return  copy(this.images.image1.steps).map(function forEachStep(step){
+    return  copy(this.steps).map(function forEachStep(step){
       return stepToString(step);
     }).slice(1).join(',');
     
