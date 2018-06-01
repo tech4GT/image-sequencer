@@ -164,11 +164,6 @@ test('insertSteps({image: {index: index, name: "module", o: options} }) inserts 
   t.end();
 });
 
-test('toString() and stepToString() return the step/steps in string format',function(t){
-  t.equal(sequencer.toString(),"channel(channel:green),channel(channel:green),channel(channel:green),channel(channel:green),channel(channel:green)","toString works");
-  t.equal(sequencer.stepToString(sequencer.steps[1]),"channel(channel:green)","stepToString works");
-  t.end();
-});
 
 test('run() runs the sequencer and returns output to callback', function (t) {
   sequencer.run('test', function (out) {
