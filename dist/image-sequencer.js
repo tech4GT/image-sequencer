@@ -47722,22 +47722,19 @@ ImageSequencer = function ImageSequencer(options) {
     return modulesdata;
   }
   
-  function toString(step) {
-    if(step) {
-      return stepToString(step);
-    } else {
-      return  copy(this.images.image1.steps).map(function forEachStep(step){
-        return toString(step);
-      }).slice(1).join(',');
-    }
+  function toString() {
+    return  copy(this.images.image1.steps).map(function forEachStep(step){
+      return toString(step);
+    }).slice(1).join(',');
+    
   }
   
   function stepToString(step) {
     let inputs = copy(modulesInfo(step.options.name).inputs);
     inputs = inputs || {};
-
+    
     for(let input in inputs) inputs[input] = step.options[input] || inputs[input].default;
-
+    
     var configurations = Object.keys(inputs).map(key=>key + ':' + inputs[key]).join(',');
     return `${step.options.name}(${configurations})`;
   }
