@@ -101,7 +101,7 @@ function DefaultHtmlStepUi(_sequencer, options) {
           .each(function(i, input) {
             step.options[$(input).attr("name")] = input.value;
           });
-        _sequencer.run();
+        _sequencer.run(_sequencer.images.image1.steps.length - 2);
       }
 
       saveOptions();

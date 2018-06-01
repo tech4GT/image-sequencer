@@ -18,7 +18,7 @@ function DefaultHtmlSequencerUi(_sequencer, options) {
       stepsFromHash.forEach(function eachStep(step) {
         _sequencer.addSteps(step);
       });
-      _sequencer.run();
+      _sequencer.run(0);
     }
   }
 
@@ -29,7 +29,7 @@ function DefaultHtmlSequencerUi(_sequencer, options) {
 
   function removeStepUi() {
     var index = $(removeStepSel).index(this) + 1;
-    sequencer.removeSteps(index).run();
+    sequencer.removeSteps(index).run(sequencer.images.image1.steps.length-1);
     // remove from URL hash too
     var urlHash = getUrlHashParameter("steps").split(",");
     urlHash.splice(index - 1, 1);
@@ -47,7 +47,7 @@ function DefaultHtmlSequencerUi(_sequencer, options) {
     var newStepName = $(addStepSel + " select").val();
     _sequencer
       .addSteps(newStepName, options)
-      .run(null);
+      .run(_sequencer.images.image1.steps.length - 2);
   }
 
   return {

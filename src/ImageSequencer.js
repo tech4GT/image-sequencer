@@ -126,6 +126,7 @@ ImageSequencer = function ImageSequencer(options) {
         progressObj = undefined;
       }
     }
+    console.log(index)
     
     var this_ = (this.name == "ImageSequencer")?this:this.sequencer;
     var args = (this.name == "ImageSequencer")?[]:[this.images];
