@@ -116,12 +116,17 @@ ImageSequencer = function ImageSequencer(options) {
   }
   
   function run(spinnerObj,t_image,t_from) {
-    let progressObj;
+    let progressObj,index=0;
+    
     if(arguments[0] != 'test'){
       progressObj = spinnerObj
-      delete arguments['0']    
+      delete arguments['0']
+      if(typeof progressObj == 'number') {
+        index = progressObj;
+        progressObj = undefined;
+      }
     }
-
+    
     var this_ = (this.name == "ImageSequencer")?this:this.sequencer;
     var args = (this.name == "ImageSequencer")?[]:[this.images];
     for (var arg in arguments) args.push(copy(arguments[arg]));
@@ -133,7 +138,7 @@ ImageSequencer = function ImageSequencer(options) {
     
     var json_q = formatInput.call(this_,args,"r");
     
-    require('./Run')(this_, json_q, callback,progressObj);
+    require('./Run')(this_, json_q, callback,index,progressObj);
     
     return true;
   }
@@ -223,7 +228,7 @@ ImageSequencer = function ImageSequencer(options) {
     log: log,
     objTypeOf: objTypeOf,
     copy: copy,
-
+    
     setInputStep: require('./ui/SetInputStep')(sequencer)
   }
   
