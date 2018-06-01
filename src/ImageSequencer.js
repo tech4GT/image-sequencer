@@ -202,7 +202,7 @@ ImageSequencer = function ImageSequencer(options) {
     if(step) {
       return stepToString(step);
     } else {
-      return copy(this.steps).map(stepToString).slice(1).join(',');
+      return copy(this.images.image1.steps).map(stepToString).slice(1).join(',');
     }
   }
   
