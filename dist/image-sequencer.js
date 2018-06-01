@@ -47723,11 +47723,12 @@ ImageSequencer = function ImageSequencer(options) {
     return modulesdata;
   }
   
-  function toString() {
-    return  copy(this.steps).map(function forEachStep(step){
+  function toString(step) {
+    if(step) {
       return stepToString(step);
-    }).slice(1).join(',');
-    
+    } else {
+      return copy(this.images.image1.steps).map(stepToString).slice(1).join(',');
+    }
   }
   
   function stepToString(step) {
