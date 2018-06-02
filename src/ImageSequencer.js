@@ -115,18 +115,20 @@ ImageSequencer = function ImageSequencer(options) {
     return this;
   }
   
-  function run(spinnerObj,t_image,t_from) {
+  //obj is the progress bar object in node and index in browser
+  function run(obj,t_image,t_from) {
     let progressObj,index=0;
     
     if(arguments[0] != 'test'){
-      progressObj = spinnerObj
-      delete arguments['0']
-      if(typeof progressObj == 'number') {
-        index = progressObj;
+      progressObj = obj;
+      
+      //To check if the obj argument is a number in which case it is treated as an index
+      if(typeof obj == 'number') {
+        index = obj;
         progressObj = undefined;
       }
+      delete arguments['0'];
     }
-    console.log(index)
     
     var this_ = (this.name == "ImageSequencer")?this:this.sequencer;
     var args = (this.name == "ImageSequencer")?[]:[this.images];

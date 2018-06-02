@@ -45,9 +45,15 @@ function DefaultHtmlSequencerUi(_sequencer, options) {
     setUrlHashParameter("steps", hash + $(addStepSel + " select").val());
 
     var newStepName = $(addStepSel + " select").val();
+
+    /*
+    * after adding the step we run the sequencer from defined step
+    * and since loadImage is not a part of the drawarray the step lies at current
+    * length - 2 of the drawarray
+    */
     _sequencer
-      .addSteps(newStepName, options)
-      .run(_sequencer.images.image1.steps.length - 2);
+    .addSteps(newStepName, options)
+    .run(_sequencer.images.image1.steps.length - 2);
   }
 
   return {
