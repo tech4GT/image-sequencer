@@ -102,6 +102,8 @@ function DefaultHtmlStepUi(_sequencer, options) {
             step.options[$(input).attr("name")] = input.value;
           });
         _sequencer.run();
+        // modify the url hash
+        setUrlHashParameter("steps", _sequencer.toString());
       }
 
       saveOptions();

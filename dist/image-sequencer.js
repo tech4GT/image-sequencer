@@ -47723,6 +47723,7 @@ ImageSequencer = function ImageSequencer(options) {
     return modulesdata;
   }
   
+  // Strigifies the current sequence
   function toString(step) {
     if(step) {
       return stepToString(step);
@@ -47731,6 +47732,7 @@ ImageSequencer = function ImageSequencer(options) {
     }
   }
   
+  // Stringifies one step of the sequence
   function stepToString(step) {
     let inputs = copy(modulesInfo(step.options.name).inputs);
     inputs = inputs || {};
@@ -47739,6 +47741,29 @@ ImageSequencer = function ImageSequencer(options) {
     
     var configurations = Object.keys(inputs).map(key=>key + ':' + inputs[key]).join(',');
     return `${step.options.name}(${configurations})`;
+  }
+  
+  // Coverts stringified sequence into JSON
+  function toJson(str){
+    let steps = str.split(',');
+    return steps.map(stepToJson);
+  }
+  // channel(channel:red)
+  // Converts one stringified step into JSON
+  function stepToJson(str){
+    str = str.split('(');
+    
+    str[1] = str[1].slice(0,-1).split(',').reduce(function(acc,cur,i){
+      cur = cur.split(':');
+      if(!!parseInt(cur[1])) cur[1] = parseInt(cur[1]);
+      if(!!cur[0]) acc[cur[0]] = cur[1];
+      return acc;
+    },{});
+    
+    return {
+      name : str[0],
+      options:str[1]
+    }
   }
   
   return {
@@ -47763,6 +47788,8 @@ ImageSequencer = function ImageSequencer(options) {
     modulesInfo: modulesInfo,
     toString: toString,
     stepToString: stepToString,
+    toJson: toJson,
+    stepToJson: stepToJson,
     
     //other functions
     log: log,
