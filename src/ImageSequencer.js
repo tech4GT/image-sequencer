@@ -218,16 +218,22 @@ ImageSequencer = function ImageSequencer(options) {
     return `${step.options.name}(${configurations})`;
   }
 
+  // blend(blend:function(r1,%20g1,%20b1,%20a1,%20r2,%20g2,%20b2,%20a2)%20{%20return%20[%20r1,%20g2,%20b2,%20a2%20]%20})
+  // crop(X:10,y:20,z:40),invert()
   // Coverts stringified sequence into JSON
   function toJson(str){
-    let steps = str.split(',');
+    let steps = str.split('),');
+    steps.push(steps.splice(-1)[0].slice(0,-1));
     return steps.map(stepToJson);
   }
   // Converts one stringified step into JSON
   function stepToJson(str){
-    str = str.split('(');
-
-    str[1] = str[1].slice(0,-1).split(',').reduce(function(acc,cur,i){
+    str = [
+      str.substr(0,str.indexOf('(')),
+      str.substr(str.indexOf('(')+1)
+    ]
+    
+    str[1] = str[1].split(',').reduce(function(acc,cur,i){
       cur = cur.split(':');
       if(!!cur[0]) acc[cur[0]] = cur[1];
       return acc;
