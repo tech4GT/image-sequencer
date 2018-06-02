@@ -221,13 +221,13 @@ ImageSequencer = function ImageSequencer(options) {
   // blend(blend:function(r1,%20g1,%20b1,%20a1,%20r2,%20g2,%20b2,%20a2)%20{%20return%20[%20r1,%20g2,%20b2,%20a2%20]%20})
   // crop(X:10,y:20,z:40),invert()
   // Coverts stringified sequence into JSON
-  function toJson(str){
+  function importStringtoJson(str){
     let steps = str.split('),');
     steps.push(steps.splice(-1)[0].slice(0,-1));
-    return steps.map(stepToJson);
+    return steps.map(importStringtoJsonStep);
   }
   // Converts one stringified step into JSON
-  function stepToJson(str){
+  function importStringtoJsonStep(str){
     str = [
       str.substr(0,str.indexOf('(')),
       str.substr(str.indexOf('(')+1)
@@ -267,8 +267,8 @@ ImageSequencer = function ImageSequencer(options) {
     modulesInfo: modulesInfo,
     toString: toString,
     stepToString: stepToString,
-    toJson: toJson,
-    stepToJson: stepToJson,
+    importStringtoJson: importStringtoJson,
+    importStringtoJsonStep: importStringtoJsonStep,
 
     //other functions
     log: log,

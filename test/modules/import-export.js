@@ -12,3 +12,11 @@ test('toString() and stepToString() return the step/steps in string format',func
   t.equal(sequencer.stepToString(sequencer.steps[1]),"channel(channel:green)","stepToString works");
   t.end();
 });
+test('importStringtoJson() and importStringtoJsonStep() return the step/steps from a string',function(t){
+  t.deepEqual(sequencer.importStringtoJson(sequencer.toString()),[
+    { name: 'channel', options: { channel: 'green' } },
+    { name: 'invert', options: {} }
+  ]);
+  t.deepEqual(sequencer.importStringtoJsonStep("channel(channel:green)"),{ name: 'channel', options: { channel: 'green)' } });
+  t.end();
+});
