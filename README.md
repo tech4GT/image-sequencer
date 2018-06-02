@@ -204,12 +204,31 @@ modules.
 sequencer.run();
 ```
 
+Sequencer can be run with a custom progress object
+
+```js
+// The progressObj object enables custom progress bars in node environment
+sequencer.run(progressObj);
+
+```
+
+Sequencer can also be run from a particular index(of steps array)
+
+```js
+  //This runs steps only after the index(eg. 0 runs all steps)
+sequencer.run(index);
+
+```
+
 Additionally, an optional callback can be passed to this method.
 
 ```js
 sequencer.run(function(out){
   // this gets called back.
   // "out" is the DataURL of the final image.
+});
+sequencer.run(index/progressObj,function(out){
+  // the callback is supported with all types of invocations
 });
 ```
 
