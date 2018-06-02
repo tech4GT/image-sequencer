@@ -106,8 +106,6 @@ function DefaultHtmlStepUi(_sequencer, options) {
         setUrlHashParameter("steps", _sequencer.toString());
       }
 
-      saveOptions();
-
       // on clicking Save in the details pane of the step
       $(step.ui.querySelector("div.details .btn-save")).click(saveOptions);
     }

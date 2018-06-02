@@ -15,7 +15,6 @@ function DefaultHtmlSequencerUi(_sequencer, options) {
 
     if (hash) {
       var stepsFromHash = _sequencer.toJson(hash);
-      console.log(stepsFromHash)
       stepsFromHash.forEach(function eachStep(stepObj) {
         _sequencer.addSteps(stepObj.name,stepObj.options);
       });
