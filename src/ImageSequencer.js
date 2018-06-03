@@ -212,7 +212,10 @@ ImageSequencer = function ImageSequencer(options) {
     let inputs = copy(modulesInfo(step.options.name).inputs);
     inputs = inputs || {};
 
-    for(let input in inputs) inputs[input] = step.options[input] || inputs[input].default;
+    for(let input in inputs) {
+      inputs[input] = step.options[input] || inputs[input].default;
+      inputs[input] = inputs[input].toString().replace(',',',%20');
+    }
 
     var configurations = Object.keys(inputs).map(key=>key + ':' + inputs[key]).join(',');
     return `${step.options.name}(${configurations})`;
@@ -232,9 +235,12 @@ ImageSequencer = function ImageSequencer(options) {
       str.substr(0,str.indexOf('(')),
       str.substr(str.indexOf('(')+1)
     ]
-    
+    str[1] = str[1].split('%20').join(' ');
+    str[1] = str[1].split(', ').join('|');
+
     str[1] = str[1].split(',').reduce(function(acc,cur,i){
       cur = cur.split(':');
+      cur[1] = cur[1].split('|').join(', ');
       if(!!cur[0]) acc[cur[0]] = cur[1];
       return acc;
     },{});
