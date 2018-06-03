@@ -214,15 +214,13 @@ ImageSequencer = function ImageSequencer(options) {
 
     for(let input in inputs) {
       inputs[input] = step.options[input] || inputs[input].default;
-      inputs[input] = inputs[input].toString().split(',').join(', ');
+      inputs[input] = encodeURIComponent(inputs[input]);
     }
 
     var configurations = Object.keys(inputs).map(key=>key + ':' + inputs[key]).join(',');
     return `${step.options.name}(${configurations})`;
   }
 
-  // blend(blend:function(r1,%20g1,%20b1,%20a1,%20r2,%20g2,%20b2,%20a2)%20{%20return%20[%20r1,%20g2,%20b2,%20a2%20]%20})
-  // crop(X:10,y:20,z:40),invert()
   // Coverts stringified sequence into JSON
   function importStringtoJson(str){
     let steps = str.split('),');
@@ -233,17 +231,14 @@ ImageSequencer = function ImageSequencer(options) {
   function importStringtoJsonStep(str){
     str = [
       str.substr(0,str.indexOf('(')),
-      str.substr(str.indexOf('(')+1)
-    ]
-    str[1] = str[1].split('%20').join(' ');
-    str[1] = str[1].split(', ').join('|');
+      str.slice(str.indexOf('(')+1)
+    ];
 
     str[1] = str[1].split(',').reduce(function(acc,cur,i){
       cur = [
         cur.substr(0,cur.indexOf(':')),
-        cur.substr(cur.indexOf(':') + 1)
+        decodeURIComponent(cur.substr(cur.indexOf(':') + 1))
       ];
-      cur[1] = cur[1].split('|').join(', ');
       if(!!cur[0]) acc[cur[0]] = cur[1];
       return acc;
     },{});
