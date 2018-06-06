@@ -221,25 +221,30 @@ ImageSequencer = function ImageSequencer(options) {
     return `${step.options.name}(${configurations})`;
   }
 
+  // exports the current sequence as JSON
+  function toJSON(str){
+    return convertToJSON(toString());
+  }
+
   // Coverts stringified sequence into JSON
-  function importStringtoJson(str){
+  function convertToJSON(str){
     let steps = str.split(',');
-    return steps.map(importStringtoJsonStep);
+    return steps.map(convertToJSONstep);
   }
 
   // Converts one stringified step into JSON
-  function importStringtoJsonStep(str){
+  function convertToJSONstep(str){
     if(str.indexOf('(') === -1) { // if there are no settings specified
       var moduleName = str.substr(0);
-          stepSettings = "";
+      stepSettings = "";
     } else {
       var moduleName = str.substr(0, str.indexOf('('));
-          stepSettings = str.slice(str.indexOf('(') + 1, -1);
+      stepSettings = str.slice(str.indexOf('(') + 1, -1);
     }
 
     stepSettings = stepSettings.split('|').reduce(function formatSettings(accumulator, current, i){
       var settingName = current.substr(0, current.indexOf(':')),
-          settingValue = current.substr(current.indexOf(':') + 1);
+      settingValue = current.substr(current.indexOf(':') + 1);
       settingValue = settingValue.replace(/^\(/, '').replace(/\)$/, ''); // strip () at start/end
       settingValue = decodeURIComponent(settingValue);
       current = [
@@ -254,6 +259,21 @@ ImageSequencer = function ImageSequencer(options) {
       name : moduleName,
       options: stepSettings
     }
+  }
+
+  // imports a string into the sequencer steps
+  function importString(str){
+    var stepsFromString = convertToJSON(str);
+    stepsFromString.forEach(function eachStep(stepObj) {
+      this.sequencer.addSteps(stepObj.name,stepObj.options);
+    });
+  }
+
+  // imports a array of JSON steps into the sequencer steps
+  function importJSON(obj){
+    obj.forEach(function eachStep(stepObj) {
+      this.sequencer.addSteps(stepObj.name,stepObj.options);
+    });
   }
 
   return {
@@ -278,8 +298,10 @@ ImageSequencer = function ImageSequencer(options) {
     modulesInfo: modulesInfo,
     toString: toString,
     stepToString: stepToString,
-    importStringtoJson: importStringtoJson,
-    importStringtoJsonStep: importStringtoJsonStep,
+    toJSON: toJSON,
+    convertToJSON: convertToJSON,
+    convertToJSONstep: convertToJSONstep,
+    importString: importString,
 
     //other functions
     log: log,
