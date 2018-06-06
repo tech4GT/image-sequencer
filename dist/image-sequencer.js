@@ -49594,7 +49594,7 @@ module.exports={
 module.exports = function ImportImageModule(options, UI) {
 
   options = options || {};
-  options.imageUrl = options.imageUrl || "/examples/images/monarch.png";
+  options.imageUrl = options.url || "/examples/images/monarch.png";
 
   var output,
       imgObj = new Image();
@@ -49685,7 +49685,9 @@ module.exports = function ImportImageModuleUi(step, ui) {
       onLoad: function onLoadFromInput(progress) {
         var reader = progress.target;
         step.options.imageUrl = reader.result;
+        step.options.url = reader.result;
         sequencer.run();
+        setUrlHashParameter("steps", sequencer.toString());
       }
     });
 
