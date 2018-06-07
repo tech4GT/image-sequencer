@@ -47750,19 +47750,19 @@ ImageSequencer = function ImageSequencer(options) {
     return `${step.options.name}(${configurations})`;
   }
 
-  // exports the current sequence as JSON
+  // exports the current sequence as an array of JSON steps
   function toJSON(str){
-    return convertToJSON(toString());
+    return this.stringToJSON(this.toString());
   }
 
-  // Coverts stringified sequence into JSON
-  function convertToJSON(str){
+  // Coverts stringified sequence into an array of JSON steps
+  function stringToJSON(str){
     let steps = str.split(',');
-    return steps.map(convertToJSONstep);
+    return steps.map(stringToJSONstep);
   }
 
   // Converts one stringified step into JSON
-  function convertToJSONstep(str){
+  function stringToJSONstep(str){
     if(str.indexOf('(') === -1) { // if there are no settings specified
       var moduleName = str.substr(0);
       stepSettings = "";
@@ -47792,16 +47792,22 @@ ImageSequencer = function ImageSequencer(options) {
 
   // imports a string into the sequencer steps
   function importString(str){
-    var stepsFromString = convertToJSON(str);
+    let sequencer = this;
+    if(this.name != "ImageSequencer")
+      sequencer = this.sequencer;
+    var stepsFromString = stringToJSON(str);
     stepsFromString.forEach(function eachStep(stepObj) {
-      this.sequencer.addSteps(stepObj.name,stepObj.options);
+      sequencer.addSteps(stepObj.name,stepObj.options);
     });
   }
 
   // imports a array of JSON steps into the sequencer steps
   function importJSON(obj){
+    let sequencer = this;
+    if(this.name != "ImageSequencer")
+      sequencer = this.sequencer;
     obj.forEach(function eachStep(stepObj) {
-      this.sequencer.addSteps(stepObj.name,stepObj.options);
+      sequencer.addSteps(stepObj.name,stepObj.options);
     });
   }
 
@@ -47828,9 +47834,10 @@ ImageSequencer = function ImageSequencer(options) {
     toString: toString,
     stepToString: stepToString,
     toJSON: toJSON,
-    convertToJSON: convertToJSON,
-    convertToJSONstep: convertToJSONstep,
+    stringToJSON: stringToJSON,
+    stringToJSONstep: stringToJSONstep,
     importString: importString,
+    importJSON: importJSON,
 
     //other functions
     log: log,
