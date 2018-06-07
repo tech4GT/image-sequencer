@@ -47647,11 +47647,11 @@ ImageSequencer = function ImageSequencer(options) {
   // Config is an object which contains the runtime configuration like progress bar
   // information and index from which the sequencer should run
   function run(config,t_image,t_from) {
-    let progressObj,index;
+    let progressObj,index=0;
 
     if(arguments[0] != 'test'){
-      progressObj = config.progressObj || undefined;
-      index = config.index || 0;
+      if(config.progressObj) progressObj = config.progressObj;
+      if(config.index) index = config.index || 0;
       delete arguments['0'];
     }
 
