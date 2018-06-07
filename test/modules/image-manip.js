@@ -20,7 +20,7 @@ sequencer.loadImages(test_png);
 sequencer.addSteps(['invert','invert']);
 
 test("Preload", function(t) {
-  sequencer.run('test',function(){
+  sequencer.run({mode:'test'},function(){
     t.end();
   });
 });
@@ -51,7 +51,7 @@ test("Twice inverted image is identical to original image", function (t) {
 
 test("Decode QR module works properly :: setup", function (t) {
   sequencer.loadImage(qr,function(){
-    this.addSteps('decode-qr').run('test',function(){
+    this.addSteps('decode-qr').run({mode:'test'},function(){
       t.end();
     });
   })
@@ -64,7 +64,7 @@ test("Decode QR module works properly :: teardown", function (t) {
 
 test("PixelManipulation works for PNG images", function (t) {
   sequencer.loadImages(test_png,function(){
-    this.addSteps('invert').run('test',function(out){
+    this.addSteps('invert').run({mode:'test'},function(out){
       t.equal(1,1)
       t.end();
     });
@@ -73,7 +73,7 @@ test("PixelManipulation works for PNG images", function (t) {
 
 test("PixelManipulation works for GIF images", function (t) {
   sequencer.loadImages(test_gif,function(){
-    this.addSteps('invert').run('test',function(out){
+    this.addSteps('invert').run({mode:'test'},function(out){
       t.equal(1,1)
       t.end();
     });

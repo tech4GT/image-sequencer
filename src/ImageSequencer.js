@@ -120,10 +120,13 @@ ImageSequencer = function ImageSequencer(options) {
   function run(config,t_image,t_from) {
     let progressObj,index=0;
 
-    if(arguments[0] != 'test'){
+    if(config.mode != 'test'){
       if(config.progressObj) progressObj = config.progressObj;
       if(config.index) index = config.index || 0;
       delete arguments['0'];
+    }
+    else{
+      config = config.mode;
     }
 
     var this_ = (this.name == "ImageSequencer")?this:this.sequencer;
