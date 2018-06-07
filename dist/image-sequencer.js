@@ -47649,16 +47649,16 @@ ImageSequencer = function ImageSequencer(options) {
   function run(config,t_image,t_from) {
     let progressObj,index=0;
     config = config || {mode: 'no-arg'};
+    if(config.index) index = config.index;
 
-    if(config.mode !== 'test'){
-      if(config.mode !== "no-arg"){
+    if(config.mode != 'test'){
+      if(config.mode != "no-arg" && typeof config != 'function'){
         if(config.progressObj) progressObj = config.progressObj;
-        if(config.index) index = config.index;
         delete arguments['0'];
       }
     }
     else{
-      config = config.mode;
+      arguments['0'] = config.mode;
     }
 
     var this_ = (this.name == "ImageSequencer")?this:this.sequencer;

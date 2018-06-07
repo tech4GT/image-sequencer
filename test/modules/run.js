@@ -12,11 +12,13 @@ sequencer.loadImages('image1', red);
 sequencer.addSteps('channel');
 sequencer.addSteps('invert');
 sequencer.addSteps('invert');
+sequencer.addSteps('ndvi');
 
 test('run() works with all possible argument combinations',function(t){
     sequencer.run();
     sequencer.run({index: 0});
-    sequencer.run({mode:test},function callback(out){
+    sequencer.run(function callback(out){
         t.end();
     });
+    t.end();
 });
