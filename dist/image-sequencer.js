@@ -47648,11 +47648,14 @@ ImageSequencer = function ImageSequencer(options) {
   // information and index from which the sequencer should run
   function run(config,t_image,t_from) {
     let progressObj,index=0;
+    config = config || {mode: 'no-arg'};
 
-    if(config.mode != 'test'){
-      if(config.progressObj) progressObj = config.progressObj;
-      if(config.index) index = config.index || 0;
-      delete arguments['0'];
+    if(config.mode !== 'test'){
+      if(config.mode !== "no-arg"){
+        if(config.progressObj) progressObj = config.progressObj;
+        if(config.index) index = config.index;
+        delete arguments['0'];
+      }
     }
     else{
       config = config.mode;
