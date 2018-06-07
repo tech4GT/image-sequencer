@@ -47644,18 +47644,14 @@ ImageSequencer = function ImageSequencer(options) {
     return this;
   }
 
-  //obj is the progress bar object in node and index in browser
-  function run(obj,t_image,t_from) {
-    let progressObj,index=0;
+  // Config is an object which contains the runtime configuration like progress bar
+  // information and index from which the sequencer should run
+  function run(config,t_image,t_from) {
+    let progressObj,index;
 
     if(arguments[0] != 'test'){
-      progressObj = obj;
-
-      //To check if the obj argument is a number in which case it is treated as an index
-      if(typeof obj == 'number') {
-        index = obj;
-        progressObj = undefined;
-      }
+      progressObj = config.progressObj || undefined;
+      index = config.index || 0;
       delete arguments['0'];
     }
 
@@ -47802,7 +47798,7 @@ ImageSequencer = function ImageSequencer(options) {
   function importString(str){
     let sequencer = this;
     if(this.name != "ImageSequencer")
-      sequencer = this.sequencer;
+    sequencer = this.sequencer;
     var stepsFromString = stringToJSON(str);
     stepsFromString.forEach(function eachStep(stepObj) {
       sequencer.addSteps(stepObj.name,stepObj.options);
@@ -47813,7 +47809,7 @@ ImageSequencer = function ImageSequencer(options) {
   function importJSON(obj){
     let sequencer = this;
     if(this.name != "ImageSequencer")
-      sequencer = this.sequencer;
+    sequencer = this.sequencer;
     obj.forEach(function eachStep(stepObj) {
       sequencer.addSteps(stepObj.name,stepObj.options);
     });
