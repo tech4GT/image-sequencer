@@ -14,12 +14,10 @@ function DefaultHtmlSequencerUi(_sequencer, options) {
     var hash = getUrlHashParameter("steps");
 
     if (hash) {
-      var stepsFromHash = hash.split(",");
-      stepsFromHash.forEach(function eachStep(step) {
-        _sequencer.addSteps(step);
-      });
+      _sequencer.importString(hash);
       _sequencer.run(0);
     }
+    setUrlHashParameter("steps", sequencer.toString());
   }
 
   function selectNewStepUi() {
@@ -31,18 +29,11 @@ function DefaultHtmlSequencerUi(_sequencer, options) {
     var index = $(removeStepSel).index(this) + 1;
     sequencer.removeSteps(index).run(sequencer.images.image1.steps.length-1);
     // remove from URL hash too
-    var urlHash = getUrlHashParameter("steps").split(",");
-    urlHash.splice(index - 1, 1);
-    setUrlHashParameter("steps", urlHash.join(","));
+    setUrlHashParameter("steps", sequencer.toString());
   }
 
   function addStepUi() {
     if ($(addStepSel + " select").val() == "none") return;
-
-    // add to URL hash too
-    var hash = getUrlHashParameter("steps") || "";
-    if (hash != "") hash += ",";
-    setUrlHashParameter("steps", hash + $(addStepSel + " select").val());
 
     var newStepName = $(addStepSel + " select").val();
 
@@ -54,6 +45,9 @@ function DefaultHtmlSequencerUi(_sequencer, options) {
     _sequencer
     .addSteps(newStepName, options)
     .run(_sequencer.images.image1.steps.length - 2);
+
+    // add to URL hash too
+    setUrlHashParameter("steps", _sequencer.toString());
   }
 
   return {
