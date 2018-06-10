@@ -34,9 +34,19 @@ function Run(ref, json_q, callback,ind, progressObj) {
         }
       }
 
+      // Tell UI that a step is being drawn.
+      ref.images[image].steps[i].UI.onDraw(ref.images[image].steps[i].options.step);
+
       ref.images[image].steps[i].draw(
         ref.copy(input),
         function onEachStep() {
+
+          // This output is accessible by UI
+          ref.images[image].steps[i].options.step.output = ref.images[image].steps[i].output.src;
+
+          // Tell UI that step has been drawn.
+          ref.images[image].steps[i].UI.onComplete(ref.images[image].steps[i].options.step);
+
           drawStep(drawarray, ++pos);
         },
         progressObj

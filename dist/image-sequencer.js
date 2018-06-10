@@ -47260,7 +47260,7 @@ arguments[4][38][0].apply(exports,arguments)
 },{"dup":38}],134:[function(require,module,exports){
 arguments[4][39][0].apply(exports,arguments)
 },{"./support/isBuffer":133,"_process":97,"dup":39,"inherits":56}],135:[function(require,module,exports){
-// add steps to the sequencer 
+// add steps to the sequencer
 // TODO: reduce redundancy with InsertStep; this should be a specific usage of InsertStep at the final position
 function AddStep(_sequencer, image, name, o) {
 
@@ -47287,7 +47287,12 @@ function AddStep(_sequencer, image, name, o) {
       options: o
     };
     var UI = _sequencer.events;
+
+    // Tell UI that a step has been set up.
+    o = o || {};
+    UI.onSetup(o.step);
     var module = _sequencer.modules[name][0](o, UI);
+
     _sequencer.images[image].steps.push(module);
 
     return true;
@@ -48047,9 +48052,19 @@ function Run(ref, json_q, callback,ind, progressObj) {
         }
       }
 
+      // Tell UI that a step is being drawn.
+      ref.images[image].steps[i].UI.onDraw(ref.images[image].steps[i].options.step);
+
       ref.images[image].steps[i].draw(
         ref.copy(input),
         function onEachStep() {
+
+          // This output is accessible by UI
+          ref.images[image].steps[i].options.step.output = ref.images[image].steps[i].output.src;
+
+          // Tell UI that step has been drawn.
+          ref.images[image].steps[i].UI.onComplete(ref.images[image].steps[i].options.step);
+
           drawStep(drawarray, ++pos);
         },
         progressObj
@@ -49766,10 +49781,6 @@ module.exports={
  */
 module.exports = function Invert(options, UI) {
 
-  options = options || {};
-
-  // Tell UI that a step has been set up.
-  UI.onSetup(options.step);
   var output;
 
   // The function which is called on every draw.
@@ -49777,8 +49788,6 @@ module.exports = function Invert(options, UI) {
 
     progressObj.stop(true);
     progressObj.overrideFlag = true;
-    // Tell UI that a step is being drawn.
-    UI.onDraw(options.step);
 
     var step = this;
 
@@ -49791,11 +49800,6 @@ module.exports = function Invert(options, UI) {
       // This output is accessible by Image Sequencer
       step.output = { src: datauri, format: mimetype };
 
-      // This output is accessible by UI
-      options.step.output = datauri;
-
-      // Tell UI that step has been drawn.
-      UI.onComplete(options.step);
     }
 
     return require('../_nomodule/PixelManipulation.js')(input, {
@@ -50330,16 +50334,16 @@ module.exports = {
     getPreviousStep : function () {
         return this.getStep(-1);
     },
-    
+
     getNextStep : function() {
         return this.getStep(1);
     },
-    
+
     getInput : function(offset){
         if(offset + this.getIndex() === 0) offset++;
         return this.getStep(offset - 1).output;
     },
-    
+
     getOuput : function(offset){
         return this.getStep(offset).output;
     }
