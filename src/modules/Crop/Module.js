@@ -15,9 +15,7 @@
  */
 module.exports = function CropModule(options, UI) {
 
-  // TODO: we could also set this to {} if nil in AddModule.js to avoid this line:
   // we should get UI to return the image thumbnail so we can attach our own UI extensions
-
   // add our custom in-module html ui:
   if (options.step.inBrowser) var ui = require('./Ui.js')(options.step, UI);
   var output,
@@ -28,7 +26,7 @@ module.exports = function CropModule(options, UI) {
 
     var step = this;
 
-    // save the input image; 
+    // save the input image;
     // TODO: this should be moved to module API to persist the input image
     options.step.input = input.src;
 
@@ -39,6 +37,12 @@ module.exports = function CropModule(options, UI) {
         src: out,
         format: format
       }
+
+      // This output is accessible to the UI
+      options.step.output = out;
+
+      // Tell the UI that the step has been drawn
+      UI.onComplete(options.step);
 
       // we should do this via event/listener:
       if (ui && ui.hide) ui.hide();
