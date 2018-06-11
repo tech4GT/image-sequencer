@@ -47956,7 +47956,7 @@ module.exports = {
 
 },{"./modules/Average/Module":143,"./modules/Average/info":144,"./modules/Blend/Module":145,"./modules/Blend/info":146,"./modules/Blur/Module":148,"./modules/Blur/info":149,"./modules/Brightness/Module":150,"./modules/Brightness/info":151,"./modules/Channel/Module":152,"./modules/Channel/info":153,"./modules/Colormap/Module":155,"./modules/Colormap/info":156,"./modules/Crop/Module":158,"./modules/Crop/info":160,"./modules/DecodeQr/Module":161,"./modules/DecodeQr/info":162,"./modules/Dynamic/Module":163,"./modules/Dynamic/info":164,"./modules/EdgeDetect/Module":166,"./modules/EdgeDetect/info":167,"./modules/FisheyeGl/Module":168,"./modules/FisheyeGl/info":169,"./modules/ImportImage/Module":170,"./modules/ImportImage/info":172,"./modules/Invert/Module":173,"./modules/Invert/info":174,"./modules/Ndvi/Module":175,"./modules/Ndvi/info":176,"./modules/Saturation/Module":177,"./modules/Saturation/info":178}],141:[function(require,module,exports){
 // Uses a given image as input and replaces it with the output.
-// Works only in the browser. 
+// Works only in the browser.
 function ReplaceImage(ref,selector,steps,options) {
   if(!ref.options.inBrowser) return false; // This isn't for Node.js
   var tempSequencer = ImageSequencer({ui: false});
@@ -48822,7 +48822,7 @@ module.exports = function CropModuleUi(step, ui) {
   let inputWidth = 0,
       inputHeight = 0;
 
-  // We don't have input image dimensions at the 
+  // We don't have input image dimensions at the
   // time of setting up the UI; that comes when draw() is triggered.
   // So we trigger setup only on first run of draw()
   // TODO: link this to an event rather than an explicit call in Module.js
@@ -50155,9 +50155,9 @@ module.exports = function GetFormat(src) {
   var format = undefined; // haha default
 
   // EXAMPLE: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAQABADASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAf/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAABgj/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABykX//Z";
-  // EXAMPLE: "http://example.com/example.png" 
-  // EXAMPLE: "/example.png" 
- 
+  // EXAMPLE: "http://example.com/example.png"
+  // EXAMPLE: "/example.png"
+
   if (isDataUrl(src)) {
     format = src.split(';')[0].split('/').pop();
   } else {
