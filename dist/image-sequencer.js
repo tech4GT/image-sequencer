@@ -48112,30 +48112,24 @@ module.exports = Run;
 * Average all pixel colors
 */
 module.exports = function Average(options, UI){
-    options = options || {};
+
     options.blur = options.blur || 2
-    
-    //Tell the UI that a step has been set up
-    UI.onSetup(options.step);
     var output;
 
     options.step.metadata = options.step.metadata || {};
-    
+
     function draw(input,callback,progressObj){
 
         progressObj.stop(true);
         progressObj.overrideFlag = true;
-        
-        // Tell the UI that a step is being drawn
-        UI.onDraw(options.step);
-        
+
         var step = this;
-        
+
         function changePixel(r, g, b, a){
             return [r,g,b,a]
         }
 
-        // do the averaging        
+        // do the averaging
         function extraManipulation(pixels){
             var sum = [0,0,0,0];
             for (var i = 0; i < pixels.data.length; i += 4) {
@@ -48165,20 +48159,14 @@ module.exports = function Average(options, UI){
         }
 
         function output(image, datauri, mimetype){
-            
+
             // This output is accessible by Image Sequencer
             step.output = {
               src: datauri,
               format: mimetype
             };
-            
-            // This output is accessible by UI
-            options.step.output = datauri;
-            
-            // Tell UI that step has been drawn.
-            UI.onComplete(options.step);
         }
-        
+
         return require('../_nomodule/PixelManipulation.js')(input, {
             output: output,
             changePixel: changePixel,
@@ -48187,7 +48175,7 @@ module.exports = function Average(options, UI){
             image: options.image,
             callback: callback
         });
-        
+
     }
     return {
         options: options,
@@ -48208,11 +48196,8 @@ module.exports={
 },{}],145:[function(require,module,exports){
 module.exports = function Dynamic(options, UI, util) {
 
-  options = options || {};
   options.func = options.func || "function(r1, g1, b1, a1, r2, g2, b2, a2) { return [ r1, g2, b2, a2 ] }";
 
-  // Tell the UI that a step has been set up.
-  UI.onSetup(options.step);
   var output;
 
   // This function is called on every draw.
@@ -48221,8 +48206,6 @@ module.exports = function Dynamic(options, UI, util) {
     progressObj.stop(true);
     progressObj.overrideFlag = true;
 
-    // Tell the UI that the step is being drawn
-    UI.onDraw(options.step);
     var step = this;
 
     // convert to runnable code:
@@ -48252,12 +48235,6 @@ module.exports = function Dynamic(options, UI, util) {
 
         // This output is accessible by Image Sequencer
         step.output = { src: datauri, format: mimetype };
-
-        // This output is accessible by the UI
-        options.step.output = datauri;
-
-        // Tell the UI that the draw is complete
-        UI.onComplete(options.step);
 
       }
 
@@ -48385,44 +48362,34 @@ function flipKernel(kernel){
 * Blur an Image
 */
 module.exports = function Blur(options,UI){
-    options = options || {};
+
     options.blur = options.blur || 2
-    
-    //Tell the UI that a step has been set up
-    UI.onSetup(options.step);
+
     var output;
-    
+
     function draw(input,callback,progressObj){
 
         progressObj.stop(true);
         progressObj.overrideFlag = true;
-        
-        // Tell the UI that a step is being drawn
-        UI.onDraw(options.step);
-        
+
         var step = this;
-        
+
         function changePixel(r, g, b, a){
             return [r,g,b,a]
         }
-        
+
         function extraManipulation(pixels){
             pixels =  require('./Blur')(pixels,options.blur)
             return pixels
         }
 
         function output(image,datauri,mimetype){
-            
+
             // This output is accessible by Image Sequencer
             step.output = {src:datauri,format:mimetype};
-            
-            // This output is accessible by UI
-            options.step.output = datauri;
-            
-            // Tell UI that step has been drawn.
-            UI.onComplete(options.step);
+
         }
-        
+
         return require('../_nomodule/PixelManipulation.js')(input, {
             output: output,
             changePixel: changePixel,
@@ -48431,7 +48398,7 @@ module.exports = function Blur(options,UI){
             image: options.image,
             callback: callback
         });
-        
+
     }
     return {
         options: options,
@@ -48455,33 +48422,27 @@ module.exports={
 }
 
 },{}],150:[function(require,module,exports){
-/* 
+/*
 * Changes the Image Brightness
 */
 
 module.exports = function Brightness(options,UI){
-    options = options || {};
 
-    //Tell the UI that a step has been set up
-    UI.onSetup(options.step);
     var output;
 
     function draw(input,callback,progressObj){
-        
+
         progressObj.stop(true);
         progressObj.overrideFlag = true;
 
         /*
         In this case progress is handled by changepixel internally otherwise progressObj
-        needs to be overriden and used 
+        needs to be overriden and used
         For eg. progressObj = new SomeProgressModule()
         */
 
-        // Tell the UI that a step is being drawn
-        UI.onDraw(options.step);
-        
         var step = this;
-        
+
         function changePixel(r, g, b, a){
             var val = (options.brightness)/100.0
 
@@ -48490,19 +48451,14 @@ module.exports = function Brightness(options,UI){
             b = val*b<255?val*b:255
             return [r , g, b, a]
         }
-        
+
         function output(image,datauri,mimetype){
-            
+
             // This output is accessible by Image Sequencer
             step.output = {src:datauri,format:mimetype};
-            
-            // This output is accessible by UI
-            options.step.output = datauri;
-            
-            // Tell UI that step has been drawn.
-            UI.onComplete(options.step);
+
         }
-        
+
         return require('../_nomodule/PixelManipulation.js')(input, {
             output: output,
             changePixel: changePixel,
@@ -48511,7 +48467,7 @@ module.exports = function Brightness(options,UI){
             inBrowser: options.inBrowser,
             callback: callback
         });
-        
+
     }
     return {
         options: options,
@@ -48540,11 +48496,8 @@ module.exports={
  */
 module.exports = function Channel(options,UI) {
 
-  options = options || {};
   options.channel = options.channel || "green";
 
-  // Tell UI that a step has been set up
-  UI.onSetup(options.step);
   var output;
 
   function draw(input,callback,progressObj) {
@@ -48552,8 +48505,6 @@ module.exports = function Channel(options,UI) {
     progressObj.stop(true);
     progressObj.overrideFlag = true;
 
-    // Tell UI that a step is being drawn
-    UI.onDraw(options.step);
     var step = this;
 
     function changePixel(r, g, b, a) {
@@ -48567,11 +48518,6 @@ module.exports = function Channel(options,UI) {
       // This output is accesible by Image Sequencer
       step.output = {src:datauri,format:mimetype};
 
-      // This output is accessible by UI
-      options.step.output = datauri;
-
-      // Tell UI that step ahs been drawn
-      UI.onComplete(options.step);
     }
 
     return require('../_nomodule/PixelManipulation.js')(input, {
@@ -48700,10 +48646,6 @@ var colormaps = {
 },{}],155:[function(require,module,exports){
 module.exports = function Colormap(options,UI) {
 
-  options = options || {};
-
-  // Tell the UI that a step has been set up.
-  UI.onSetup(options.step);
   var output;
 
   // This function is called on every draw.
@@ -48712,8 +48654,6 @@ module.exports = function Colormap(options,UI) {
     progressObj.stop(true);
     progressObj.overrideFlag = true;
 
-    // Tell the UI that the step is being drawn
-    UI.onDraw(options.step);
     var step = this;
 
     function changePixel(r, g, b, a) {
@@ -48726,12 +48666,6 @@ module.exports = function Colormap(options,UI) {
 
       // This output is accessible by Image Sequencer
       step.output = { src: datauri, format: mimetype };
-
-      // This output is accessible by the UI
-      options.step.output = datauri;
-
-      // Tell the UI that the draw is complete
-      UI.onComplete(options.step);
 
     }
     return require('../_nomodule/PixelManipulation.js')(input, {
@@ -48832,10 +48766,7 @@ module.exports = function Crop(input,options,callback) {
 module.exports = function CropModule(options, UI) {
 
   // TODO: we could also set this to {} if nil in AddModule.js to avoid this line:
-  options = options || {};
-
-  // Tell the UI that a step has been added
-  UI.onSetup(options.step); // we should get UI to return the image thumbnail so we can attach our own UI extensions
+  // we should get UI to return the image thumbnail so we can attach our own UI extensions
 
   // add our custom in-module html ui:
   if (options.step.inBrowser) var ui = require('./Ui.js')(options.step, UI);
@@ -48845,8 +48776,6 @@ module.exports = function CropModule(options, UI) {
   // This function is caled everytime the step has to be redrawn
   function draw(input,callback) {
 
-    // Tell the UI that the step has been triggered
-    UI.onDraw(options.step);
     var step = this;
 
     // save the input image; 
@@ -48860,12 +48789,6 @@ module.exports = function CropModule(options, UI) {
         src: out,
         format: format
       }
-
-      // This output is accessible to the UI
-      options.step.output = out;
-
-      // Tell the UI that the step has been drawn
-      UI.onComplete(options.step);
 
       // we should do this via event/listener:
       if (ui && ui.hide) ui.hide();
@@ -49026,19 +48949,12 @@ module.exports={
  */
 module.exports = function DoNothing(options,UI) {
 
-  options = options || {};
-
-  // Tell the UI that a step has been added
-  UI.onSetup(options.step);
-
   var output;
   var jsQR = require('jsqr');
   var getPixels = require('get-pixels');
 
   // This function is called everytime a step has to be redrawn
   function draw(input,callback) {
-
-    UI.onDraw(options.step);
 
     var step = this;
 
@@ -49056,13 +48972,8 @@ module.exports = function DoNothing(options,UI) {
 
       // Tell Image Sequencer that this step is complete
       callback();
-
-      // These values are accessible to the UI
-      options.step.output = input.src;
       options.step.qrval = decoded;
 
-      // Tell the UI that the step is complete and output is set
-      UI.onComplete(options.step);
     });
 
   }
@@ -49090,26 +49001,20 @@ module.exports={
 
 },{}],163:[function(require,module,exports){
 module.exports = function Dynamic(options,UI) {
-  
-  options = options || {};
-  
-  // Tell the UI that a step has been set up.
-  UI.onSetup(options.step);
+
   var output;
-  
+
   // This function is called on every draw.
   function draw(input,callback,progressObj) {
 
     progressObj.stop(true);
     progressObj.overrideFlag = true;
 
-    // Tell the UI that the step is being drawn
-    UI.onDraw(options.step);
     var step = this;
-    
+
     // start with monochrome, but if options.red, options.green, and options.blue are set, accept them too
     options.monochrome = options.monochrome || "(R+G+B)/3";
-    
+
     function generator(expression) {
       var func = 'f = function (r, g, b, a) { var R = r, G = g, B = b, A = a;'
       func = func + 'return ';
@@ -49118,15 +49023,15 @@ module.exports = function Dynamic(options,UI) {
       eval(func);
       return f;
     }
-    
+
     var channels = ['red', 'green', 'blue', 'alpha'];
-    
+
     channels.forEach(function(channel) {
       if (options.hasOwnProperty(channel)) options[channel + '_function'] = generator(options[channel]);
       else if (channel === 'alpha')        options['alpha_function'] = function() { return 255; }
       else                                 options[channel + '_function'] = generator(options.monochrome);
     });
-    
+
     function changePixel(r, g, b, a) {
 
       /* neighbourpixels can be calculated by
@@ -49140,7 +49045,7 @@ module.exports = function Dynamic(options,UI) {
         options.alpha_function(r, g, b, a),
       ];
     }
-    
+
     /* Functions to get the neighbouring pixel by position (x,y) */
     function getNeighbourPixel(pixels,curX,curY,distX,distY){
       return [
@@ -49150,19 +49055,13 @@ module.exports = function Dynamic(options,UI) {
         ,pixels.get(curX+distX,curY+distY,3)
       ]
     }
-    
-    
+
+
     function output(image,datauri,mimetype){
-      
+
       // This output is accessible by Image Sequencer
       step.output = { src: datauri, format: mimetype };
-      
-      // This output is accessible by the UI
-      options.step.output = datauri;
-      
-      // Tell the UI that the draw is complete
-      UI.onComplete(options.step);
-      
+
     }
     return require('../_nomodule/PixelManipulation.js')(input, {
       output: output,
@@ -49174,9 +49073,9 @@ module.exports = function Dynamic(options,UI) {
       inBrowser: options.inBrowser,
       callback: callback
     });
-    
+
   }
-  
+
   return {
     options: options,
     draw: draw,
@@ -49396,72 +49295,61 @@ function hysteresis(pixels){
 
 },{"lodash":61}],166:[function(require,module,exports){
 /*
- * Detect Edges in an Image
- */
+* Detect Edges in an Image
+*/
 module.exports = function edgeDetect(options,UI) {
 
-    options = options || {};
-    options.blur = options.blur || 2
-    options.highThresholdRatio = options.highThresholdRatio||0.2
-    options.lowThresholdRatio = options.lowThresholdRatio||0.15
-  
-    // Tell UI that a step has been set up.
-    UI.onSetup(options.step);
-    var output;
-  
-    // The function which is called on every draw.
-    function draw(input,callback,progressObj) {
-      
-      progressObj.stop(true);
-      progressObj.overrideFlag = true;
+  options.blur = options.blur || 2;
+  options.highThresholdRatio = options.highThresholdRatio||0.2;
+  options.lowThresholdRatio = options.lowThresholdRatio||0.15;
 
-      // Tell UI that a step is being drawn.
-      UI.onDraw(options.step);
-  
-      var step = this;
+  var output;
+
+  // The function which is called on every draw.
+  function draw(input,callback,progressObj) {
+
+    progressObj.stop(true);
+    progressObj.overrideFlag = true;
+
+    var step = this;
 
 
     //   Extra Manipulation function used as an enveloper for applying gaussian blur and Convolution
-      function extraManipulation(pixels){
-        pixels = require('ndarray-gaussian-filter')(pixels,options.blur)
-        return require('./EdgeUtils')(pixels,options.highThresholdRatio,options.lowThresholdRatio,options.inBrowser)
-      }
-  
-      function changePixel(r, g, b, a) {
-        return [(r+g+b)/3, (r+g+b)/3, (r+g+b)/3, a];
-      }
-  
-      function output(image,datauri,mimetype){
-  
-        // This output is accessible by Image Sequencer
-        step.output = {src:datauri,format:mimetype};
-  
-        // This output is accessible by UI
-        options.step.output = datauri;
-  
-        // Tell UI that step has been drawn.
-        UI.onComplete(options.step);
-      }
-  
-      return require('../_nomodule/PixelManipulation.js')(input, {
-        output: output,
-        changePixel: changePixel,
-        extraManipulation: extraManipulation,
-        format: input.format,
-        image: options.image,
-        inBrowser: options.inBrowser,
-        callback: callback
-      });
-  
+    function extraManipulation(pixels){
+      pixels = require('ndarray-gaussian-filter')(pixels,options.blur);
+      return require('./EdgeUtils')(pixels,options.highThresholdRatio,options.lowThresholdRatio,options.inBrowser);
     }
-  
-    return {
-      options: options,
-      draw:  draw,
+
+    function changePixel(r, g, b, a) {
+      return [(r+g+b)/3, (r+g+b)/3, (r+g+b)/3, a];
+    }
+
+    function output(image,datauri,mimetype){
+
+      // This output is accessible by Image Sequencer
+      step.output = {src:datauri,format:mimetype};
+
+    }
+
+    return require('../_nomodule/PixelManipulation.js')(input, {
       output: output,
-      UI: UI
-    }
+      changePixel: changePixel,
+      extraManipulation: extraManipulation,
+      format: input.format,
+      image: options.image,
+      inBrowser: options.inBrowser,
+      callback: callback
+    });
+
   }
+
+  return {
+    options: options,
+    draw:  draw,
+    output: output,
+    UI: UI
+  }
+}
 
 },{"../_nomodule/PixelManipulation.js":179,"./EdgeUtils":165,"ndarray-gaussian-filter":66}],167:[function(require,module,exports){
 module.exports={
@@ -49492,17 +49380,11 @@ module.exports={
  */
 module.exports = function DoNothing(options,UI) {
 
-  options = options || {};
   var output;
 
-  // Tell the UI that a step has been set up.
-  UI.onSetup(options.step);
   require('fisheyegl');
 
   function draw(input,callback) {
-
-    // Tell the UI that the step is being drawn
-    UI.onDraw(options.step);
 
     var step = this;
 
@@ -49548,13 +49430,9 @@ module.exports = function DoNothing(options,UI) {
         // this output is accessible to Image Sequencer
         step.output = {src: canvas.toDataURL(), format: input.format};
 
-        // This output is accessible to the UI
-        options.step.output = step.output.src;
-
         // Tell Image Sequencer and UI that step has been drawn
         callback();
-        UI.onComplete(options.step);
-        
+
       });
 
     }
@@ -49647,14 +49525,12 @@ module.exports={
  */
 module.exports = function ImportImageModule(options, UI) {
 
-  options = options || {};
   options.imageUrl = options.url || "./images/monarch.png";
 
   var output,
       imgObj = new Image();
 
-  // Tell the UI that a step has been added
-  UI.onSetup(options.step); // we should get UI to return the image thumbnail so we can attach our own UI extensions
+  // we should get UI to return the image thumbnail so we can attach our own UI extensions
 
   // add our custom in-module html ui:
   if (options.step.inBrowser) {
@@ -49665,8 +49541,6 @@ module.exports = function ImportImageModule(options, UI) {
   // This function is caled everytime the step has to be redrawn
   function draw(input,callback) {
 
-    // Tell the UI that the step has been triggered
-    UI.onDraw(options.step);
     var step = this;
 
     step.metadata = step.metadata || {};
@@ -49681,12 +49555,6 @@ module.exports = function ImportImageModule(options, UI) {
         src: imgObj.src,
         format: options.format
       }
-
-      // This output is accessible to the UI
-      options.step.output = imgObj.src;
- 
-      // Tell the UI that the step has been drawn
-      UI.onComplete(options.step);
 
       // Tell Image Sequencer that step has been drawn
       callback();
@@ -49835,11 +49703,8 @@ module.exports={
  */
 module.exports = function Ndvi(options,UI) {
 
-  options = options || {};
   options.filter = options.filter || "red";
 
-  // Tell the UI that a step has been set up.
-  UI.onSetup(options.step);
   var output;
 
   // The function which is called on every draw.
@@ -49848,8 +49713,6 @@ module.exports = function Ndvi(options,UI) {
     progressObj.stop(true);
     progressObj.overrideFlag = true;
 
-    // Tell the UI that a step is being drawn.
-    UI.onDraw(options.step);
     var step = this;
 
     function changePixel(r, g, b, a) {
@@ -49864,13 +49727,8 @@ module.exports = function Ndvi(options,UI) {
       // This output is accessible by Image Sequencer
       step.output = {src:datauri,format:mimetype};
 
-      // This output is accessible by the UI.
-      options.step.output = datauri;
-
-      // Tell the UI that step has been drawn succesfully.
-      UI.onComplete(options.step);
     }
-    
+
     return require('../_nomodule/PixelManipulation.js')(input, {
       output: output,
       changePixel: changePixel,
@@ -49910,10 +49768,6 @@ module.exports={
  */
 module.exports = function Saturation(options,UI) {
 
-  options = options || {};
-
-  // Tell UI that a step has been set up
-  UI.onSetup(options.step);
   var output;
 
   function draw(input,callback,progressObj) {
@@ -49921,8 +49775,6 @@ module.exports = function Saturation(options,UI) {
     progressObj.stop(true);
     progressObj.overrideFlag = true;
 
-    // Tell UI that a step is being drawn
-    UI.onDraw(options.step);
     var step = this;
 
     function changePixel(r, g, b, a) {
@@ -49946,11 +49798,6 @@ module.exports = function Saturation(options,UI) {
       // This output is accesible by Image Sequencer
       step.output = {src:datauri,format:mimetype};
 
-      // This output is accessible by UI
-      options.step.output = datauri;
-
-      // Tell UI that step ahs been drawn
-      UI.onComplete(options.step);
     }
 
     return require('../_nomodule/PixelManipulation.js')(input, {
