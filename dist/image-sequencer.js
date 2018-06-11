@@ -48835,7 +48835,7 @@ module.exports = function CropModuleUi(step, ui) {
         y = 0;
 
     // display original uncropped input image on initial setup
-    showOriginal()
+    showOriginal();
 
     inputWidth = Math.floor(imgEl().naturalWidth);
     inputHeight = Math.floor(imgEl().naturalHeight);
