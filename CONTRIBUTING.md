@@ -12,6 +12,7 @@ Most contribution (we imagine) would be in the form of API-compatible modules, w
 * [Info File](#info-file)
 * [Ideas](#ideas)
 
+****
 
 ## Contribution ideas
 
@@ -27,24 +28,24 @@ If you find a bug please list it here, and help us develop Image Sequencer by [o
 
 Most contributions can happen in modules, rather than to core library code. Modules and their [corresponding info files](#info-file) are included into the library in this file: https://github.com/publiclab/image-sequencer/blob/master/src/Modules.js#L5-L7
 
+Module names, descriptions, and parameters are set in the `info.json` file -- [see below](#info-file).
+
 Any module must follow this basic format:
 
 ```js
 module.exports = function ModuleName(options,UI) {
-  options = options || {};
-  options.title = "Title of the Module";
-  UI.onSetup(options.step);
+
   var output;
 
   function draw(input,callback) {
-    UI.onDraw(options.step);
 
-    var output = /*do something with the input*/ ;
+    var output = function(input){
+      /* do something with the input */
+      return input;
+    }
 
-    this.output = output;
-    options.step.output = output.src;
+    this.output = output(input); // run the output and assign it to this.output
     callback();
-    UI.onComplete(options.step);
   }
 
   return {
@@ -56,6 +57,7 @@ module.exports = function ModuleName(options,UI) {
 }
 ```
 
+
 ### options
 
 The object `options` stores some important information. This is how you can accept
@@ -66,6 +68,19 @@ Options also has some in-built properties. The `options.inBrowser` boolean denot
 whether your module is being run on a browser.
 
 ### draw()
+
+To add a module to Image Sequencer, it must have a `draw` method; you can wrap an existing module to add them:
+
+* `module.draw(input, callback)`
+
+The `draw` method should accept an `input` parameter, which will be an object of the form:
+
+```js
+input = {
+  src: "datauri of an image here",
+  format: "jpeg/png/etc"
+}
+```
 
 The draw method is run every time the step is `run` using `sequencer.run()`.
 So any calculations must go **into** the `draw()` method's definition.
@@ -82,17 +97,17 @@ constant definitions must be done **outside** the `draw()` method's definition.
       format: "<png|jpeg|gif>"
     }
     ```
-* `callback` is a function which is responsible to tell the sequencer that the
-step has been "drawn".
+* `callback` is a function which is responsible to tell the sequencer that the step has been "drawn".
 
-When you have done your calculations and produced an image output, you are required
-to set `this.output` to an object similar to what the input object was, call
-`callback()`, and set `options.step.output` equal to the output DataURL
+When you have done your calculations and produced an image output, you are required to set `this.output` to an object similar to what the input object was, call `callback()`, and set `options.step.output` equal to the output DataURL
+
+* `progressObj` is an optional additional Object that can be passed in the format `draw(input, callback, progressObj)`, which handles the progress output; see [Progress reporting](#progress-reporting) below.
 
 ### UI Methods
 
-The module is responsible for emitting various events for the UI to capture. There are
-four events in all:
+The module is responsible for emitting various events for the UI to capture.
+
+There are four events in all:
 
 * `UI.onSetup(options.step)` must be emitted when the module is added. So it must be emitted outside the draw method's definition as shown above.
 * `UI.onDraw(options.step)` must be emitted whenever the `draw()` method is called. So it should ideally be the first line of the definition of the `draw` method.
@@ -100,26 +115,14 @@ four events in all:
 is ready. An argument, that is the DataURL of the output image must be passed in.
 * `UI.onRemove(options.step)` is emitted automatically and the module should not emit it.
 
-To add a module to Image Sequencer, it must have the following method; you can wrap an existing module to add them:
+### Name and description
 
-* `module.draw()`
-
-The `draw(input,callback)` method should accept an `input` parameter, which will be an object of the form:
-
-```js
-input = {
-  src: "datauri here",
-  format: "jpeg/png/etc"
-}
-```
-
-### options.title
-
-For display in the web-based UI, each module may also have a title `options.title`.
+For display in the web-based demo UI, set the `name` and `description` fields in the `info.json` file for the module.
 
 ## Info file
 
 All module folders must have an `info.json` file which looks like the following:
+
 ```json
 {
   "name": "Name of Module to be displayed",
@@ -154,6 +157,52 @@ Integer and Float types should also specify minimum and maximum values like this
 Similarly, "Select" type inputs should have a `values` array.
 
 Also, A module may have output values. These must be defined as shown above.
+
+### Progress reporting
+
+The default "loading spinner" can be optionally overriden with a custom progress object to draw progress on the CLI, following is a basic module format for the same:
+
+```js
+module.exports = function ModuleName(options,UI) {
+
+  options = options || {};
+  UI.onSetup(options.step);
+  var output;
+
+  function draw(input,callback,progressObj) {
+
+    /* If you wish to supply your own progress bar you need to override progressObj */
+
+    progressObj.stop() // Stop the current progress spinner
+
+    progressObj.overrideFlag = true; // Tell image sequencer that you will supply your own progressBar 
+
+    /* Override the object and give your own progress Bar */
+    progressObj = /* Your own progress Object */
+
+    UI.onDraw(options.step);
+
+    var output = function(input){
+      /* do something with the input */ 
+      return input;
+    };
+
+    this.output = output();
+    options.step.output = output.src;
+    callback();
+    UI.onComplete(options.step);
+  }
+
+  return {
+    options: options,
+    draw: draw,
+    output: output,
+    UI: UI
+  }
+}
+```
+
+The `progressObj` parameter of `draw()` is not consumed unless a custom progress bar needs to be drawn, for which this default spinner should be stopped with `progressObj.stop()` and image-sequencer is informed about the custom progress bar with `progressObj.overrideFlag = true;` following which this object can be overriden with custom progress object.
 
 ### Module example
 

@@ -1,24 +1,23 @@
 /*
- * Display only the green channel
+ * Display only one color channel
  */
-module.exports = function GreenChannel(options,UI) {
+module.exports = function Channel(options,UI) {
 
-  options = options || {};
-  options.title = "Green channel only";
-  options.description = "Displays only the green channel of an image";
+  options.channel = options.channel || "green";
 
-  // Tell UI that a step has been set up
-  UI.onSetup(options.step);
   var output;
 
-  function draw(input,callback) {
+  function draw(input,callback,progressObj) {
 
-    // Tell UI that a step is being drawn
-    UI.onDraw(options.step);
+    progressObj.stop(true);
+    progressObj.overrideFlag = true;
+
     var step = this;
 
     function changePixel(r, g, b, a) {
-      return [0, g, 0, a];
+      if (options.channel == "red")   return [r, 0, 0, a];
+      if (options.channel == "green") return [0, g, 0, a];
+      if (options.channel == "blue")  return [0, 0, b, a];
     }
 
     function output(image,datauri,mimetype){
@@ -26,11 +25,6 @@ module.exports = function GreenChannel(options,UI) {
       // This output is accesible by Image Sequencer
       step.output = {src:datauri,format:mimetype};
 
-      // This output is accessible by UI
-      options.step.output = datauri;
-
-      // Tell UI that step ahs been drawn
-      UI.onComplete(options.step);
     }
 
     return require('../_nomodule/PixelManipulation.js')(input, {
@@ -38,6 +32,7 @@ module.exports = function GreenChannel(options,UI) {
       changePixel: changePixel,
       format: input.format,
       image: options.image,
+      inBrowser: options.inBrowser,
       callback: callback
     });
 

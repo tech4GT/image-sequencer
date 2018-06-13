@@ -13,47 +13,58 @@
  *          y = options.y
  *          y = options.y + options.h
  */
- module.exports = function CropModule(options,UI) {
+module.exports = function CropModule(options, UI) {
 
-   options = options || {};
-   options.title = "Crop Image";
+  // we should get UI to return the image thumbnail so we can attach our own UI extensions
+  // add our custom in-module html ui:
+  if (options.step.inBrowser) var ui = require('./Ui.js')(options.step, UI);
+  var output,
+      setupComplete = false;
 
-   // Tell the UI that a step has been added
-   UI.onSetup(options.step);
-   var output;
+  // This function is caled everytime the step has to be redrawn
+  function draw(input,callback) {
 
-   // This function is caled everytime the step has to be redrawn
-   function draw(input,callback) {
+    var step = this;
 
-     // Tell the UI that the step has been triggered
-     UI.onDraw(options.step);
-     var step = this;
+    // save the input image;
+    // TODO: this should be moved to module API to persist the input image
+    options.step.input = input.src;
 
-     require('./Crop')(input,options,function(out,format){
+    require('./Crop')(input, options, function(out, format){
 
-       // This output is accessible to Image Sequencer
-       step.output = {
-         src: out,
-         format: format
-       }
+      // This output is accessible to Image Sequencer
+      step.output = {
+        src: out,
+        format: format
+      }
 
-       // This output is accessible to the UI
-       options.step.output = out;
+      // This output is accessible to the UI
+      options.step.output = out;
 
-       // Tell the UI that the step has been drawn
-       UI.onComplete(options.step);
+      // Tell the UI that the step has been drawn
+      UI.onComplete(options.step);
 
-       // Tell Image Sequencer that step has been drawn
-       callback();
+      // we should do this via event/listener:
+      if (ui && ui.hide) ui.hide();
 
-     });
+      // start custom UI setup (draggable UI)
+      // only once we have an input image
+      if (setupComplete === false && options.step.inBrowser) {
+        setupComplete = true;
+        ui.setup();
+      }
 
-   }
+      // Tell Image Sequencer that step has been drawn
+      callback();
 
-   return {
-     options: options,
-     draw: draw,
-     output: output,
-     UI: UI
-   }
- }
+    });
+
+  }
+
+  return {
+    options: options,
+    draw: draw,
+    output: output,
+    UI: UI
+  }
+}

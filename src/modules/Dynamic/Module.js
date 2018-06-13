@@ -1,17 +1,13 @@
 module.exports = function Dynamic(options,UI) {
 
-  options = options || {};
-  options.title = "Dynamic";
-
-  // Tell the UI that a step has been set up.
-  UI.onSetup(options.step);
   var output;
 
   // This function is called on every draw.
-  function draw(input,callback) {
+  function draw(input,callback,progressObj) {
 
-    // Tell the UI that the step is being drawn
-    UI.onDraw(options.step);
+    progressObj.stop(true);
+    progressObj.overrideFlag = true;
+
     var step = this;
 
     // start with monochrome, but if options.red, options.green, and options.blue are set, accept them too
@@ -35,32 +31,44 @@ module.exports = function Dynamic(options,UI) {
     });
 
     function changePixel(r, g, b, a) {
+
+      /* neighbourpixels can be calculated by
+       this.getNeighbourPixel.fun(x,y)  or this.getNeighborPixel.fun(x,y)
+       */
       var combined = (r + g + b) / 3.000;
       return [
-        options.red_function(  r, g, b, a),
+        options.red_function(r, g, b, a),
         options.green_function(r, g, b, a),
-        options.blue_function( r, g, b, a),
+        options.blue_function(r, g, b, a),
         options.alpha_function(r, g, b, a),
       ];
     }
+
+    /* Functions to get the neighbouring pixel by position (x,y) */
+    function getNeighbourPixel(pixels,curX,curY,distX,distY){
+      return [
+         pixels.get(curX+distX,curY+distY,0)
+        ,pixels.get(curX+distX,curY+distY,1)
+        ,pixels.get(curX+distX,curY+distY,2)
+        ,pixels.get(curX+distX,curY+distY,3)
+      ]
+    }
+
 
     function output(image,datauri,mimetype){
 
       // This output is accessible by Image Sequencer
       step.output = { src: datauri, format: mimetype };
 
-      // This output is accessible by the UI
-      options.step.output = datauri;
-
-      // Tell the UI that the draw is complete
-      UI.onComplete(options.step);
-
     }
     return require('../_nomodule/PixelManipulation.js')(input, {
       output: output,
       changePixel: changePixel,
+      getNeighbourPixel: getNeighbourPixel,
+      getNeighborPixel: getNeighbourPixel,
       format: input.format,
       image: options.image,
+      inBrowser: options.inBrowser,
       callback: callback
     });
 
