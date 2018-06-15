@@ -50361,23 +50361,17 @@ module.exports = {
     },
 
     getHeight : function(callback){
-        getPixels(this.getStep(-1).output.src,function(err,pixels){
-            if (err) {
-                console.log("Bad image path", image);
-                return;
-            }
-            callback(pixels.shape[1]);
-        });
+        let img = new Image();
+        img.onload = function () {
+            callback(img.height);
+        }
     },
 
     getWidth : function (callback) {
-        getPixels(this.getStep(-1).output.src,function(err,pixels){
-            if (err) {
-                console.log("Bad image path", image);
-                return;
-            }
-            callback(pixels.shape[0]);
-        });
+        let img = new Image();
+        img.onload = function () {
+            callback(img.width);
+        }
     }
 }
 },{"get-pixels":23}]},{},[138]);
