@@ -47580,6 +47580,15 @@ ImageSequencer = function ImageSequencer(options) {
   events = require('./ui/UserInterface')(),
   fs = require('fs');
 
+
+  if(options.inBrowser){
+    for(o in sequencer){
+      if(sequencer.hasOwnProperty(o)){
+        modules[o] = [sequencer[o].func,sequencer[o].info];
+      }
+    }
+  }
+
   // if in browser, prompt for an image
   // if (options.imageSelect || options.inBrowser) addStep('image-select');
   // else if (options.imageUrl) loadImage(imageUrl);
@@ -47826,6 +47835,22 @@ ImageSequencer = function ImageSequencer(options) {
     });
   }
 
+  function loadNewModule(name,options){
+    // refers to the function itself
+    if(options.func && options.info){
+      this.modules[name] = [
+        options.func, options.info
+      ]
+    }
+    // refers to the path at which the function can be found(only in node context)
+    else if(options.path&&!this.inBrowser){
+      const module = [
+        require(`${options.path}/Module.js`), require(`${options.path}/info.json`)
+      ];
+      this.modules[name] = module;
+    }
+  }
+
   return {
     //literals and objects
     name: "ImageSequencer",
@@ -47853,6 +47878,7 @@ ImageSequencer = function ImageSequencer(options) {
     stringToJSONstep: stringToJSONstep,
     importString: importString,
     importJSON: importJSON,
+    loadNewModule: loadNewModule,
 
     //other functions
     log: log,
