@@ -47262,6 +47262,8 @@ arguments[4][39][0].apply(exports,arguments)
 },{"./support/isBuffer":133,"_process":97,"dup":39,"inherits":56}],135:[function(require,module,exports){
 // add steps to the sequencer
 // TODO: reduce redundancy with InsertStep; this should be a specific usage of InsertStep at the final position
+
+const getPixels = require('get-pixels');
 function AddStep(_sequencer, image, name, o) {
 
   function addStep(image, name, o_) {
@@ -47276,6 +47278,7 @@ function AddStep(_sequencer, image, name, o) {
     o.container = o_.container || _sequencer.options.selector;
     o.image = image;
     o.inBrowser = _sequencer.options.inBrowser;
+    o.getPixels = getPixels;
 
     o.step = {
       name: o.name,
@@ -47303,7 +47306,7 @@ function AddStep(_sequencer, image, name, o) {
 }
 module.exports = AddStep;
 
-},{}],136:[function(require,module,exports){
+},{"get-pixels":23}],136:[function(require,module,exports){
 var fs = require('fs');
 var getDirectories = function(rootDir, cb) {
   fs.readdir(rootDir, function(err, files) {
@@ -48043,6 +48046,11 @@ module.exports = ReplaceImage;
 
 },{}],142:[function(require,module,exports){
 const getStepUtils = require('./util/getStep.js');
+const getPixels = require('get-pixels');
+const pixelManipulation = require('./modules/_nomodule/PixelManipulation')
+const lodash = require('lodash')
+const dataUriToBuffer = require('data-uri-to-buffer');
+const savePixels =  require('save-pixels');
 
 function Run(ref, json_q, callback,ind, progressObj) {
   if (!progressObj) progressObj = { stop: function () { } };
@@ -48081,8 +48089,15 @@ function Run(ref, json_q, callback,ind, progressObj) {
       // Tell UI that a step is being drawn.
       ref.images[image].steps[i].UI.onDraw(ref.images[image].steps[i].options.step);
 
+      var inputForNextStep = ref.copy(input);
+      inputForNextStep.getPixels = getPixels;
+      inputForNextStep.pixelManipulation = pixelManipulation;
+      inputForNextStep.lodash = lodash;
+      inputForNextStep.dataUriToBuffer = dataUriToBuffer;
+      inputForNextStep.savePixels = savePixels;
+
       ref.images[image].steps[i].draw(
-        ref.copy(input),
+        inputForNextStep,
         function onEachStep() {
 
           // This output is accessible by UI
@@ -48133,7 +48148,7 @@ function Run(ref, json_q, callback,ind, progressObj) {
 }
 module.exports = Run;
 
-},{"./util/getStep.js":184}],143:[function(require,module,exports){
+},{"./modules/_nomodule/PixelManipulation":179,"./util/getStep.js":184,"data-uri-to-buffer":13,"get-pixels":23,"lodash":61,"save-pixels":110}],143:[function(require,module,exports){
 /*
 * Average all pixel colors
 */
@@ -49699,7 +49714,7 @@ module.exports = function Invert(options, UI) {
 
     }
 
-    return require('../_nomodule/PixelManipulation.js')(input, {
+    return input.pixelManipulation({
       output: output,
       changePixel: changePixel,
       format: input.format,
@@ -49718,7 +49733,7 @@ module.exports = function Invert(options, UI) {
   }
 }
 
-},{"../_nomodule/PixelManipulation.js":179}],174:[function(require,module,exports){
+},{}],174:[function(require,module,exports){
 module.exports={
   "name": "Invert",
   "description": "Inverts the image.",
@@ -49869,6 +49884,14 @@ module.exports={
 * accepting a changePixel() method to remix a pixel's channels
 */
 module.exports = function PixelManipulation(image, options) {
+
+  // To handle the case where pixelmanipulation is called on the input object itself
+  // like input.pixelManipulation(options)
+  if(arguments.length <= 1){
+    options = image;
+    image = this;
+  }
+
   options = options || {};
   options.changePixel =
     options.changePixel ||

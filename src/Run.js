@@ -1,4 +1,9 @@
 const getStepUtils = require('./util/getStep.js');
+const getPixels = require('get-pixels');
+const pixelManipulation = require('./modules/_nomodule/PixelManipulation')
+const lodash = require('lodash')
+const dataUriToBuffer = require('data-uri-to-buffer');
+const savePixels =  require('save-pixels');
 
 function Run(ref, json_q, callback,ind, progressObj) {
   if (!progressObj) progressObj = { stop: function () { } };
@@ -37,8 +42,15 @@ function Run(ref, json_q, callback,ind, progressObj) {
       // Tell UI that a step is being drawn.
       ref.images[image].steps[i].UI.onDraw(ref.images[image].steps[i].options.step);
 
+      var inputForNextStep = ref.copy(input);
+      inputForNextStep.getPixels = getPixels;
+      inputForNextStep.pixelManipulation = pixelManipulation;
+      inputForNextStep.lodash = lodash;
+      inputForNextStep.dataUriToBuffer = dataUriToBuffer;
+      inputForNextStep.savePixels = savePixels;
+
       ref.images[image].steps[i].draw(
-        ref.copy(input),
+        inputForNextStep,
         function onEachStep() {
 
           // This output is accessible by UI

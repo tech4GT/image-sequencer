@@ -24,7 +24,7 @@ module.exports = function Invert(options, UI) {
 
     }
 
-    return require('../_nomodule/PixelManipulation.js')(input, {
+    return input.pixelManipulation({
       output: output,
       changePixel: changePixel,
       format: input.format,
