@@ -81,20 +81,22 @@ function ModuleName(options,UI) {
     draw: draw,
     output: output,
     UI: UI
-  }
+  };
 }
-
-if(this.module) {
-  module.exports = Invert;
-} else {
-  sequencer['ModuleName'] = {
-    func: ModuleName,
-    info: {
+<!-- Info can be defined here or imported from a json file -->
+var info = {
       "name": "ModuleName",
       "description": "",
       "inputs": {
         // inputs here
-      }
+      };
+
+if(this.module) {
+  module.exports = [ModuleName,info];
+} else {
+  sequencer['ModuleName'] = {
+    func: ModuleName,
+    info: info
     }
   };
 ```

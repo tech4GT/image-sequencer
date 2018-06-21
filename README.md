@@ -277,6 +277,14 @@ sequencer.insertSteps(index,module_name,optional_options);
 
 return value: **`sequencer`** (To allow method chaining)
 
+###Importing an independent module
+The `loadNewModule` method can be used to import a new module inside sequencer. Modules can be downloaded via npm, yarn or cdn and are imported with a custom name
+
+```js
+const module = require('sequencer-moduleName')
+sequencer.loadNewModule('moduleName',module);
+```
+
 
 ## Method Chaining
 Methods can be chained on the Image Sequencer:

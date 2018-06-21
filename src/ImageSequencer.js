@@ -302,19 +302,27 @@ ImageSequencer = function ImageSequencer(options) {
   }
 
   function loadNewModule(name,options){
-    // refers to the function itself
-    if(options.func && options.info){
+
+    if(!options) {
+      return this;
+    }
+    else if(Array.isArray(options)) {
+      // contains the array of module and info
+      this.module[name] = options;
+
+    } else  if(options.func && options.info) {
+      // passed in options object
       this.modules[name] = [
         options.func, options.info
       ]
-    }
-    // refers to the path at which the function can be found(only in node context)
-    else if(options.path&&!this.inBrowser){
+    } else if(options.path&&!this.inBrowser) {
+      // load from path
       const module = [
         require(`${options.path}/Module.js`), require(`${options.path}/info.json`)
       ];
       this.modules[name] = module;
     }
+    return this;
   }
 
   return {

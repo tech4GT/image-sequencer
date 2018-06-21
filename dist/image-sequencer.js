@@ -47262,8 +47262,6 @@ arguments[4][39][0].apply(exports,arguments)
 },{"./support/isBuffer":133,"_process":97,"dup":39,"inherits":56}],135:[function(require,module,exports){
 // add steps to the sequencer
 // TODO: reduce redundancy with InsertStep; this should be a specific usage of InsertStep at the final position
-
-const getPixels = require('get-pixels');
 function AddStep(_sequencer, image, name, o) {
 
   function addStep(image, name, o_) {
@@ -47278,7 +47276,6 @@ function AddStep(_sequencer, image, name, o) {
     o.container = o_.container || _sequencer.options.selector;
     o.image = image;
     o.inBrowser = _sequencer.options.inBrowser;
-    o.getPixels = getPixels;
 
     o.step = {
       name: o.name,
@@ -47306,7 +47303,7 @@ function AddStep(_sequencer, image, name, o) {
 }
 module.exports = AddStep;
 
-},{"get-pixels":23}],136:[function(require,module,exports){
+},{}],136:[function(require,module,exports){
 var fs = require('fs');
 var getDirectories = function(rootDir, cb) {
   fs.readdir(rootDir, function(err, files) {
@@ -47839,19 +47836,27 @@ ImageSequencer = function ImageSequencer(options) {
   }
 
   function loadNewModule(name,options){
-    // refers to the function itself
-    if(options.func && options.info){
+
+    if(!options) {
+      return this;
+    }
+    else if(Array.isArray(options)) {
+      // contains the array of module and info
+      this.module[name] = options;
+
+    } else  if(options.func && options.info) {
+      // passed in options object
       this.modules[name] = [
         options.func, options.info
       ]
-    }
-    // refers to the path at which the function can be found(only in node context)
-    else if(options.path&&!this.inBrowser){
+    } else if(options.path&&!this.inBrowser) {
+      // load from path
       const module = [
         require(`${options.path}/Module.js`), require(`${options.path}/info.json`)
       ];
       this.modules[name] = module;
     }
+    return this;
   }
 
   return {
