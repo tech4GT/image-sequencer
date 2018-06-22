@@ -1,7 +1,7 @@
 /*
  * Invert the image
  */
-module.exports = function Invert(options, UI) {
+function Invert(options, UI) {
 
   var output;
 
@@ -42,3 +42,10 @@ module.exports = function Invert(options, UI) {
     UI: UI
   }
 }
+var info = {
+  "name": "Invert",
+  "description": "Inverts the image.",
+  "inputs": {
+  }
+}
+module.exports = [Invert,info];

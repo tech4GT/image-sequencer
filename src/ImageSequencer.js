@@ -49,9 +49,7 @@ ImageSequencer = function ImageSequencer(options) {
 
   if(options.inBrowser){
     for(o in sequencer){
-      if(sequencer.hasOwnProperty(o)){
-        modules[o] = [sequencer[o].func,sequencer[o].info];
-      }
+        modules[o] = sequencer[o];
     }
   }
 
