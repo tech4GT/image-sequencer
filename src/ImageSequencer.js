@@ -314,7 +314,7 @@ ImageSequencer = function ImageSequencer(options) {
         options.func, options.info
       ]
     } else if(options.path&&!this.inBrowser) {
-      // load from path
+      // load from path(only in node)
       const module = [
         require(`${options.path}/Module.js`), require(`${options.path}/info.json`)
       ];

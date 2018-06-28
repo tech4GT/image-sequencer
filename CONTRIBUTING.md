@@ -58,7 +58,8 @@ module.exports = function ModuleName(options,UI) {
 }
 ```
 
-Modules can be distributed independently via npm, yarn and cdn. Any Independent Module Must follow this basic format
+Modules can be distributed independently via npm, yarn and cdn(for browser). `require` syntax should not be used if the module is intended to be used inside the browser.
+Any Independent Module Must follow this basic format
 
 ```js
 function ModuleName(options,UI) {
@@ -83,13 +84,14 @@ function ModuleName(options,UI) {
     UI: UI
   };
 }
-<!-- Info can be defined here or imported from a json file -->
+/* Info can be defined here or imported from a json file */
 var info = {
       "name": "ModuleName",
       "description": "",
       "inputs": {
         // inputs here
       };
+      // var info = require('./info.json') This only works in node
 
 if(this.module) {
   module.exports = [ModuleName,info];

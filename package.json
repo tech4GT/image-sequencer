@@ -29,6 +29,7 @@
     "fisheyegl": "^0.1.2",
     "font-awesome": "~4.5.0",
     "get-pixels": "~3.3.0",
+    "image-sequencer-invert": "^1.0.0",
     "imgareaselect": "git://github.com/jywarren/imgareaselect.git#v1.0.0-rc.2",
     "jquery": "~2",
     "jsqr": "^0.2.2",

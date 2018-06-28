@@ -15,6 +15,6 @@ module.exports = {
   'saturation': require('./modules/Saturation'),
   'average': require('./modules/Average'),
   'blend': require('./modules/Blend'),
-  'import-image': require('./modules/ImportImage')
-  // 'invert': require('./modules/Invert/Module')
+  'import-image': require('./modules/ImportImage'),
+  'invert': require('image-sequencer-invert')
 }
