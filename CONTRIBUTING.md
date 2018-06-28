@@ -93,14 +93,7 @@ var info = {
       };
       // var info = require('./info.json') This only works in node
 
-if(this.module) {
   module.exports = [ModuleName,info];
-} else {
-  sequencer['ModuleName'] = {
-    func: ModuleName,
-    info: info
-    }
-  };
 ```
 
 
