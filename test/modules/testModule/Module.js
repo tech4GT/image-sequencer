@@ -1,9 +1,9 @@
-module.exports = function ModuleName(options,UI) {
+module.exports = function testModule(options, UI) {
 
   var output;
-  function draw(input,callback) {
+  function draw(input, callback) {
 
-    var output = function(input){
+    var output = function(input) {
       return input;
     }
 

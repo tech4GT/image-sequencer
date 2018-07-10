@@ -47547,30 +47547,30 @@ function formatInput(args,format,images) {
 module.exports = formatInput;
 
 },{}],139:[function(require,module,exports){
-if (typeof window !== 'undefined') {isBrowser = true}
-else {var isBrowser = false}
-require('./util/getStep.js')
+if (typeof window !== 'undefined') { isBrowser = true }
+else { var isBrowser = false }
+require('./util/getStep.js');
 
 ImageSequencer = function ImageSequencer(options) {
 
-  var sequencer = (this.name == "ImageSequencer")?this:this.sequencer;
+  var sequencer = (this.name == "ImageSequencer") ? this : this.sequencer;
   options = options || {};
   options.inBrowser = options.inBrowser || isBrowser;
   options.sequencerCounter = 0;
 
-  function objTypeOf(object){
-    return Object.prototype.toString.call(object).split(" ")[1].slice(0,-1)
+  function objTypeOf(object) {
+    return Object.prototype.toString.call(object).split(" ")[1].slice(0, -1)
   }
 
-  function log(color,msg) {
-    if(options.ui!="none") {
-      if(arguments.length==1) console.log(arguments[0]);
-      else if(arguments.length==2) console.log(color,msg);
+  function log(color, msg) {
+    if (options.ui != "none") {
+      if (arguments.length == 1) console.log(arguments[0]);
+      else if (arguments.length == 2) console.log(color, msg);
     }
   }
 
   function copy(a) {
-    if (!typeof(a) == "object") return a;
+    if (!typeof (a) == "object") return a;
     if (objTypeOf(a) == "Array") return a.slice();
     if (objTypeOf(a) == "Object") {
       var b = {};
@@ -47583,22 +47583,22 @@ ImageSequencer = function ImageSequencer(options) {
   }
 
   function makeArray(input) {
-    return (objTypeOf(input)=="Array")?input:[input];
+    return (objTypeOf(input) == "Array") ? input : [input];
   }
 
   var image,
-  steps = [],
-  modules = require('./Modules'),
-  formatInput = require('./FormatInput'),
-  images = {},
-  inputlog = [],
-  events = require('./ui/UserInterface')(),
-  fs = require('fs');
+    steps = [],
+    modules = require('./Modules'),
+    formatInput = require('./FormatInput'),
+    images = {},
+    inputlog = [],
+    events = require('./ui/UserInterface')(),
+    fs = require('fs');
 
 
-  if(options.inBrowser){
-    for(o in sequencer){
-        modules[o] = sequencer[o];
+  if (options.inBrowser) {
+    for (o in sequencer) {
+      modules[o] = sequencer[o];
     }
   }
 
@@ -47606,46 +47606,46 @@ ImageSequencer = function ImageSequencer(options) {
   // if (options.imageSelect || options.inBrowser) addStep('image-select');
   // else if (options.imageUrl) loadImage(imageUrl);
 
-  function addSteps(){
-    var this_ = (this.name == "ImageSequencer")?this:this.sequencer;
-    var args = (this.name == "ImageSequencer")?[]:[this.images];
+  function addSteps() {
+    var this_ = (this.name == "ImageSequencer") ? this : this.sequencer;
+    var args = (this.name == "ImageSequencer") ? [] : [this.images];
     var json_q = {};
-    for(var arg in arguments){args.push(copy(arguments[arg]));}
-    json_q = formatInput.call(this_,args,"+");
+    for (var arg in arguments) { args.push(copy(arguments[arg])); }
+    json_q = formatInput.call(this_, args, "+");
 
-    inputlog.push({method:"addSteps", json_q:copy(json_q)});
+    inputlog.push({ method: "addSteps", json_q: copy(json_q) });
 
     for (var i in json_q)
-    for (var j in json_q[i])
-    require("./AddStep")(this_,i,json_q[i][j].name,json_q[i][j].o);
+      for (var j in json_q[i])
+        require("./AddStep")(this_, i, json_q[i][j].name, json_q[i][j].o);
 
     return this;
   }
 
-  function removeStep(image,index) {
+  function removeStep(image, index) {
     //remove the step from images[image].steps and redraw remaining images
-    if(index>0) {
+    if (index > 0) {
       thisStep = images[image].steps[index];
       thisStep.UI.onRemove(thisStep.options.step);
-      images[image].steps.splice(index,1);
+      images[image].steps.splice(index, 1);
     }
     //tell the UI a step has been removed
   }
 
-  function removeSteps(image,index) {
+  function removeSteps(image, index) {
     var run = {}, indices;
-    var this_ = (this.name == "ImageSequencer")?this:this.sequencer;
-    var args = (this.name == "ImageSequencer")?[]:[this.images];
-    for(var arg in arguments) args.push(copy(arguments[arg]));
+    var this_ = (this.name == "ImageSequencer") ? this : this.sequencer;
+    var args = (this.name == "ImageSequencer") ? [] : [this.images];
+    for (var arg in arguments) args.push(copy(arguments[arg]));
 
-    var json_q = formatInput.call(this_,args,"-");
-    inputlog.push({method:"removeSteps", json_q:copy(json_q)});
+    var json_q = formatInput.call(this_, args, "-");
+    inputlog.push({ method: "removeSteps", json_q: copy(json_q) });
 
     for (var img in json_q) {
-      indices = json_q[img].sort(function(a,b){return b-a});
-      run[img] = indices[indices.length-1];
+      indices = json_q[img].sort(function(a, b) { return b - a });
+      run[img] = indices[indices.length - 1];
       for (var i in indices)
-      removeStep(img,indices[i]);
+        removeStep(img, indices[i]);
     }
     // this.run(run); // This is creating problems
     return this;
@@ -47653,19 +47653,19 @@ ImageSequencer = function ImageSequencer(options) {
 
   function insertSteps(image, index, name, o) {
     var run = {};
-    var this_ = (this.name == "ImageSequencer")?this:this.sequencer;
-    var args = (this.name == "ImageSequencer")?[]:[this.images];
+    var this_ = (this.name == "ImageSequencer") ? this : this.sequencer;
+    var args = (this.name == "ImageSequencer") ? [] : [this.images];
     for (var arg in arguments) args.push(arguments[arg]);
 
-    var json_q = formatInput.call(this_,args,"^");
-    inputlog.push({method:"insertSteps", json_q:copy(json_q)});
+    var json_q = formatInput.call(this_, args, "^");
+    inputlog.push({ method: "insertSteps", json_q: copy(json_q) });
 
     for (var img in json_q) {
       var details = json_q[img];
-      details = details.sort(function(a,b){return b.index-a.index});
+      details = details.sort(function(a, b) { return b.index - a.index });
       for (var i in details)
-      require("./InsertStep")(this_,img,details[i].index,details[i].name,details[i].o);
-      run[img] = details[details.length-1].index;
+        require("./InsertStep")(this_, img, details[i].index, details[i].name, details[i].o);
+      run[img] = details[details.length - 1].index;
     }
     // this.run(run); // This is Creating issues
     return this;
@@ -47673,33 +47673,33 @@ ImageSequencer = function ImageSequencer(options) {
 
   // Config is an object which contains the runtime configuration like progress bar
   // information and index from which the sequencer should run
-  function run(config,t_image,t_from) {
-    let progressObj,index=0;
-    config = config || {mode: 'no-arg'};
-    if(config.index) index = config.index;
+  function run(config, t_image, t_from) {
+    let progressObj, index = 0;
+    config = config || { mode: 'no-arg' };
+    if (config.index) index = config.index;
 
-    if(config.mode != 'test'){
-      if(config.mode != "no-arg" && typeof config != 'function'){
-        if(config.progressObj) progressObj = config.progressObj;
+    if (config.mode != 'test') {
+      if (config.mode != "no-arg" && typeof config != 'function') {
+        if (config.progressObj) progressObj = config.progressObj;
         delete arguments['0'];
       }
     }
-    else{
+    else {
       arguments['0'] = config.mode;
     }
 
-    var this_ = (this.name == "ImageSequencer")?this:this.sequencer;
-    var args = (this.name == "ImageSequencer")?[]:[this.images];
+    var this_ = (this.name == "ImageSequencer") ? this : this.sequencer;
+    var args = (this.name == "ImageSequencer") ? [] : [this.images];
     for (var arg in arguments) args.push(copy(arguments[arg]));
 
-    var callback = function() {};
+    var callback = function() { };
     for (var arg in args)
-    if(objTypeOf(args[arg]) == "Function")
-    callback = args.splice(arg,1)[0];
+      if (objTypeOf(args[arg]) == "Function")
+        callback = args.splice(arg, 1)[0];
 
-    var json_q = formatInput.call(this_,args,"r");
+    var json_q = formatInput.call(this_, args, "r");
 
-    require('./Run')(this_, json_q, callback,index,progressObj);
+    require('./Run')(this_, json_q, callback, index, progressObj);
 
     return true;
   }
@@ -47708,9 +47708,9 @@ ImageSequencer = function ImageSequencer(options) {
     var args = [];
     var sequencer = this;
     for (var arg in arguments) args.push(copy(arguments[arg]));
-    var json_q = formatInput.call(this,args,"l");
+    var json_q = formatInput.call(this, args, "l");
 
-    inputlog.push({method:"loadImages", json_q:copy(json_q)});
+    inputlog.push({ method: "loadImages", json_q: copy(json_q) });
     var loadedimages = this.copy(json_q.loadedimages);
 
     var ret = {
@@ -47726,12 +47726,12 @@ ImageSequencer = function ImageSequencer(options) {
     };
 
     function load(i) {
-      if(i==loadedimages.length) {
+      if (i == loadedimages.length) {
         json_q.callback.call(ret);
         return;
       }
       var img = loadedimages[i];
-      require('./ui/LoadImage')(sequencer,img,json_q.images[img],function(){
+      require('./ui/LoadImage')(sequencer, img, json_q.images[img], function() {
         load(++i);
       });
     }
@@ -47739,34 +47739,34 @@ ImageSequencer = function ImageSequencer(options) {
     load(0);
   }
 
-  function replaceImage(selector,steps,options) {
+  function replaceImage(selector, steps, options) {
     options = options || {};
-    options.callback = options.callback || function() {};
-    return require('./ReplaceImage')(this,selector,steps,options);
+    options.callback = options.callback || function() { };
+    return require('./ReplaceImage')(this, selector, steps, options);
   }
 
   function setUI(UI) {
     this.events = require('./ui/UserInterface')(UI);
   }
 
-  var exportBin = function(dir,basic) {
-    return require('./ExportBin')(dir,this,basic);
+  var exportBin = function(dir, basic) {
+    return require('./ExportBin')(dir, this, basic);
   }
 
   function modulesInfo(name) {
     var modulesdata = {}
-    if(name == "load-image") return {};
-    if(arguments.length==0)
-    for (var modulename in modules) {
-      modulesdata[modulename] = modules[modulename][1];
-    }
+    if (name == "load-image") return {};
+    if (arguments.length == 0)
+      for (var modulename in modules) {
+        modulesdata[modulename] = modules[modulename][1];
+      }
     else modulesdata = modules[name][1];
     return modulesdata;
   }
 
   // Strigifies the current sequence
   function toString(step) {
-    if(step) {
+    if (step) {
       return stepToString(step);
     } else {
       return copy(this.images.image1.steps).map(stepToString).slice(1).join(',');
@@ -47778,7 +47778,7 @@ ImageSequencer = function ImageSequencer(options) {
     let inputs = copy(modulesInfo(step.options.name).inputs);
     inputs = inputs || {};
 
-    for(let input in inputs) {
+    for (let input in inputs) {
       inputs[input] = step.options[input] || inputs[input].default;
       inputs[input] = encodeURIComponent(inputs[input]);
     }
@@ -47788,19 +47788,19 @@ ImageSequencer = function ImageSequencer(options) {
   }
 
   // exports the current sequence as an array of JSON steps
-  function toJSON(str){
+  function toJSON(str) {
     return this.stringToJSON(this.toString());
   }
 
   // Coverts stringified sequence into an array of JSON steps
-  function stringToJSON(str){
+  function stringToJSON(str) {
     let steps = str.split(',');
     return steps.map(stringToJSONstep);
   }
 
   // Converts one stringified step into JSON
-  function stringToJSONstep(str){
-    if(str.indexOf('(') === -1) { // if there are no settings specified
+  function stringToJSONstep(str) {
+    if (str.indexOf('(') === -1) { // if there are no settings specified
       var moduleName = str.substr(0);
       stepSettings = "";
     } else {
@@ -47808,9 +47808,9 @@ ImageSequencer = function ImageSequencer(options) {
       stepSettings = str.slice(str.indexOf('(') + 1, -1);
     }
 
-    stepSettings = stepSettings.split('|').reduce(function formatSettings(accumulator, current, i){
+    stepSettings = stepSettings.split('|').reduce(function formatSettings(accumulator, current, i) {
       var settingName = current.substr(0, current.indexOf(':')),
-      settingValue = current.substr(current.indexOf(':') + 1);
+        settingValue = current.substr(current.indexOf(':') + 1);
       settingValue = settingValue.replace(/^\(/, '').replace(/\)$/, ''); // strip () at start/end
       settingValue = decodeURIComponent(settingValue);
       current = [
@@ -47822,50 +47822,50 @@ ImageSequencer = function ImageSequencer(options) {
     }, {});
 
     return {
-      name : moduleName,
+      name: moduleName,
       options: stepSettings
     }
   }
 
   // imports a string into the sequencer steps
-  function importString(str){
+  function importString(str) {
     let sequencer = this;
-    if(this.name != "ImageSequencer")
-    sequencer = this.sequencer;
+    if (this.name != "ImageSequencer")
+      sequencer = this.sequencer;
     var stepsFromString = stringToJSON(str);
     stepsFromString.forEach(function eachStep(stepObj) {
-      sequencer.addSteps(stepObj.name,stepObj.options);
+      sequencer.addSteps(stepObj.name, stepObj.options);
     });
   }
 
   // imports a array of JSON steps into the sequencer steps
-  function importJSON(obj){
+  function importJSON(obj) {
     let sequencer = this;
-    if(this.name != "ImageSequencer")
-    sequencer = this.sequencer;
+    if (this.name != "ImageSequencer")
+      sequencer = this.sequencer;
     obj.forEach(function eachStep(stepObj) {
-      sequencer.addSteps(stepObj.name,stepObj.options);
+      sequencer.addSteps(stepObj.name, stepObj.options);
     });
   }
 
-  function loadNewModule(name,options){
+  function loadNewModule(name, options) {
 
-    if(!options) {
+    if (!options) {
       return this;
-    }
-    else if(Array.isArray(options)) {
+    } else if (Array.isArray(options)) {
       // contains the array of module and info
       this.module[name] = options;
 
-    } else  if(options.func && options.info) {
+    } else if (options.func && options.info) {
       // passed in options object
       this.modules[name] = [
         options.func, options.info
-      ]
-    } else if(options.path&&!this.inBrowser) {
+      ];
+    } else if (options.path && !this.inBrowser) {
       // load from path(only in node)
       const module = [
-        require(`${options.path}/Module.js`), require(`${options.path}/info.json`)
+        require(`${options.path}/Module.js`),
+        require(`${options.path}/info.json`)
       ];
       this.modules[name] = module;
     }
@@ -48045,8 +48045,8 @@ module.exports = ReplaceImage;
 },{}],143:[function(require,module,exports){
 const getStepUtils = require('./util/getStep.js');
 
-function Run(ref, json_q, callback,ind, progressObj) {
-  if (!progressObj) progressObj = { stop: function () { } };
+function Run(ref, json_q, callback, ind, progressObj) {
+  if (!progressObj) progressObj = { stop: function() { } };
 
   function drawStep(drawarray, pos) {
     if (pos == drawarray.length && drawarray[pos - 1] !== undefined) {
@@ -48066,10 +48066,10 @@ function Run(ref, json_q, callback,ind, progressObj) {
       var input = ref.images[image].steps[i - 1].output;
 
       ref.images[image].steps[i].getStep = function getStep(offset) {
-        if(i + offset >= ref.images[image].steps.length) return {options:{name:undefined}};
+        if (i + offset >= ref.images[image].steps.length) return { options: { name: undefined } };
         else return ref.images[image].steps.slice(i + offset)[0];
       };
-      ref.images[image].steps[i].getIndex = function getIndex(){
+      ref.images[image].steps[i].getIndex = function getIndex() {
         return i;
       }
 
@@ -48082,6 +48082,7 @@ function Run(ref, json_q, callback,ind, progressObj) {
       // Tell UI that a step is being drawn.
       ref.images[image].steps[i].UI.onDraw(ref.images[image].steps[i].options.step);
 
+      // provides a set of standard tools for each step
       var inputForNextStep = require('./RunToolkit')(ref.copy(input));
 
       ref.images[image].steps[i].draw(
@@ -48116,7 +48117,7 @@ function Run(ref, json_q, callback,ind, progressObj) {
   function filter(json_q) {
     for (var image in json_q) {
       if (json_q[image] == 0 && ref.images[image].steps.length == 1)
-      delete json_q[image];
+        delete json_q[image];
       else if (json_q[image] == 0) json_q[image]++;
     }
     for (var image in json_q) {
@@ -48138,12 +48139,12 @@ module.exports = Run;
 
 },{"./RunToolkit":144,"./util/getStep.js":198}],144:[function(require,module,exports){
 const getPixels = require('get-pixels');
-const pixelManipulation = require('./modules/_nomodule/PixelManipulation')
-const lodash = require('lodash')
+const pixelManipulation = require('./modules/_nomodule/PixelManipulation');
+const lodash = require('lodash');
 const dataUriToBuffer = require('data-uri-to-buffer');
-const savePixels =  require('save-pixels');
+const savePixels = require('save-pixels');
 
-module.exports = function(input){
+module.exports = function(input) {
     input.getPixels = getPixels;
     input.pixelManipulation = pixelManipulation;
     input.lodash = lodash;

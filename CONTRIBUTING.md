@@ -58,9 +58,20 @@ module.exports = function ModuleName(options,UI) {
 }
 ```
 
-Modules can be distributed independently via npm, yarn and cdn(for browser). `require` syntax should not be used if the module is intended to be used inside the browser.
-Any Independent Module Must follow this basic format
+Image Sequencer is designed to be run either in the browser or in a Node.js environment. For dynamically loaded modules, that means that any uses of `require()` to include an external library must be compiled using a system like `browserify` or `webpack` to ensure browser compatibility. An example of this can be found here:
 
+https://github.com/tech4gt/image-sequencer
+
+If you wish to offer a module without browser-compatibility, please indicate this in the returned `info` object as:
+
+module.exports = [
+  ModuleName,
+  { only: ['node'] }
+];
+
+If you believe that full cross-compatibility is possible, but need help, please open an issue on your module's issue tracker requesting assistance (and potentially link to it from an inline comment or the module description).
+
+Any Independent Module Must follow this basic format
 ```js
 function ModuleName(options,UI) {
 
@@ -84,16 +95,18 @@ function ModuleName(options,UI) {
     UI: UI
   };
 }
-/* Info can be defined here or imported from a json file */
-var info = {
+
+  module.exports = [ModuleName,{
       "name": "ModuleName",
       "description": "",
       "inputs": {
         // inputs here
-      };
-      // var info = require('./info.json') This only works in node
-
-  module.exports = [ModuleName,info];
+      }
+      /* Info can be defined here or imported from a json file */
+      // require('./info.json') This only works in node
+      // In a module compiled with browserify or webpack, a require() can be used to
+      // load a standard info.json file.
+      ];
 ```
 
 
