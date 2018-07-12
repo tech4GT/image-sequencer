@@ -58,7 +58,7 @@ module.exports = function ModuleName(options,UI) {
 }
 ```
 
-Image Sequencer is designed to be run either in the browser or in a Node.js environment. For dynamically loaded modules, that means that any uses of `require()` to include an external library must be compiled using a system like `browserify` or `webpack` to ensure browser compatibility. An example of this can be found here:
+Image Sequencer modules are designed to be run either in the browser or in a Node.js environment. For dynamically loaded modules, that means that any uses of `require()` to include an external library must be compiled using a system like `browserify` or `webpack` to ensure browser compatibility. An example of this can be found here:
 
 https://github.com/tech4gt/image-sequencer
 

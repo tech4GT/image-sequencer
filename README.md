@@ -279,7 +279,7 @@ return value: **`sequencer`** (To allow method chaining)
 
 ### Importing an independent module
 
-The `loadNewModule` method can be used to import a new module inside sequencer. Modules can be downloaded via npm, yarn or cdn and are imported with a custom name. If you wish to load a new module at runtime, it will need to avoid usingrequire()-- unless it is compiled with a system like browserify or webpack.
+The `loadNewModule` method can be used to import a new module inside sequencer. Modules can be downloaded via npm, yarn or cdn and are imported with a custom name. If you wish to load a new module at runtime, it will need to avoid using `require()` -- unless it is compiled with a system like browserify or webpack.
 
 ```js
 const module = require('sequencer-moduleName')
