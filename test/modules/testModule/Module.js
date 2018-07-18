@@ -1,14 +1,27 @@
-module.exports = function testModule(options, UI) {
+module.exports = function Dynamic(options, UI, util) {
+  // Tests for functions that are available inside modules only
 
   var output;
+
+  // This function is called on every draw.
   function draw(input, callback) {
 
-    var output = function(input) {
-      return input;
+    var step = this;
+
+    this.getPreviousStep();
+    this.getNextStep();
+    this.getInput(1);
+    this.getOutput(1);
+    this.getOptions();
+    this.getFormat();
+    this.setOptions({});
+    this.getHeight((() => { }));
+    this.getWidth(() => { });
+
+    function output(image, datauri, mimetype) {
+      step.output = input;
     }
 
-    this.output = output(input); // run the output and assign it to this.output
-    callback();
   }
 
   return {
