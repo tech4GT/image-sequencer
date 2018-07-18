@@ -1,6 +1,6 @@
 if (typeof window !== 'undefined') { isBrowser = true }
 else { var isBrowser = false }
-require('./util/getStep.js')
+require('./util/getStep.js');
 
 ImageSequencer = function ImageSequencer(options) {
 
@@ -45,6 +45,14 @@ ImageSequencer = function ImageSequencer(options) {
     inputlog = [],
     events = require('./ui/UserInterface')(),
     fs = require('fs');
+
+
+
+  if (options.inBrowser) {
+    for (o in sequencer) {
+      modules[o] = sequencer[o];
+    }
+  }
 
   // if in browser, prompt for an image
   // if (options.imageSelect || options.inBrowser) addStep('image-select');
@@ -292,6 +300,30 @@ ImageSequencer = function ImageSequencer(options) {
     });
   }
 
+  function loadNewModule(name, options) {
+
+    if (!options) {
+      return this;
+    } else if (Array.isArray(options)) {
+      // contains the array of module and info
+      this.module[name] = options;
+
+    } else if (options.func && options.info) {
+      // passed in options object
+      this.modules[name] = [
+        options.func, options.info
+      ];
+    } else if (options.path && !this.inBrowser) {
+      // load from path(only in node)
+      const module = [
+        require(`${options.path}/Module.js`),
+        require(`${options.path}/info.json`)
+      ];
+      this.modules[name] = module;
+    }
+    return this;
+  }
+
   return {
     //literals and objects
     name: "ImageSequencer",
@@ -319,6 +351,7 @@ ImageSequencer = function ImageSequencer(options) {
     stringToJSONstep: stringToJSONstep,
     importString: importString,
     importJSON: importJSON,
+    loadNewModule: loadNewModule,
 
     //other functions
     log: log,
