@@ -40,6 +40,7 @@ ImageSequencer = function ImageSequencer(options) {
   var image,
     steps = [],
     modules = require('./Modules'),
+    metaModules = require('./MetaModules.json'),
     formatInput = require('./FormatInput'),
     images = {},
     inputlog = [],
@@ -52,6 +53,7 @@ ImageSequencer = function ImageSequencer(options) {
     for (o in sequencer) {
       modules[o] = sequencer[o];
     }
+    // TODO--import meta modules
   }
 
   // if in browser, prompt for an image
@@ -208,11 +210,20 @@ ImageSequencer = function ImageSequencer(options) {
   function modulesInfo(name) {
     var modulesdata = {}
     if (name == "load-image") return {};
-    if (arguments.length == 0)
+    if (arguments.length == 0) {
       for (var modulename in modules) {
         modulesdata[modulename] = modules[modulename][1];
       }
-    else modulesdata = modules[name][1];
+      for (var modulename in metaModules) {
+        modulesdata[modulename] = metaModules[modulename];
+      }
+    }
+    else {
+      if (modules[name])
+        modulesdata = modules[name][1];
+      else
+        modulesdata = { 'inputs': metaModules[name]['options'] };
+    }
     return modulesdata;
   }
 
@@ -246,7 +257,11 @@ ImageSequencer = function ImageSequencer(options) {
 
   // Coverts stringified sequence into an array of JSON steps
   function stringToJSON(str) {
-    let steps = str.split(',');
+    let steps;
+    if (str.includes(','))
+      steps = str.split(',');
+    else
+      steps = [str];
     return steps.map(stringToJSONstep);
   }
 
@@ -324,12 +339,37 @@ ImageSequencer = function ImageSequencer(options) {
     return this;
   }
 
+  function saveMetaModule(name, sequenceString) {
+    const sequence = stringToJSON(sequenceString);
+    // Save the given sequence string as a module
+    if (options.inBrowser) {
+      // Inside the browser we save the meta-modules using the Web Storage API
+      // TODO
+    }
+    else {
+      // In node we save the modules in the json file MetaModules.json
+      var metaModules = require('./MetaModules.json');
+      metaModules[name] = sequence;
+      fs.writeFileSync('./src/MetaModules.json', JSON.stringify(metaModules));
+    }
+  }
+  function loadModules() {
+    // This function loads the modules and meta-modules
+    this.modules = require('./Modules');
+    if (options.inBrowser) {
+      // TODO
+    }
+    else
+      this.metaModules = require('./MetaModules.json');
+  }
+
   return {
     //literals and objects
     name: "ImageSequencer",
     options: options,
     inputlog: inputlog,
     modules: modules,
+    metaModules: metaModules,
     images: images,
     events: events,
 
@@ -352,6 +392,8 @@ ImageSequencer = function ImageSequencer(options) {
     importString: importString,
     importJSON: importJSON,
     loadNewModule: loadNewModule,
+    saveMetaModule: saveMetaModule,
+    loadModules: loadModules,
 
     //other functions
     log: log,

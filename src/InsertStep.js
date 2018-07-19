@@ -2,10 +2,15 @@ const getStepUtils = require('./util/getStep.js');
 
 // insert one or more steps at a given index in the sequencer
 function InsertStep(ref, image, index, name, o) {
+  if (ref.metaModules[name]) {
+    return ref.importJSON(ref.metaModules[name]);
+  }
 
   function insertStep(image, index, name, o_) {
     if (ref.modules[name]) var moduleInfo = ref.modules[name][1];
-    else console.log('Module ' + name + ' not found.');
+    else {
+      console.log('Module ' + name + ' not found.');
+    }
 
     var o = ref.copy(o_);
     o.number = ref.options.sequencerCounter++; //Gives a Unique ID to each step
