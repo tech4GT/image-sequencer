@@ -48026,7 +48026,7 @@ function InsertStep(ref, image, index, name, o) {
 module.exports = InsertStep;
 
 },{"./util/getStep.js":199}],141:[function(require,module,exports){
-module.exports={}
+module.exports={"sample":[{"name":"invert","options":{}},{"name":"channel","options":{"channel":"red"}},{"name":"blur","options":{"blur":"5"}}]}
 },{}],142:[function(require,module,exports){
 /*
 * Core modules and their info files
