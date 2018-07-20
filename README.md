@@ -461,6 +461,13 @@ sequencer.insertSteps({
 ```
 return value: **`sequencer`** (To allow method chaining)
 
+##Meta Modules
+
+Image sequencer supports saving a sequence of modules and their associated settings(a stringified sequence) as a `meta-module`. These meta-modules are saved in the local storage inside the browser and inside a json file in node.js. Meta-modules can be saved in node context using the CLI option
+```shell
+--save-as-meta-module "name stringified-sequence"
+```
+
 
 ## Creating a User Interface
 
