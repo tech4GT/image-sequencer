@@ -467,7 +467,7 @@ Image sequencer supports saving a sequence of modules and their associated setti
 ```shell
 --save-as-meta-module "name stringified-sequence"
 ```
-
+Sequencer supports a function `sequencer.saveMetaModule(name,sequenceString)` which saves the given string as a meta module. The function `sequencer.loadModules()` reloads the modules and meta modules into `sequencer.modules` and `sequencer.metaModules`
 
 ## Creating a User Interface
 
