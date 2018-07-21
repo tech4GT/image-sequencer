@@ -28,8 +28,11 @@ if (program.saveAsMetaModule) {
   sequencer.saveMetaModule(params[0], params[1]);
 } else if (program.registerModule) {
   var params = program.registerModule.split(' ');
+  var spinner = Spinner("Now Installing...").start();
+  require('child_process').execSync(`npm i ${params[1]}`)
   sequencer.saveNewModule(params[0], params[1]);
   sequencer.loadNewModule(params[0], require(params[1]));
+  spinner.stop();
 } else {
   // Parse step into an array to allow for multiple steps.
   if (!program.step) exit("No steps passed");
