@@ -47887,7 +47887,7 @@ ImageSequencer = function ImageSequencer(options) {
       return this;
     } else if (Array.isArray(options)) {
       // contains the array of module and info
-      this.module[name] = options;
+      this.modules[name] = options;
 
     } else if (options.func && options.info) {
       // passed in options object
@@ -47903,6 +47903,16 @@ ImageSequencer = function ImageSequencer(options) {
       this.modules[name] = module;
     }
     return this;
+  }
+
+  function saveNewModule(name, path) {
+    if (options.inBrowser) {
+      // Not for browser context
+      return;
+    }
+    var mods = fs.readFileSync('./src/Modules.js').toString();
+    mods = mods.substr(0, mods.length - 1) + "  '" + name + "': require('" + path + "'),\n}";
+    fs.writeFileSync('./src/Modules.js', mods);
   }
 
   function saveMetaModule(name, sequenceString) {
@@ -47959,6 +47969,7 @@ ImageSequencer = function ImageSequencer(options) {
     importString: importString,
     importJSON: importJSON,
     loadNewModule: loadNewModule,
+    saveNewModule: saveNewModule,
     saveMetaModule: saveMetaModule,
     loadModules: loadModules,
 
@@ -48026,7 +48037,7 @@ function InsertStep(ref, image, index, name, o) {
 module.exports = InsertStep;
 
 },{"./util/getStep.js":199}],141:[function(require,module,exports){
-module.exports={"sample":[{"name":"invert","options":{}},{"name":"channel","options":{"channel":"red"}},{"name":"blur","options":{"blur":"5"}}]}
+module.exports={"sample":[{"name":"invert","options":{}},{"name":"channel","options":{"channel":"red"}},{"name":"blur","options":{"blur":"5"}}],"meta":[{"name":"invert","options":{}},{"name":"channel","options":{"channel":"red"}}]}
 },{}],142:[function(require,module,exports){
 /*
 * Core modules and their info files
@@ -48046,9 +48057,8 @@ module.exports = {
   'average': require('./modules/Average'),
   'blend': require('./modules/Blend'),
   'import-image': require('./modules/ImportImage'),
-  'invert': require('image-sequencer-invert')
+  'invert': require('image-sequencer-invert'),
 }
-
 },{"./modules/Average":147,"./modules/Blend":150,"./modules/Blur":154,"./modules/Brightness":157,"./modules/Channel":160,"./modules/Colormap":164,"./modules/Crop":169,"./modules/DecodeQr":172,"./modules/Dynamic":175,"./modules/EdgeDetect":179,"./modules/FisheyeGl":182,"./modules/ImportImage":186,"./modules/Ndvi":189,"./modules/Saturation":192,"image-sequencer-invert":56}],143:[function(require,module,exports){
 // Uses a given image as input and replaces it with the output.
 // Works only in the browser.

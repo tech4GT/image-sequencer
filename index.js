@@ -20,13 +20,17 @@ program
   .option("-b, --basic", "Basic mode outputs only final image")
   .option("-c, --config [Object]", "Options for the step")
   .option("--save-as-meta-module [string]", "Name space separated with Stringified sequence")
+  .option('--register-module [string]', "Module name space seaprated npm package name")
   .parse(process.argv);
 
 if (program.saveAsMetaModule) {
   var params = program.saveAsMetaModule.split(' ');
   sequencer.saveMetaModule(params[0], params[1]);
-}
-else {
+} else if (program.registerModule) {
+  var params = program.registerModule.split(' ');
+  sequencer.saveNewModule(params[0], params[1]);
+  sequencer.loadNewModule(params[0], require(params[1]));
+} else {
   // Parse step into an array to allow for multiple steps.
   if (!program.step) exit("No steps passed");
   program.step = program.step.split(" ");

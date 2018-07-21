@@ -16,5 +16,5 @@ module.exports = {
   'average': require('./modules/Average'),
   'blend': require('./modules/Blend'),
   'import-image': require('./modules/ImportImage'),
-  'invert': require('image-sequencer-invert')
+  'invert': require('image-sequencer-invert'),
 }

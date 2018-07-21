@@ -325,7 +325,7 @@ ImageSequencer = function ImageSequencer(options) {
       return this;
     } else if (Array.isArray(options)) {
       // contains the array of module and info
-      this.module[name] = options;
+      this.modules[name] = options;
 
     } else if (options.func && options.info) {
       // passed in options object
@@ -341,6 +341,16 @@ ImageSequencer = function ImageSequencer(options) {
       this.modules[name] = module;
     }
     return this;
+  }
+
+  function saveNewModule(name, path) {
+    if (options.inBrowser) {
+      // Not for browser context
+      return;
+    }
+    var mods = fs.readFileSync('./src/Modules.js').toString();
+    mods = mods.substr(0, mods.length - 1) + "  '" + name + "': require('" + path + "'),\n}";
+    fs.writeFileSync('./src/Modules.js', mods);
   }
 
   function saveMetaModule(name, sequenceString) {
@@ -397,6 +407,7 @@ ImageSequencer = function ImageSequencer(options) {
     importString: importString,
     importJSON: importJSON,
     loadNewModule: loadNewModule,
+    saveNewModule: saveNewModule,
     saveMetaModule: saveMetaModule,
     loadModules: loadModules,
 
