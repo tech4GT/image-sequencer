@@ -97,8 +97,8 @@ sequencer.loadImages(program.image, function() {
 
       if (program.config) {
         try {
-          program.config = JSON.parse(program.config);
-          console.log(`The parsed options object: `, program.config);
+          var config = JSON.parse(program.config);
+          console.log(`The parsed options object: `, config);
         } catch (e) {
           console.error(
             "\x1b[31m%s\x1b[0m",
@@ -108,10 +108,10 @@ sequencer.loadImages(program.image, function() {
           console.log(e);
         }
       }
-      if (program.config && validateConfig(program.config, options)) {
+      if (program.config && validateConfig(config, options)) {
         console.log("Now using Options object");
         Object.keys(options).forEach(function(input) {
-          options[input] = program.config[input];
+          options[input] = config[input];
         });
       } else {
         // If inputs exist, iterate through them and prompt for values.
