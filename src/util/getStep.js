@@ -35,13 +35,15 @@ module.exports = {
         let img = new Image();
         img.onload = function() {
             callback(img.height);
-        }
+        };
+        img.src = this.getInput(0).src;
     },
 
     getWidth: function(callback) {
         let img = new Image();
         img.onload = function() {
             callback(img.width);
-        }
+        };
+        img.src = this.getInput(0).src;
     }
 }
