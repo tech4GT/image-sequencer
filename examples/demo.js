@@ -28,8 +28,8 @@ window.onload = function() {
   $("#addStep select").on("change", ui.selectNewStepUi);
   $("#addStep button").on("click", ui.addStepUi);
   $('body').on('click', 'button.remove', ui.removeStepUi);
-  $('#save-meta').click(() => {
-    sequencer.saveMetaModule(window.prompt("Please give a name to your sequence..."), sequencer.toString());
+  $('#save-seq').click(() => {
+    sequencer.saveSequence(window.prompt("Please give a name to your sequence..."), sequencer.toString());
     sequencer.loadModules();
     refreshOptions();
   });

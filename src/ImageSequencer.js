@@ -40,7 +40,7 @@ ImageSequencer = function ImageSequencer(options) {
   var image,
     steps = [],
     modules = require('./Modules'),
-    metaModules = require('./MetaModules.json'),
+    sequences = require('./SavedSequences.json'),
     formatInput = require('./FormatInput'),
     images = {},
     inputlog = [],
@@ -53,10 +53,10 @@ ImageSequencer = function ImageSequencer(options) {
     for (o in sequencer) {
       modules[o] = sequencer[o];
     }
-    metaModules = JSON.parse(window.localStorage.getItem('metaModules'));
-    if (!metaModules) {
-      metaModules = {};
-      window.localStorage.setItem('metaModules', JSON.stringify(metaModules));
+    sequences = JSON.parse(window.localStorage.getItem('sequences'));
+    if (!sequences) {
+      sequences = {};
+      window.localStorage.setItem('sequences', JSON.stringify(sequences));
     }
   }
 
@@ -218,15 +218,15 @@ ImageSequencer = function ImageSequencer(options) {
       for (var modulename in this.modules) {
         modulesdata[modulename] = modules[modulename][1];
       }
-      for (var modulename in this.metaModules) {
-        modulesdata[modulename] = { name: modulename, steps: metaModules[modulename] };
+      for (var sequencename in this.sequences) {
+        modulesdata[sequencename] = { name: sequencename, steps: sequences[sequencename] };
       }
     }
     else {
       if (modules[name])
         modulesdata = modules[name][1];
       else
-        modulesdata = { 'inputs': metaModules[name]['options'] };
+        modulesdata = { 'inputs': sequences[name]['options'] };
     }
     return modulesdata;
   }
@@ -323,6 +323,7 @@ ImageSequencer = function ImageSequencer(options) {
 
     if (!options) {
       return this;
+
     } else if (Array.isArray(options)) {
       // contains the array of module and info
       this.modules[name] = options;
@@ -332,6 +333,7 @@ ImageSequencer = function ImageSequencer(options) {
       this.modules[name] = [
         options.func, options.info
       ];
+
     } else if (options.path && !this.inBrowser) {
       // load from path(only in node)
       const module = [
@@ -353,29 +355,43 @@ ImageSequencer = function ImageSequencer(options) {
     fs.writeFileSync('./src/Modules.js', mods);
   }
 
-  function saveMetaModule(name, sequenceString) {
+  function createMetaModule(stepsCollection, info) {
+    var stepsArr = stepsCollection;
+    if (typeof stepsCollection === 'string')
+      stepsArr = stringToJSON(stepsCollection);
+    var metaMod = function() {
+      this.expandSteps(stepsArr);
+      return {
+        isMeta: true
+      }
+    }
+    return [metaMod, info];
+  }
+
+  function saveSequence(name, sequenceString) {
     const sequence = stringToJSON(sequenceString);
     // Save the given sequence string as a module
     if (options.inBrowser) {
       // Inside the browser we save the meta-modules using the Web Storage API
-      var metaModules = JSON.parse(window.localStorage.getItem('metaModules'));
-      metaModules[name] = sequence;
-      window.localStorage.setItem('metaModules', JSON.stringify(metaModules));
+      var sequences = JSON.parse(window.localStorage.getItem('sequences'));
+      sequences[name] = sequence;
+      window.localStorage.setItem('sequences', JSON.stringify(sequences));
     }
     else {
-      // In node we save the modules in the json file MetaModules.json
-      var metaModules = require('./MetaModules.json');
-      metaModules[name] = sequence;
-      fs.writeFileSync('./src/MetaModules.json', JSON.stringify(metaModules));
+      // In node we save the sequences in the json file SavedSequences.json
+      var sequences = require('./SavedSequences.json');
+      sequences[name] = sequence;
+      fs.writeFileSync('./src/SavedSequences.json', JSON.stringify(sequences));
     }
   }
+
   function loadModules() {
-    // This function loads the modules and meta-modules
+    // This function loads the modules and saved sequences
     this.modules = require('./Modules');
     if (options.inBrowser)
-      this.metaModules = JSON.parse(window.localStorage.getItem('metaModules'));
+      this.sequences = JSON.parse(window.localStorage.getItem('sequences'));
     else
-      this.metaModules = require('./MetaModules.json');
+      this.sequences = require('./SavedSequences.json');
   }
 
   return {
@@ -384,7 +400,7 @@ ImageSequencer = function ImageSequencer(options) {
     options: options,
     inputlog: inputlog,
     modules: modules,
-    metaModules: metaModules,
+    sequences: sequences,
     images: images,
     events: events,
 
@@ -408,7 +424,8 @@ ImageSequencer = function ImageSequencer(options) {
     importJSON: importJSON,
     loadNewModule: loadNewModule,
     saveNewModule: saveNewModule,
-    saveMetaModule: saveMetaModule,
+    createMetaModule: createMetaModule,
+    saveSequence: saveSequence,
     loadModules: loadModules,
 
     //other functions

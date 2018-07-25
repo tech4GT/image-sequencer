@@ -17,4 +17,5 @@ module.exports = {
   'blend': require('./modules/Blend'),
   'import-image': require('./modules/ImportImage'),
   'invert': require('image-sequencer-invert'),
+  'ndvi-colormap': require('./modules/NdviColormap'),
 }

@@ -19,13 +19,13 @@ program
   .option("-o, --output [PATH]", "Directory where output will be stored.")
   .option("-b, --basic", "Basic mode outputs only final image")
   .option("-c, --config [Object]", "Options for the step")
-  .option("--save-as-meta-module [string]", "Name space separated with Stringified sequence")
+  .option("--save-sequence [string]", "Name space separated with Stringified sequence")
   .option('--register-module [string]', "Module name space seaprated npm package name")
   .parse(process.argv);
 
-if (program.saveAsMetaModule) {
-  var params = program.saveAsMetaModule.split(' ');
-  sequencer.saveMetaModule(params[0], params[1]);
+if (program.saveSequence) {
+  var params = program.saveSequence.split(' ');
+  sequencer.saveSequence(params[0], params[1]);
 } else if (program.registerModule) {
   var params = program.registerModule.split(' ');
   var spinner = Spinner("Now Installing...").start();
