@@ -20,14 +20,14 @@ program
   .option("-b, --basic", "Basic mode outputs only final image")
   .option("-c, --config [Object]", "Options for the step")
   .option("--save-sequence [string]", "Name space separated with Stringified sequence")
-  .option('--register-module [string]', "Module name space seaprated npm package name")
+  .option('--install-module [string]', "Module name space seaprated npm package name")
   .parse(process.argv);
 
 if (program.saveSequence) {
   var params = program.saveSequence.split(' ');
   sequencer.saveSequence(params[0], params[1]);
-} else if (program.registerModule) {
-  var params = program.registerModule.split(' ');
+} else if (program.installModule) {
+  var params = program.installModule.split(' ');
   var spinner = Spinner("Now Installing...").start();
   require('child_process').execSync(`npm i ${params[1]}`)
   sequencer.saveNewModule(params[0], params[1]);
