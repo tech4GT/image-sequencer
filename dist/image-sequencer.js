@@ -47814,8 +47814,15 @@ ImageSequencer = function ImageSequencer(options) {
 
   // Converts one stringified step into JSON
   function stringToJSONstep(str) {
-    var bracesStrings = ['{', '}'];
-    if (str.includes('(') && str.indexOf('(') < str.indexOf('{')) bracesStrings = ['(', ')'];
+    var bracesStrings;
+    if (str.includes('{'))
+      if (str.includes('(') && str.indexOf('(') < str.indexOf('{'))
+        bracesStrings = ['(', ')'];
+      else
+        bracesStrings = ['{', '}'];
+    else
+      bracesStrings = ['(', ')'];
+
     if (str.indexOf(bracesStrings[0]) === -1) { // if there are no settings specified
       var moduleName = str.substr(0);
       stepSettings = "";
