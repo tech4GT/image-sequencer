@@ -132,6 +132,15 @@ Or the values can be given through terminal prompt like
 
 <img width="1436" alt="screen shot 2018-02-14 at 5 18 50 pm" src="https://user-images.githubusercontent.com/25617855/36202790-3c6e8204-11ab-11e8-9e17-7f3387ab0158.png">
 
+`save-sequence` option can be used to save a sequence and the associated options for later usage. You should provide a string which contains a name of the sequence space separated from the sequence of steps which constitute it.
+```shell
+sequencer --save-sequence "invert-colormap invert(),colormap()"
+```
+
+`install-module` option can be used to install new modules from npm. You can register this module in your sequencer with a custom name space sepated with the npm package name. Below is an example for the `image-sequencer-invert` module.
+```shell
+sequencer --install-module "invert image-sequencer-invert"
+```
 
 The CLI is also chainable with other commands using `&&`
 

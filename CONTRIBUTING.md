@@ -308,8 +308,8 @@ module.exports = function metaModuleFun(){
 ```js
 //index.js
 module.exports = [
-  require('./Module.js)
-  require('./info.json)
+  require('./Module.js'),
+  require('./info.json')
 ]
 ```
 
@@ -331,3 +331,4 @@ module.export = [
   }
 ]
 ```
+The length is absolutely required for a meta-module, since sequencer is optimized to re-run minimum number of steps when a step is added in the UI which is 1 in the case of normal modules, if the added step is a meta-module the length of the sequence governs the number of steps to re-run.
