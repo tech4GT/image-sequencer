@@ -1,0 +1,6 @@
+{
+    "name": "Colorbar",
+    "description": "Generates a colorbar to lay over the image",
+    "inputs": {},
+    "length": 4
+}
