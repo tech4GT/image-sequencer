@@ -47831,7 +47831,7 @@ ImageSequencer = function ImageSequencer(options) {
   }
 
   // exports the current sequence as an array of JSON steps
-  function toJSON(str) {
+  function toJSON() {
     return this.stringToJSON(this.toString());
   }
 
