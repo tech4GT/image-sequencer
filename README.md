@@ -490,7 +490,7 @@ The function `sequencer.loadModules()` reloads the modules and the saved sequenc
 
 ## String syntax
 
-Image sequencer supports stringifying a sequence which is appended to the url and hence can then be shared. An example below shows the string syntax for `channel` module
+Image sequencer supports stringifying a sequence which is appended to the url and hence can then be shared. An example below shows the string syntax for `channel` and `invert` module
 ```
 channel{channel:green},invert{}
 ```
