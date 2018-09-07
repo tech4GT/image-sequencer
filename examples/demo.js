@@ -51,4 +51,14 @@ window.onload = function() {
       step.options.step.imgElement.src = reader.result;
     }
   });
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js',{scope : '/examples/'})
+    .then(function(registration) {
+      console.log('Registration successful, scope is:', registration.scope);
+    })
+    .catch(function(error) {
+      console.log('Service worker registration failed, error:', error);
+    });
+  }
 };
