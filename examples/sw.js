@@ -37,7 +37,7 @@ const filesToCache = [
   'demo-old.css'
 ];
 
-const staticCacheName = 'pages-cache-v1';
+const staticCacheName = 'image-sequencer-static-v1';
 
 self.addEventListener('install', event => {
   console.log('Attempting to install service worker and cache static assets');
@@ -47,6 +47,22 @@ self.addEventListener('install', event => {
       return cache.addAll(filesToCache);
     })
   );
+});
+
+self.addEventListener('activate', function(e) {
+  console.log('[ServiceWorker] Activate');
+  e.waitUntil(
+    caches.keys().then(function(cacheNames) {
+      return Promise.all(
+        cacheNames.filter(function(cacheName){
+          return cacheName.startsWith('image-sequencer-') &&
+                 cacheName != staticCacheName;
+        }).map(function(cacheName){
+          return cache.delete(cacheName);
+        })
+      );
+    })
+  );      
 });
 
 self.addEventListener('fetch', function(event) {
