@@ -1,40 +1,21 @@
 const filesToCache = [
-  'index.html',
-  'demo.css',
-  '../icons/ic_192.png',
-  'index.html',
-  'demo.js',
-  'lib/defaultHtmlSequencerUi.js',
-  'lib/defaultHtmlStepUi.js',
-  'lib/urlHash.js',
-  'images/tulips.png',
-  '../node_modules/jquery/dist/jquery.min.js',
-  '../node_modules/bootstrap/dist/js/bootstrap.min.js',
-  '../src/ui/prepareDynamic.js',
-  '../dist/image-sequencer.js',
-  '../node_modules/imgareaselect/jquery.imgareaselect.dev.js',
-  '../node_modules/bootstrap/dist/css/bootstrap.min.css',
-  '../node_modules/font-awesome/css/font-awesome.min.css',
-  '../node_modules/imgareaselect/distfiles/css/imgareaselect-default.css',
-  'images/cyan.jpg',
-  'images/diagram-6-steps.png',
-  'images/diagram-workflows.png',
-  'images/grid-crop.png',
-  'images/grid.png',
-  'images/IS-QR.png',
-  'images/load.gif',
-  'images/monarch.png',
-  'images/red.jpg',
-  'images/red.png',
-  'images/replace.jpg',
-  'images/test.gif',
-  'images/test.png',
-  'images/test.png.js',
-  'images/test.gif.js',
-  'images/IS-QR.js',
-  'fisheye.html',
-  'replace.html',
-  'demo-old.css'
+  '/examples/#steps=',
+  '/node_modules/jquery/dist/jquery.min.js',
+  '/node_modules/bootstrap/dist/js/bootstrap.min.js',
+  '/src/ui/prepareDynamic.js',
+  '/dist/image-sequencer.js',
+  '/examples/lib/urlHash.js',
+  '/examples/lib/defaultHtmlStepUi.js',
+  '/examples/lib/defaultHtmlSequencerUi.js',
+  '/examples/demo.js',
+  '/node_modules/imgareaselect/jquery.imgareaselect.dev.js',
+  '/node_modules/bootstrap/dist/css/bootstrap.min.css',
+  '/node_modules/font-awesome/css/font-awesome.min.css',
+  '/node_modules/imgareaselect/distfiles/css/imgareaselect-default.css',
+  '/examples/demo.css',
+  'https://raw.githubusercontent.com/theleagueof/league-spartan/master/_webfonts/leaguespartan-bold.woff2',
+  '/node_modules/font-awesome/fonts/fontawesome-webfont.woff2?v=4.5.0',
+  '/examples/images/tulips.png'
 ];
 
 const staticCacheName = 'image-sequencer-static-v1';
@@ -58,7 +39,7 @@ self.addEventListener('activate', function(e) {
           return cacheName.startsWith('image-sequencer-') &&
                  cacheName != staticCacheName;
         }).map(function(cacheName){
-          return cache.delete(cacheName);
+          return caches.delete(cacheName);
         })
       );
     })
@@ -66,6 +47,7 @@ self.addEventListener('activate', function(e) {
 });
 
 self.addEventListener('fetch', function(event) {
+  console.log(event.request);
   event.respondWith(
     fetch(event.request).catch(function() {
       return caches.match(event.request);
