@@ -1,0 +1,5 @@
+{
+    "name": "Histogram",
+    "description": "Calculates the histogram for the image",
+    "inputs": {}
+}
