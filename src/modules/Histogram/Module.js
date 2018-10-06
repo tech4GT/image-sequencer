@@ -4,10 +4,11 @@
 module.exports = function Channel(options, UI) {
 
     var output;
-    options.gradient = options.gradient || "true";
-    options.gradient = JSON.parse(options.gradient);
 
     function draw(input, callback, progressObj) {
+
+        options.gradient = options.gradient || "true";
+        options.gradient = JSON.parse(options.gradient);
 
         progressObj.stop(true);
         progressObj.overrideFlag = true;
