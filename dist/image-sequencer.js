@@ -50056,6 +50056,8 @@ module.exports={
 module.exports = function Channel(options, UI) {
 
     var output;
+    options.gradient = options.gradient || "true";
+    options.gradient = JSON.parse(options.gradient);
 
     function draw(input, callback, progressObj) {
 
@@ -50087,20 +50089,23 @@ module.exports = function Channel(options, UI) {
                 }
             }
 
-            for (let x = 0; x < 256; x++) {
-                for (let y = 0; y < 10; y++) {
-                    pixels.set(x, 255 - y, 0, x);
-                    pixels.set(x, 255 - y, 1, x);
-                    pixels.set(x, 255 - y, 2, x);
+            let startY = options.gradient ? 10 : 0;
+            if (options.gradient) {
+                for (let x = 0; x < 256; x++) {
+                    for (let y = 0; y < 10; y++) {
+                        pixels.set(x, 255 - y, 0, x);
+                        pixels.set(x, 255 - y, 1, x);
+                        pixels.set(x, 255 - y, 2, x);
+                    }
                 }
             }
 
-            let convfactor = 246 / Math.max(...hist);
+            let convfactor = (256 - startY) / Math.max(...hist);
 
             for (let x = 0; x < 256; x++) {
                 let pixCount = Math.round(convfactor * hist[x]);
 
-                for (let y = 10; y < pixCount; y++) {
+                for (let y = startY; y < pixCount; y++) {
                     pixels.set(x, 255 - y, 0, 204);
                     pixels.set(x, 255 - y, 1, 255);
                     pixels.set(x, 255 - y, 2, 153);
@@ -50147,7 +50152,17 @@ module.exports = [
 module.exports={
     "name": "Histogram",
     "description": "Calculates the histogram for the image",
-    "inputs": {}
+    "inputs": {
+        "gradient": {
+            "type": "select",
+            "desc": "Toggle the gradient along x-axis",
+            "default": "true",
+            "values": [
+                "true",
+                "false"
+            ]
+        }
+    }
 }
 },{}],200:[function(require,module,exports){
 /*
