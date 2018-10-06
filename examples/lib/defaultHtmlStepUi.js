@@ -71,6 +71,10 @@ function DefaultHtmlStepUi(_sequencer, options) {
             inputDesc.type +
             '" name="' +
             paramName +
+            '" value="' +
+            inputDesc.default +
+            '" placeholder ="' +
+            (inputDesc.placeholder || "") +
             '">';
         }
 
