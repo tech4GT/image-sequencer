@@ -39,8 +39,6 @@ output/
 
 examples/
 icons/
-dist/
-test/
 
 .travis.yml
 Gruntfile.js
