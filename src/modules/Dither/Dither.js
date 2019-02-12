@@ -1,5 +1,5 @@
 module.exports = function Dither(pixels, type) {
-  type = type || "none";
+  type = type;
   let bayerThresholdMap = [
     [15, 135, 45, 165],
     [195, 75, 225, 105],
@@ -31,13 +31,17 @@ module.exports = function Dither(pixels, type) {
     if (type === "none") {
       // No dithering
       pixels.data[currentPixel] = pixels.data[currentPixel] < threshold ? 0 : 255;
+
     } else if (type === "bayer") {
+
       // 4x4 Bayer ordered dithering algorithm
       let x = currentPixel / 4 % w;
       let y = Math.floor(currentPixel / 4 / w);
       let map = Math.floor((pixels.data[currentPixel] + bayerThresholdMap[x % 4][y % 4]) / 2);
       pixels.data[currentPixel] = (map < threshold) ? 0 : 255;
+
     } else if (type === "floydsteinberg") {
+
       // Floyd–Steinberg dithering algorithm
       newPixel = pixels.data[currentPixel] < 129 ? 0 : 255;
       err = Math.floor((pixels.data[currentPixel] - newPixel) / 16);
@@ -47,7 +51,9 @@ module.exports = function Dither(pixels, type) {
       pixels.data[currentPixel + 4 * w - 4] += err * 3;
       pixels.data[currentPixel + 4 * w] += err * 5;
       pixels.data[currentPixel + 4 * w + 4] += err * 1;
+
     } else {
+
       // Bill Atkinson's dithering algorithm
       newPixel = pixels.data[currentPixel] < threshold ? 0 : 255;
       err = Math.floor((pixels.data[currentPixel] - newPixel) / 8);
@@ -59,6 +65,7 @@ module.exports = function Dither(pixels, type) {
       pixels.data[currentPixel + 4 * w] += err;
       pixels.data[currentPixel + 4 * w + 4] += err;
       pixels.data[currentPixel + 8 * w] += err;
+
     }
 
     // Set g and b pixels equal to r
