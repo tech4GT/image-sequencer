@@ -66344,7 +66344,6 @@ module.exports = function Colorbar(options, UI) {
   options.colormap = options.colormap || defaults.colormap;
   options.h = options.h || defaults.h;
 
-  console.log('added colorbar 13');
   var steps = [
     { 'name': 'gradient', 'options': {} },
     { 'name': 'colormap', 'options': { colormap: options.colormap } },
@@ -66352,13 +66351,12 @@ module.exports = function Colorbar(options, UI) {
     { 'name': 'overlay', 'options': { 'x': options.x, 'y': options.y, 'offset': -4 } }
   ];
 
-  var internalSequencer = ImageSequencer({ inBrowser: false });
-  console.log('colorbar setup is', internalSequencer);
+  // ui: false prevents internal logs
+  var internalSequencer = ImageSequencer({ inBrowser: false, ui: false });
 
   function draw(input, callback) {
 
     var step = this;
-    console.log('colorbar draw', input);
 
     internalSequencer.loadImage(input.src, function onAddImage() {
       internalSequencer.importJSON(steps);
