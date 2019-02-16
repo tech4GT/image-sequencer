@@ -1,27 +1,31 @@
-module.exports = function createMetaModule(mapFunction, moduleOptions){
+module.exports = function createMetaModule(mapFunction, moduleOptions) {
 
   moduleOptions = moduleOptions || {};
-  moduleOptions.infoJson = moduleOptions.infoJson || 'info.json';
+  moduleOptions.infoJson = moduleOptions.infoJson || {};
 
   function MetaModule(options, UI) {
 
-    var defaults = require('./getDefaults.js')(require(moduleOptions.infoJson));
+    var defaults = require('./getDefaults.js')(moduleOptions.infoJson);
     var output;
+
+
+    // Parses the options and gets the input which is not available in options from defaults
+    for (key in moduleOptions.infoJson.inputs) {
+      if (moduleOptions.infoJson.inputs.hasOwnProperty(key)) {
+        options[key] = options[key] || defaults[key];
+      }
+    }
 
     // map inputs to internal step options;
     // use this to set defaults for internal steps
     // and to expose internal settings as external meta-module parameters;
     // it must return a steps object
-    var steps = mapFunction(options, defaults);
+    var steps = mapFunction(options);
 
     /* example:
-    function mapFunction(opt, _defaults) { 
-      opt.x = opt.x || _defaults.x;
-      opt.y = opt.y || _defaults.y;
-      opt.colormap = opt.colormap || _defaults.colormap;
-      opt.h = opt.h || _defaults.h;
- 
-      // return steps with options: 
+    function mapFunction(opt, _defaults) {
+
+      // return steps with options:
       return [
         { 'name': 'gradient', 'options': {} },
         { 'name': 'colormap', 'options': { colormap: options.colormap } },
@@ -30,14 +34,14 @@ module.exports = function createMetaModule(mapFunction, moduleOptions){
       ];
     }
     */
- 
+
     // ui: false prevents internal logs
     var internalSequencer = ImageSequencer({ inBrowser: false, ui: false });
- 
+
     function draw(input, callback) {
- 
+
       var step = this;
- 
+
       internalSequencer.loadImage(input.src, function onAddImage() {
         internalSequencer.importJSON(steps);
         internalSequencer.run(function onCallback(internalOutput) {
@@ -45,9 +49,9 @@ module.exports = function createMetaModule(mapFunction, moduleOptions){
           callback();
         });
       });
- 
+
     }
- 
+
     return {
       options: options,
       draw: draw,
@@ -56,5 +60,5 @@ module.exports = function createMetaModule(mapFunction, moduleOptions){
     }
   }
 
-  return MetaModule;
+  return [MetaModule, moduleOptions.infoJson];
 }
