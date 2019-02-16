@@ -65478,19 +65478,6 @@ ImageSequencer = function ImageSequencer(options) {
     fs.writeFileSync('./src/Modules.js', mods);
   }
 
-  function createMetaModule(stepsCollection, info) {
-    var stepsArr = stepsCollection;
-    if (typeof stepsCollection === 'string')
-      stepsArr = stringToJSON(stepsCollection);
-    var metaMod = function() {
-      this.expandSteps(stepsArr);
-      return {
-        isMeta: true
-      }
-    }
-    return [metaMod, info];
-  }
-
   function saveSequence(name, sequenceString) {
     const sequence = stringToJSON(sequenceString);
     // Save the given sequence string as a module
@@ -65548,7 +65535,7 @@ ImageSequencer = function ImageSequencer(options) {
     importJSON: importJSON,
     loadNewModule: loadNewModule,
     saveNewModule: saveNewModule,
-    createMetaModule: createMetaModule,
+    createMetaModule: require('./util/createMetaModule'),
     saveSequence: saveSequence,
     loadModules: loadModules,
 
@@ -65563,7 +65550,7 @@ ImageSequencer = function ImageSequencer(options) {
 }
 module.exports = ImageSequencer;
 
-},{"./AddStep":151,"./ExportBin":152,"./FormatInput":153,"./InsertStep":155,"./Modules":156,"./ReplaceImage":157,"./Run":158,"./SavedSequences.json":160,"./ui/LoadImage":265,"./ui/SetInputStep":266,"./ui/UserInterface":267,"./util/getStep.js":271,"fs":46}],155:[function(require,module,exports){
+},{"./AddStep":151,"./ExportBin":152,"./FormatInput":153,"./InsertStep":155,"./Modules":156,"./ReplaceImage":157,"./Run":158,"./SavedSequences.json":160,"./ui/LoadImage":265,"./ui/SetInputStep":266,"./ui/UserInterface":267,"./util/createMetaModule":270,"./util/getStep.js":272,"fs":46}],155:[function(require,module,exports){
 const getStepUtils = require('./util/getStep.js');
 
 // insert one or more steps at a given index in the sequencer
@@ -65630,7 +65617,7 @@ function InsertStep(ref, image, index, name, o) {
 }
 module.exports = InsertStep;
 
-},{"./util/getStep.js":271}],156:[function(require,module,exports){
+},{"./util/getStep.js":272}],156:[function(require,module,exports){
 /*
 * Core modules and their info files
 */
@@ -65825,7 +65812,7 @@ function Run(ref, json_q, callback, ind, progressObj) {
 }
 module.exports = Run;
 
-},{"./RunToolkit":159,"./util/getStep.js":271}],159:[function(require,module,exports){
+},{"./RunToolkit":159,"./util/getStep.js":272}],159:[function(require,module,exports){
 const getPixels = require('get-pixels');
 const pixelManipulation = require('./modules/_nomodule/PixelManipulation');
 const lodash = require('lodash');
@@ -66009,7 +65996,7 @@ module.exports = function Dynamic(options, UI, util) {
     }
 }
 
-},{"../_nomodule/PixelManipulation.js":264,"./../../util/getDefaults.js":270,"./info.json":166,"get-pixels":29}],165:[function(require,module,exports){
+},{"../_nomodule/PixelManipulation.js":264,"./../../util/getDefaults.js":271,"./info.json":166,"get-pixels":29}],165:[function(require,module,exports){
 arguments[4][162][0].apply(exports,arguments)
 },{"./Module":164,"./info.json":166,"dup":162}],166:[function(require,module,exports){
 module.exports={
@@ -66161,7 +66148,7 @@ module.exports = function Blur(options, UI) {
     }
 }
 
-},{"../_nomodule/PixelManipulation.js":264,"./../../util/getDefaults.js":270,"./Blur":167,"./info.json":170}],169:[function(require,module,exports){
+},{"../_nomodule/PixelManipulation.js":264,"./../../util/getDefaults.js":271,"./Blur":167,"./info.json":170}],169:[function(require,module,exports){
 arguments[4][162][0].apply(exports,arguments)
 },{"./Module":168,"./info.json":170,"dup":162}],170:[function(require,module,exports){
 module.exports={
@@ -66239,7 +66226,7 @@ module.exports = function Brightness(options, UI) {
     }
 }
 
-},{"../_nomodule/PixelManipulation.js":264,"./../../util/getDefaults.js":270,"./info.json":173}],172:[function(require,module,exports){
+},{"../_nomodule/PixelManipulation.js":264,"./../../util/getDefaults.js":271,"./info.json":173}],172:[function(require,module,exports){
 arguments[4][162][0].apply(exports,arguments)
 },{"./Module":171,"./info.json":173,"dup":162}],173:[function(require,module,exports){
 module.exports={
@@ -66310,7 +66297,7 @@ module.exports = function Channel(options, UI) {
   }
 }
 
-},{"../_nomodule/PixelManipulation.js":264,"./../../util/getDefaults.js":270,"./info.json":176}],175:[function(require,module,exports){
+},{"../_nomodule/PixelManipulation.js":264,"./../../util/getDefaults.js":271,"./info.json":176}],175:[function(require,module,exports){
 arguments[4][162][0].apply(exports,arguments)
 },{"./Module":174,"./info.json":176,"dup":162}],176:[function(require,module,exports){
 module.exports={
@@ -66328,49 +66315,25 @@ module.exports={
 }
 
 },{}],177:[function(require,module,exports){
-module.exports = function Colorbar(options, UI) {
+module.exports = require('../../util/createMetaModule.js')(
+  function mapFunction(options, defaults) { 
 
-  var defaults = require('./../../util/getDefaults.js')(require('./info.json'));
-  var output;
-
-  options.x = options.x || defaults.x;
-  options.y = options.y || defaults.y;
-  options.colormap = options.colormap || defaults.colormap;
-  options.h = options.h || defaults.h;
-
-  var steps = [
-    { 'name': 'gradient', 'options': {} },
-    { 'name': 'colormap', 'options': { colormap: options.colormap } },
-    { 'name': 'crop', 'options': { 'y': 0, 'h': options.h } },
-    { 'name': 'overlay', 'options': { 'x': options.x, 'y': options.y, 'offset': -4 } }
-  ];
-
-  // ui: false prevents internal logs
-  var internalSequencer = ImageSequencer({ inBrowser: false, ui: false });
-
-  function draw(input, callback) {
-
-    var step = this;
-
-    internalSequencer.loadImage(input.src, function onAddImage() {
-      internalSequencer.importJSON(steps);
-      internalSequencer.run(function onCallback(internalOutput) {
-        step.output = { src: internalOutput, format: input.format };
-        callback();
-      });
-    });
-
+    options.x = options.x || defaults.x;
+    options.y = options.y || defaults.y;
+    options.colormap = options.colormap || defaults.colormap;
+    options.h = options.h || defaults.h;
+ 
+    // return steps with options: 
+    return [
+      { 'name': 'gradient', 'options': {} },
+      { 'name': 'colormap', 'options': { colormap: options.colormap } },
+      { 'name': 'crop', 'options': { 'y': 0, 'h': options.h } },
+      { 'name': 'overlay', 'options': { 'x': options.x, 'y': options.y, 'offset': -4 } }
+    ];
   }
+)
 
-  return {
-    options: options,
-    draw: draw,
-    output: output,
-    UI: UI
-  }
-}
-
-},{"./../../util/getDefaults.js":270,"./info.json":179}],178:[function(require,module,exports){
+},{"../../util/createMetaModule.js":270}],178:[function(require,module,exports){
 arguments[4][162][0].apply(exports,arguments)
 },{"./Module":177,"./info.json":179,"dup":162}],179:[function(require,module,exports){
 module.exports={
@@ -66760,7 +66723,7 @@ module.exports = function Contrast(options, UI) {
     }
 }
 
-},{"../_nomodule/PixelManipulation.js":264,"./../../util/getDefaults.js":270,"./Contrast":184,"./info.json":187}],186:[function(require,module,exports){
+},{"../_nomodule/PixelManipulation.js":264,"./../../util/getDefaults.js":271,"./Contrast":184,"./info.json":187}],186:[function(require,module,exports){
 arguments[4][162][0].apply(exports,arguments)
 },{"./Module":185,"./info.json":187,"dup":162}],187:[function(require,module,exports){
 module.exports={
@@ -66895,7 +66858,7 @@ module.exports = function Convolution(options, UI) {
     }
 }
 
-},{"../_nomodule/PixelManipulation.js":264,"./../../util/getDefaults.js":270,"./Convolution":188,"./info.json":191}],190:[function(require,module,exports){
+},{"../_nomodule/PixelManipulation.js":264,"./../../util/getDefaults.js":271,"./Convolution":188,"./info.json":191}],190:[function(require,module,exports){
 arguments[4][162][0].apply(exports,arguments)
 },{"./Module":189,"./info.json":191,"dup":162}],191:[function(require,module,exports){
 module.exports={
@@ -66976,7 +66939,7 @@ module.exports = function Crop(input,options,callback) {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"./../../util/getDefaults.js":270,"./info.json":196,"buffer":47,"get-pixels":29,"save-pixels":138}],193:[function(require,module,exports){
+},{"./../../util/getDefaults.js":271,"./info.json":196,"buffer":47,"get-pixels":29,"save-pixels":138}],193:[function(require,module,exports){
 /*
  * Image Cropping module
  * Usage:
@@ -67388,7 +67351,7 @@ module.exports = function Dither(options, UI){
         UI: UI
     }
 }
-},{"../_nomodule/PixelManipulation.js":264,"./../../util/getDefaults.js":270,"./Dither":200,"./info.json":203}],202:[function(require,module,exports){
+},{"../_nomodule/PixelManipulation.js":264,"./../../util/getDefaults.js":271,"./Dither":200,"./info.json":203}],202:[function(require,module,exports){
 arguments[4][162][0].apply(exports,arguments)
 },{"./Module":201,"./info.json":203,"dup":162}],203:[function(require,module,exports){
 module.exports={
@@ -67437,7 +67400,7 @@ module.exports = exports = function(pixels, options){
   drawSide(ox, ey, ex, ey); // Bottom
   return pixels;
 }
-},{"./../../util/getDefaults.js":270,"./info.json":207}],205:[function(require,module,exports){
+},{"./../../util/getDefaults.js":271,"./info.json":207}],205:[function(require,module,exports){
 module.exports = function DrawRectangle(options, UI) {
 
     
@@ -67896,7 +67859,7 @@ module.exports = function edgeDetect(options, UI) {
   }
 }
 
-},{"../_nomodule/PixelManipulation.js":264,"./../../util/getDefaults.js":270,"./EdgeUtils":211,"./info.json":214,"ndarray-gaussian-filter":80}],213:[function(require,module,exports){
+},{"../_nomodule/PixelManipulation.js":264,"./../../util/getDefaults.js":271,"./EdgeUtils":211,"./info.json":214,"ndarray-gaussian-filter":80}],213:[function(require,module,exports){
 arguments[4][162][0].apply(exports,arguments)
 },{"./Module":212,"./info.json":214,"dup":162}],214:[function(require,module,exports){
 module.exports={
@@ -68117,7 +68080,7 @@ module.exports = function Gamma(options, UI) {
     }
 }
 
-},{"../_nomodule/PixelManipulation.js":264,"./../../util/getDefaults.js":270,"./info.json":220}],219:[function(require,module,exports){
+},{"../_nomodule/PixelManipulation.js":264,"./../../util/getDefaults.js":271,"./info.json":220}],219:[function(require,module,exports){
 arguments[4][162][0].apply(exports,arguments)
 },{"./Module":218,"./info.json":220,"dup":162}],220:[function(require,module,exports){
 module.exports={
@@ -68303,7 +68266,7 @@ module.exports = function Channel(options, UI) {
     }
 }
 
-},{"../_nomodule/PixelManipulation.js":264,"./../../util/getDefaults.js":270,"./info.json":226}],225:[function(require,module,exports){
+},{"../_nomodule/PixelManipulation.js":264,"./../../util/getDefaults.js":271,"./info.json":226}],225:[function(require,module,exports){
 module.exports = [
     require('./Module.js'),
     require('./info.json')
@@ -68386,7 +68349,7 @@ module.exports = function ImportImageModule(options, UI) {
   }
 }
 
-},{"../../util/GetFormat":268,"./../../util/getDefaults.js":270,"./Ui.js":228,"./info.json":230}],228:[function(require,module,exports){
+},{"../../util/GetFormat":268,"./../../util/getDefaults.js":271,"./Ui.js":228,"./info.json":230}],228:[function(require,module,exports){
 // hide on save
 module.exports = function ImportImageModuleUi(step, ui) {
 
@@ -68519,7 +68482,7 @@ module.exports = function Ndvi(options, UI) {
   }
 }
 
-},{"../_nomodule/PixelManipulation.js":264,"./../../util/getDefaults.js":270,"./Ui.js":232,"./info.json":234}],232:[function(require,module,exports){
+},{"../_nomodule/PixelManipulation.js":264,"./../../util/getDefaults.js":271,"./Ui.js":232,"./info.json":234}],232:[function(require,module,exports){
 // hide on save
 module.exports = function CropModuleUi(step, ui) {
 
@@ -68677,7 +68640,7 @@ module.exports = function Dynamic(options, UI, util) {
     }
 }
 
-},{"../../util/ParseInputCoordinates":269,"../_nomodule/PixelManipulation.js":264,"./../../util/getDefaults.js":270,"./info.json":240,"get-pixels":29}],239:[function(require,module,exports){
+},{"../../util/ParseInputCoordinates":269,"../_nomodule/PixelManipulation.js":264,"./../../util/getDefaults.js":271,"./info.json":240,"get-pixels":29}],239:[function(require,module,exports){
 arguments[4][162][0].apply(exports,arguments)
 },{"./Module":238,"./info.json":240,"dup":162}],240:[function(require,module,exports){
 module.exports={
@@ -68812,7 +68775,7 @@ module.exports = exports = function(pixels, options) {
   return pixels;
 }
 
-},{"./../../util/getDefaults.js":270,"./info.json":244}],243:[function(require,module,exports){
+},{"./../../util/getDefaults.js":271,"./info.json":244}],243:[function(require,module,exports){
 arguments[4][162][0].apply(exports,arguments)
 },{"./Module":241,"./info.json":244,"dup":162}],244:[function(require,module,exports){
 module.exports={
@@ -68919,7 +68882,7 @@ module.exports = function Resize(options, UI) {
     }
 }
 
-},{"../_nomodule/PixelManipulation.js":264,"./../../util/getDefaults.js":270,"./info.json":247,"imagejs":62}],246:[function(require,module,exports){
+},{"../_nomodule/PixelManipulation.js":264,"./../../util/getDefaults.js":271,"./info.json":247,"imagejs":62}],246:[function(require,module,exports){
 arguments[4][162][0].apply(exports,arguments)
 },{"./Module":245,"./info.json":247,"dup":162}],247:[function(require,module,exports){
 module.exports={
@@ -68999,7 +68962,7 @@ module.exports = function Rotate(options, UI) {
     }
 }
 
-},{"../_nomodule/PixelManipulation.js":264,"./../../util/getDefaults.js":270,"./info.json":250,"imagejs":62}],249:[function(require,module,exports){
+},{"../_nomodule/PixelManipulation.js":264,"./../../util/getDefaults.js":271,"./info.json":250,"imagejs":62}],249:[function(require,module,exports){
 arguments[4][162][0].apply(exports,arguments)
 },{"./Module":248,"./info.json":250,"dup":162}],250:[function(require,module,exports){
 module.exports={
@@ -69211,7 +69174,7 @@ function otsu(histData) {
     return threshold;
 
 }
-},{"./../../util/getDefaults.js":270,"./info.json":257}],256:[function(require,module,exports){
+},{"./../../util/getDefaults.js":271,"./info.json":257}],256:[function(require,module,exports){
 arguments[4][162][0].apply(exports,arguments)
 },{"./Module":254,"./info.json":257,"dup":162}],257:[function(require,module,exports){
 module.exports={
@@ -69286,7 +69249,7 @@ module.exports = function Tint(options, UI) {
     }
 }
 
-},{"../_nomodule/PixelManipulation.js":264,"./../../util/getDefaults.js":270,"./info.json":260}],259:[function(require,module,exports){
+},{"../_nomodule/PixelManipulation.js":264,"./../../util/getDefaults.js":271,"./info.json":260}],259:[function(require,module,exports){
 arguments[4][162][0].apply(exports,arguments)
 },{"./Module":258,"./info.json":260,"dup":162}],260:[function(require,module,exports){
 module.exports={
@@ -69841,16 +69804,79 @@ module.exports = function parseCornerCoordinateInputs(options,coord,callback) {
     })
   }
 },{"get-pixels":29}],270:[function(require,module,exports){
-module.exports = function(info){
-	var defaults = {};
-	for (var key in info.inputs) {
-	  if (info.inputs.hasOwnProperty(key)) {
-	    defaults[key] = info.inputs[key].default;
-	  }
-	}
-	return defaults;
+module.exports = function createMetaModule(mapFunction, moduleOptions){
+
+  moduleOptions = moduleOptions || {};
+  moduleOptions.infoJson = moduleOptions.infoJson || 'info.json';
+
+  function MetaModule(options, UI) {
+
+    var defaults = require('./getDefaults.js')(require(moduleOptions.infoJson));
+    var output;
+
+    // map inputs to internal step options;
+    // use this to set defaults for internal steps
+    // and to expose internal settings as external meta-module parameters;
+    // it must return a steps object
+    var steps = mapFunction(options, defaults);
+
+    /* example:
+    function mapFunction(opt, _defaults) { 
+      opt.x = opt.x || _defaults.x;
+      opt.y = opt.y || _defaults.y;
+      opt.colormap = opt.colormap || _defaults.colormap;
+      opt.h = opt.h || _defaults.h;
+ 
+      // return steps with options: 
+      return [
+        { 'name': 'gradient', 'options': {} },
+        { 'name': 'colormap', 'options': { colormap: options.colormap } },
+        { 'name': 'crop', 'options': { 'y': 0, 'h': options.h } },
+        { 'name': 'overlay', 'options': { 'x': options.x, 'y': options.y, 'offset': -4 } }
+      ];
+    }
+    */
+ 
+    // ui: false prevents internal logs
+    var internalSequencer = ImageSequencer({ inBrowser: false, ui: false });
+ 
+    function draw(input, callback) {
+ 
+      var step = this;
+ 
+      internalSequencer.loadImage(input.src, function onAddImage() {
+        internalSequencer.importJSON(steps);
+        internalSequencer.run(function onCallback(internalOutput) {
+          step.output = { src: internalOutput, format: input.format };
+          callback();
+        });
+      });
+ 
+    }
+ 
+    return {
+      options: options,
+      draw: draw,
+      output: output,
+      UI: UI
+    }
+  }
+
+  return MetaModule;
 }
-},{}],271:[function(require,module,exports){
+
+},{"./getDefaults.js":271}],271:[function(require,module,exports){
+module.exports = function(info){
+  var defaults = {};
+  for (var key in info.inputs) {
+    if (info.inputs.hasOwnProperty(key)) {
+      defaults[key] = info.inputs[key].default;
+    }
+  }
+  return defaults;
+}
+
+},{}],272:[function(require,module,exports){
 module.exports = {
     getPreviousStep: function() {
         return this.getStep(-1);
