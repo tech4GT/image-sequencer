@@ -9,7 +9,7 @@
 module.exports = function ImportImageModule(options, UI) {
 
   var defaults = require('./../../util/getDefaults.js')(require('./info.json'));
-  options.imageUrl = options.url || defaults.url;
+  options.imageUrl = options.inBrowser ? (options.url || defaults.url) : "./examples/images/monarch.png";
 
   var output;
 
@@ -32,7 +32,7 @@ module.exports = function ImportImageModule(options, UI) {
     step.metadata.input = input;
     // options.format = require('../../util/GetFormat')(options.imageUrl);
 
-    var helper = ImageSequencer({ ui: false });
+    var helper = ImageSequencer({ inBrowser: options.inBrowser, ui: false });
     helper.loadImages(options.imageUrl, () => {
       step.output = helper.steps[0].output;
       callback();

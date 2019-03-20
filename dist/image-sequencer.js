@@ -71927,7 +71927,7 @@ module.exports={
 module.exports = function ImportImageModule(options, UI) {
 
   var defaults = require('./../../util/getDefaults.js')(require('./info.json'));
-  options.imageUrl = options.url || defaults.url;
+  options.imageUrl = options.inBrowser ? (options.url || defaults.url) : "./examples/images/monarch.png";
 
   var output;
 
@@ -71950,7 +71950,7 @@ module.exports = function ImportImageModule(options, UI) {
     step.metadata.input = input;
     // options.format = require('../../util/GetFormat')(options.imageUrl);
 
-    var helper = ImageSequencer({ ui: false });
+    var helper = ImageSequencer({ inBrowser: options.inBrowser, ui: false });
     helper.loadImages(options.imageUrl, () => {
       step.output = helper.steps[0].output;
       callback();
@@ -73249,13 +73249,13 @@ function LoadImage(ref, name, src, main_callback) {
       callback(datauri, step);
     }
     else if (!ref.options.inBrowser && !!src.match(/^https?:\/\//i)) {
-      require( src.match(/^(https?):\/\//i)[1] ).get(src,function(res){
+      require(src.match(/^(https?):\/\//i)[1]).get(src, function(res) {
         var data = '';
         var contentType = res.headers['content-type'];
         res.setEncoding('base64');
-        res.on('data',function(chunk) {data += chunk;});
-        res.on('end',function() {
-          callback("data:"+contentType+";base64,"+data, step);
+        res.on('data', function(chunk) { data += chunk; });
+        res.on('end', function() {
+          callback("data:" + contentType + ";base64," + data, step);
         });
       });
     }
@@ -73267,10 +73267,10 @@ function LoadImage(ref, name, src, main_callback) {
       image.onload = function() {
         canvas.width = image.naturalWidth;
         canvas.height = image.naturalHeight;
-        context.drawImage(image,0,0);
-        datauri = canvas.toDataURL(ext);        
+        context.drawImage(image, 0, 0);
+        datauri = canvas.toDataURL(ext);
         callback(datauri, step);
-      }  
+      }
       image.src = src;
     }
     else {
@@ -73287,7 +73287,7 @@ function LoadImage(ref, name, src, main_callback) {
       inBrowser: ref.options.inBrowser,
       ui: ref.options.ui,
       UI: ref.events,
-      output : ''
+      output: ''
     };
 
 
@@ -73304,7 +73304,7 @@ function LoadImage(ref, name, src, main_callback) {
     });
   }
 
-  return loadImage(name,src);
+  return loadImage(name, src);
 }
 
 module.exports = LoadImage;
