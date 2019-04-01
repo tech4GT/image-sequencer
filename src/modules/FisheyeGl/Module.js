@@ -191,6 +191,9 @@ module.exports = function DoNothing(options, UI) {
           gl.bindTexture(gl.TEXTURE_2D, texture);
 
           gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+          var pixels = new Uint8Array(200 * 200 * 4)
+          gl.readPixels(0, 0, 200, 200, gl.RGBA, gl.UNSIGNED_BYTE, pixels)
+          console.log(pixels.reduce((el, acc) => el + acc))
 
           gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
           gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); //gl.NEAREST is also allowed, instead of gl.LINEAR, as neither mipmap.
@@ -206,24 +209,19 @@ module.exports = function DoNothing(options, UI) {
         function loadImageFromUrl(gl, url, callback) {
           var texture = gl.createTexture();
 
-          var Canvas = require('canvas');
 
-          var img = new Canvas.Image; // Create a new Image
-          img.src = url;
-
-          // Initialiaze a new Canvas with the same dimensions
-          // as the image, and get a 2D drawing context for it.
-          var canvas = createCanvas(img.width, img.height);
-          var ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, img.width / 4, img.height / 4);
-
-          loadImages(gl, canvas.getContext('2d').createImageData(img.width, img.height), callback, texture);
-          options.width = img.width;
-          options.height = img.height;
-          resize(
-            options.width,
-            options.height
-          )
+          require('get-pixels')(url, function(err, image) {
+            console.log(image.data.reduce((el, acc) => el + acc))
+            image.width = image.shape[0]
+            image.height = image.shape[1]
+            loadImages(gl, image, callback, texture);
+            options.width = image.width;
+            options.height = image.height;
+            resize(
+              options.width,
+              options.height
+            )
+          })
 
           return texture;
         }
@@ -277,12 +275,11 @@ module.exports = function DoNothing(options, UI) {
 
         function setImage(imageUrl, callback) {
           texture = loadImageFromUrl(gl, imageUrl, function onImageLoad() {
-            if (callback) callback();
-            // run(false, callback);
+            run(false, callback);
           });
         }
 
-        setImage(image);
+        // setImage(image);
 
         // asynchronous!
         function getImage(format) {
@@ -318,8 +315,7 @@ module.exports = function DoNothing(options, UI) {
       }
 
       var gl = require('gl')(200, 200, { preserveDrawingBuffer: true })
-      const canvas = createCanvas(200, 200)
-      // data = canvas.getContext('2d').createImageData(10, 10);
+      const canvas = createCanvas(1000, 1000)
       var x = canvas.getContext;
       canvas.getContext = function(param) {
         if (param === 'webgl')
