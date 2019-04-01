@@ -190,10 +190,11 @@ module.exports = function DoNothing(options, UI) {
 
           gl.bindTexture(gl.TEXTURE_2D, texture);
 
+          console.log('\nImage data sum: ' + img.data.reduce((el, acc) => el + acc))
           gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
-          var pixels = new Uint8Array(200 * 200 * 4)
-          gl.readPixels(0, 0, 200, 200, gl.RGBA, gl.UNSIGNED_BYTE, pixels)
-          console.log(pixels.reduce((el, acc) => el + acc))
+          var pixels = new Uint8Array(img.width * img.height * 4)
+          gl.readPixels(0, 0, img.width, img.height, gl.RGBA, gl.UNSIGNED_BYTE, pixels)
+          console.log('gl pixels sum: ' + pixels.reduce((el, acc) => el + acc))
 
           gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
           gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); //gl.NEAREST is also allowed, instead of gl.LINEAR, as neither mipmap.
@@ -211,7 +212,6 @@ module.exports = function DoNothing(options, UI) {
 
 
           require('get-pixels')(url, function(err, image) {
-            console.log(image.data.reduce((el, acc) => el + acc))
             image.width = image.shape[0]
             image.height = image.shape[1]
             loadImages(gl, image, callback, texture);
