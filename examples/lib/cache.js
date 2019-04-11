@@ -5,9 +5,9 @@ var setupCache = function() {
         const installingWorker = registration.installing;
         installingWorker.onstatechange = () => {
           console.log(installingWorker)
-          if (installingWorker.state === 'installed') {
-            location.reload();
-          }
+          // if (installingWorker.state === 'installed') {
+          //   location.reload();
+          // }
         }
         console.log('Registration successful, scope is:', registration.scope);
       })
