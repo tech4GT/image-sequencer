@@ -11,34 +11,9 @@ module.exports = function DoNothing(options, UI) {
 
     var step = this;
 
-    if (!options.inBrowser) { // This module is only for browser
+    if (!options.inBrowser) {
       this.output = input;
-      const puppeteer = require('puppeteer');
-
-      puppeteer.launch().then(function(browser) {
-        browser.newPage().then(page => {
-          page.goto("http://localhost:3000/examples").then(() => {
-            page.evaluate((ip) => {
-              return new Promise((resolve, reject) => {
-                var sequencer = ImageSequencer();
-                // sequencer.steps[0].output = input;
-                sequencer.loadImage(ip.src);
-                sequencer.addSteps('fisheye-gl');
-                // sequencer.addSteps('fisheye-gl');
-                sequencer.run(function cb(out) {
-                  resolve(sequencer.steps[1].output.src)
-                });
-              })
-            }, input).then(el => {
-              console.log(el.length);
-              browser.close().then(() => {
-                step.output = { src: el, format: input.format };
-                callback();
-              });
-            });
-          });
-        });
-      })
+      require('../_nomodule/gl-context')(input, callback, step);
     }
     else {
       // Create a canvas, if it doesn't already exist.
