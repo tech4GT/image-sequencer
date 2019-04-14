@@ -18,6 +18,8 @@ test('benchmark all modules', function(t) {
   var mods = Object.keys(sequencer.modules);
 
   sequencer.loadImages(image);
+  while ((mods[0] === 'import-image' || (!!sequencer.modulesInfo(mods[0]).requires && sequencer.modulesInfo(mods[0]).requires.includes("webgl"))))
+    mods.splice(0, 1);
   sequencer.addSteps(mods[0]);
   global.start = Date.now()
   global.idx = 0
