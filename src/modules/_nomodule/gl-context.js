@@ -5,7 +5,7 @@ module.exports = function runInBrowserContext(input, callback, step, options) {
 
     //Stripped down version of options which is serializable
     var minOptions = require("lodash").cloneDeep(options);
-    minOptions.step = undefined;
+    minOptions.step = options.step.name;
 
     var obj = { input: input, modOptions: minOptions }
 
@@ -19,7 +19,7 @@ module.exports = function runInBrowserContext(input, callback, step, options) {
                         return new Promise((resolve, reject) => {
                             var sequencer = ImageSequencer();
                             sequencer.loadImage(options.input.src);
-                            sequencer.addSteps('fisheye-gl', options.modOptions);
+                            sequencer.addSteps(options.modOptions.step, options.modOptions);
                             sequencer.run(function cb(out) {
                                 resolve(sequencer.steps[1].output.src)
                             });
