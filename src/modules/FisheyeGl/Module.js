@@ -12,12 +12,7 @@ module.exports = function DoNothing(options, UI) {
     var step = this;
 
     if (!options.inBrowser) {
-      this.output = input;
-
-      //Stripped down version of options which is serializable
-      var minOptions = require("lodash").cloneDeep(options);
-      minOptions.step = undefined;
-      require('../_nomodule/gl-context')(input, callback, step, minOptions);
+      require('../_nomodule/gl-context')(input, callback, step, options);
     }
     else {
       // Create a canvas, if it doesn't already exist.

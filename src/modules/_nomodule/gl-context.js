@@ -2,7 +2,12 @@ module.exports = function runInBrowserContext(input, callback, step, options) {
 
     // to ignore this from getting browserified
     const puppeteer = eval('require')('puppeteer');
-    var obj = { input: input, modOptions: options }
+
+    //Stripped down version of options which is serializable
+    var minOptions = require("lodash").cloneDeep(options);
+    minOptions.step = undefined;
+
+    var obj = { input: input, modOptions: minOptions }
 
     puppeteer.launch().then(function(browser) {
         browser.newPage().then(page => {
