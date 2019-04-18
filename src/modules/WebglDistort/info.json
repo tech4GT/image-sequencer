@@ -1,0 +1,8 @@
+{
+    "name": "Webl Distort",
+    "requires": [
+        "webgl"
+    ],
+    "description": "",
+    "inputs": {}
+}
