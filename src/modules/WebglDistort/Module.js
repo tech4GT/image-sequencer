@@ -193,17 +193,20 @@ module.exports = function DoNothing(options, UI) {
                     [0, 0, 1023, 0, 1023, 767, 0, 767], // matrix 1 (before) corner coordinates, NW, NE, SE, SW
                     [0, 100, 1023, -50, 1223, 867, 100, 767]  // matrix 2 (after) corner coordinates
                 );
-                var canvas = document.createElement('canvas');
-                canvas.width = image.naturalWidth; // or 'width' if you want a special/scaled size
-                canvas.height = image.naturalHeight; // or 'height' if you want a special/scaled size
-                canvas.getContext('2d').drawImage(image, 0, 0);
+                image.onload = () => {
+                    var canvas = document.createElement('canvas');
+                    canvas.width = image.naturalWidth; // or 'width' if you want a special/scaled size
+                    canvas.height = image.naturalHeight; // or 'height' if you want a special/scaled size
+                    canvas.getContext('2d').drawImage(image, 0, 0);
 
-                step.output = { src: canvas.toDataURL('image/png'), format: 'png' }
-                callback();
+                    step.output = { src: canvas.toDataURL('image/png'), format: 'png' }
+                    image.remove();
+                    callback();
+                };
             };
+            image.src = input.src;
             image.id = "img";
             document.body.appendChild(image);
-            image.src = input.src;
         }
     }
 
