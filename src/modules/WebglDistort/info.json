@@ -7,22 +7,22 @@
     "inputs": {
         "nw": {
             "type": "String",
-            "description": "Space separated X and Y coordinates of top-left corner",
+            "desc": "Space separated X and Y coordinates of top-left corner",
             "default": "0 100"
         },
         "ne": {
             "type": "String",
-            "description": "Space separated X and Y coordinates of top-right corner",
+            "desc": "Space separated X and Y coordinates of top-right corner",
             "default": "1023 -50"
         },
         "se": {
             "type": "String",
-            "description": "Space separated X and Y coordinates of bottom-right corner",
+            "desc": "Space separated X and Y coordinates of bottom-right corner",
             "default": "1223 867"
         },
         "sw": {
             "type": "String",
-            "description": "Space separated X and Y coordinates of bottom-left corner",
+            "desc": "Space separated X and Y coordinates of bottom-left corner",
             "default": "100 767"
         }
     },

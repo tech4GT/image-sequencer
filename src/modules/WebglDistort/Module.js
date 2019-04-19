@@ -3,6 +3,8 @@
 */
 module.exports = function DoNothing(options, UI) {
 
+    var defaults = require('./../../util/getDefaults.js')(require('./info.json'));
+
     var output;
     var fx = require('./glfx')
 
@@ -180,6 +182,14 @@ module.exports = function DoNothing(options, UI) {
 
         var step = this;
 
+        options.nw = options.nw || defaults.nw;
+        options.ne = options.ne || defaults.ne;
+        options.se = options.se || defaults.se;
+        options.sw = options.sw || defaults.sw;
+
+        var parseDistortCoordinates = require('../../util/parseDistortCoordinates.js');
+        var cornerCoordinates = parseDistortCoordinates(options)
+
         if (!options.inBrowser) {
             // this.output = input;
             // callback();
@@ -191,7 +201,8 @@ module.exports = function DoNothing(options, UI) {
                 warpWebGl(
                     'img',
                     [0, 0, 1023, 0, 1023, 767, 0, 767], // matrix 1 (before) corner coordinates, NW, NE, SE, SW
-                    [0, 100, 1023, -50, 1223, 867, 100, 767]  // matrix 2 (after) corner coordinates
+                    // [0, 100, 1023, -50, 1223, 867, 100, 767]  // matrix 2 (after) corner coordinates
+                    cornerCoordinates
                 );
                 image.onload = () => {
                     var canvas = document.createElement('canvas');
